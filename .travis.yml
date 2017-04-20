@@ -1,5 +1,5 @@
 # This is the config file for building GDAL and running its autotest suite
-# with Travis-ci.org
+# with Travis-ci.org.
 
 dist: precise
 sudo: required
