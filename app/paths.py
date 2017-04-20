@@ -27,15 +27,11 @@ class PathsNotSetExecption(BaseException):
 
 class Paths:
 
-    etrm_input_root = None
-    etrm_output_root = None
+    polygons = None
 
     def __init__(self):
         self._is_set = False
         self.config = os.path.join(os.path.expanduser('~'), 'ETRM_CONFIG.yml')
-
-    def set_mask_path(self, path):
-        self.mask = self.input_path(path)
 
     def input_path(self, path):
         return os.path.join(self.etrm_input_root, path)
