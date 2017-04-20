@@ -34,7 +34,7 @@ class Paths:
         self.config = os.path.join(os.path.expanduser('~'), 'ETRM_CONFIG.yml')
 
     def input_path(self, path):
-        return os.path.join(self.etrm_input_root, path)
+        return os.path.join(self.etrm_input_root, path) #start with this
 
     def set_polygons_path(self, p):
         self.polygons = self.input_path(p)
