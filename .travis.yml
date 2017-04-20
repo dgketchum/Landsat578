@@ -39,3 +39,7 @@ install:
 script:
   - export GDAL_DATA=/home/travis/miniconda2/envs/landsatenv/share/gdal
   - python setup.py test
+
+
+notifications:
+  slack: nmbgmr:6025BpWw62bzddqVqFrtGLOF
