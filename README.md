@@ -1,3 +1,3 @@
-# MT_Rsense
+# Easy Landsat Download
 
 # 2017 dgetchum
