@@ -26,6 +26,7 @@ class PathsNotSetExecption(BaseException):
 
 
 class Paths:
+
     etrm_input_root = None
     etrm_output_root = None
 
@@ -33,6 +34,33 @@ class Paths:
         self._is_set = False
         self.config = os.path.join(os.path.expanduser('~'), 'ETRM_CONFIG.yml')
 
+    def set_mask_path(self, path):
+        self.mask = self.input_path(path)
+
+    def input_path(self, path):
+        return os.path.join(self.etrm_input_root, path)
+
+    def set_polygons_path(self, p):
+        self.polygons = self.input_path(p)
+
+    def verify(self):
+        attrs = ('etrm_input_root',
+                 'etrm_output_root')
+
+        nonfound = []
+        for attr in attrs:
+            v = getattr(self, attr)
+            if not os.path.exists(v):
+                print 'NOT FOUND {}: {}'.format(attr, v)
+                nonfound.append((attr, v))
+
+        if nonfound:
+            sys.exit(1)
+
+    def is_set(self):
+        return self._is_set
+
+paths = Paths()
 
 
 if __name__ == '__main__':
