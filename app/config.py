@@ -19,6 +19,8 @@ import sys
 import yaml
 from datetime import datetime
 
+import paths
+
 DEFAULT_CFG = None
 DATETIME_FMT = '%m/%d/%Y'
 
@@ -48,6 +50,26 @@ class RunSpec:
         else:
             return (datetime.strptime(obj['start_date'], DATETIME_FMT),
                     datetime.strptime(obj['end_date'], DATETIME_FMT))
+
+
+class Config:
+    runspecs = None
+
+    def __init__(self, path=None):
+        self.load(path=path)
+
+    def load(self, path=None):
+        if path is None:
+            path = paths.config
+
+        if isinstance(path, (str, unicode)):
+            check_config(path)
+            rfile = open(path, 'r')
+        else:
+            rfile = path
+
+        self.runspecs = [RunSpec(doc) for doc in yaml.load_all(rfile)]
+        rfile.close()
 
 
 def check_config(path=None):
