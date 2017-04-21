@@ -36,7 +36,11 @@ def main(args):
 
         if args.lat:
             download_landsat((datetime.strptime(args.end, '%Y%M%d'), datetime.strptime(args.end, '%Y%M%d')),
-                             args.satellite, lat_lon_tuple=(args.lat, args.lon), )
+                             args.satellite, lat_lon_tuple=(args.lat, args.lon), output_path=args.output,
+                             usgs_creds=args.credentials)
+
+        else:
+            raise NotImplementedError('Was not executed.')
 
 
 def download_landsat(start_end_tuple, satellite, path_row_tuple=None, lat_lon_tuple=None,
