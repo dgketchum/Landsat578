@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
 import os
+import pycurl
 import argparse
 from osgeo import ogr
 from datetime import datetime
 
-from landsat import usgs_download
+import usgs_download
 from vector_tools import get_pr_from_field, get_pr_multipath
 from web_tools import convert_lat_lon_wrs2pr
 
@@ -85,23 +86,36 @@ def download_landsat(start_end_tuple, satellite, path_row_tuple=None, lat_lon_tu
             print 'making dir: {}'.format(destination_path)
             os.mkdir(destination_path)
 
-        scenes_list = usgs_download.get_candidate_scenes_list(tile, satellite, start, end)
+        scenes_list = usgs_download.get_candidate_scenes_list(tile, satellite, start_date, end_date)
 
         usgs_download.down_usgs_by_list(scenes_list, destination_path, usgs_creds)
 
     return None
 
 
-if __name__ == '__main__':
-    home = os.path.expanduser('~')
-    start = datetime(2007, 5, 1)
-    end = datetime(2007, 5, 30)
-    sat = 'LT5'
-    output = os.path.join(home, 'images', sat)
-    usgs_creds = os.path.join(home, 'images', 'usgs.txt')
-    path_row = 37, 27
-    download_landsat((start, end), satellite=sat.replace('andsat_', ''),
-                     path_row_tuple=path_row, output_path=output, usgs_creds=usgs_creds)
+def __main__():
 
+    global parser
+    parser = args_options()
+    args = parser.parse_args()
+
+
+if __name__ == '__main__':
+
+    try:
+        __main__()
+
+    except (KeyboardInterrupt, pycurl.error):
+        exit('Keyboard interrupt, exiting....', 1)
+
+#     home = os.path.expanduser('~')
+#     start = datetime(2007, 5, 1)
+#     end = datetime(2007, 5, 30)
+#     sat = 'LT5'
+#     output = os.path.join(home, 'images', sat)
+#     usgs_creds = os.path.join(home, 'images', 'usgs.txt')
+#     path_row = 37, 27
+#     download_landsat((start, end), satellite=sat.replace('andsat_', ''),
+#                      path_row_tuple=path_row, output_path=output, usgs_creds=usgs_creds)
 
 # ===============================================================================
