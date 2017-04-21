@@ -1,24 +1,47 @@
-"""
-This module downloads landsat data.  Get the wrs (ascending)
-from http://landsat.usgs.gov/worldwide_reference_system_WRS.php
-select an area you want images for, save the selection and
-pass shapefile to this program,
-or just choose location coordinates
-"""
+#!/usr/bin/env python
+
 import os
+import argparse
 from osgeo import ogr
 from datetime import datetime
 
-from utils import usgs_download
-
+from landsat import usgs_download
 from vector_tools import get_pr_from_field, get_pr_multipath
 from web_tools import convert_lat_lon_wrs2pr
+
+
+def args_options():
+
+    parser = argparse.ArgumentParser(prog='landsat')
+
+    parser.add_argument('-s', '--start', help='Start date in format YYYY-MM-DD')
+    parser.add_argument('-e', '--end', help='End date in format YYY-MM-DD')
+    parser.add_argument('--satellite', help='Satellite name: LT5, LE7, or LC8')
+    parser.add_argument('--lat', help='Latitude')
+    parser.add_argument('--lon', help='Longitude')
+    parser.add_argument('--path', help='The path')
+    parser.add_argument('--row', help='The row')
+    parser.add_argument('-o', '--output', help='Output directory')
+    parser.add_argument('--shapefile', help='A shapefile with polygons (.shp)')
+    parser.add_argument('--credentials',
+                        help='Path to a text file with USGS credentials with one space between <username password>')
+    parser.add_argument('--seek-multipath', help='Search for multiple paths within shapefile coverage')
+    parser.add_argument('--return-list', help='Just return list of images without downloading')
+
+    return parser
+
+
+def main(args):
+    if args:
+
+        if args.lat:
+            download_landsat((datetime.strptime(args.end, '%Y%M%d'), datetime.strptime(args.end, '%Y%M%d')),
+                             args.satellite, lat_lon_tuple=(args.lat, args.lon), )
 
 
 def download_landsat(start_end_tuple, satellite, path_row_tuple=None, lat_lon_tuple=None,
                      shape=None, output_path=None, seek_multipath=False, multipath_points=None,
                      usgs_creds=None):
-
     start_date, end_date = start_end_tuple[0], start_end_tuple[1]
     print 'Date range: {} to {}'.format(start_date, end_date)
 
@@ -69,11 +92,11 @@ if __name__ == '__main__':
     home = os.path.expanduser('~')
     start = datetime(2007, 5, 1)
     end = datetime(2007, 5, 30)
-    satellite = 'LT5'
-    output = os.path.join(home, 'images', satellite)
+    sat = 'LT5'
+    output = os.path.join(home, 'images', sat)
     usgs_creds = os.path.join(home, 'images', 'usgs.txt')
     path_row = 37, 27
-    download_landsat((start, end), satellite=satellite.replace('andsat_', ''),
+    download_landsat((start, end), satellite=sat.replace('andsat_', ''),
                      path_row_tuple=path_row, output_path=output, usgs_creds=usgs_creds)
 
 
