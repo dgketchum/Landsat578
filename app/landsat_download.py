@@ -20,7 +20,7 @@ import pycurl
 import argparse
 from datetime import datetime
 
-from landsat.landsat import download_landsat
+from landsat.downloader import download_landsat
 
 
 def create_parser():
@@ -57,12 +57,22 @@ def main(args):
 
             return scenes
 
-        if args.path:
+        elif args.path:
             print '\nStarting download with pathrow...'
             print args
             scenes = download_landsat(
                 (datetime.strptime(args.start, '%Y-%m-%d'), datetime.strptime(args.end, '%Y-%m-%d')),
                 args.satellite, path_row_tuple=(args.path, args.row), output_path=args.output,
+                usgs_creds=args.credentials, dry_run=args.return_list)
+
+            return scenes
+
+        elif args.shapefile:
+            print '\nStarting download with pathrow...'
+            print args
+            scenes = download_landsat(
+                (datetime.strptime(args.start, '%Y-%m-%d'), datetime.strptime(args.end, '%Y-%m-%d')),
+                args.satellite, shape=args.shapefile, output_path=args.output,
                 usgs_creds=args.credentials, dry_run=args.return_list)
 
             return scenes
