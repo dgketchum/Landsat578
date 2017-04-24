@@ -21,7 +21,7 @@ import pkg_resources
 from utils import spatial_reference_tools as srt
 
 
-class MyTestCase(unittest.TestCase):
+class SpatialTestCase(unittest.TestCase):
     def setUp(self):
         self.mtspcs_tif = 'LT05_L1GS_036029_20060523_test_MTSPCS.tif'
         self.mtspcs_file = pkg_resources.resource_filename('data', self.mtspcs_tif)
