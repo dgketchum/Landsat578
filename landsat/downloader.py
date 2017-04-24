@@ -16,7 +16,6 @@
 
 
 import os
-from osgeo import ogr
 
 import usgs_download
 from vector_tools import get_pr_from_field, get_pr_multipath
@@ -33,9 +32,8 @@ def download_landsat(start_end_tuple, satellite, path_row_tuple=None, lat_lon_tu
 
     if shape and not seek_multipath:
         # assumes shapefile has a 'path' and a 'row' field
-        ds = ogr.Open(shape)
-        lyr = ds.GetLayer()
-        image_index = get_pr_from_field(lyr)
+        images = get_pr_from_field(shape)
+        image_index = [(int(x[0]), int(x[1])) for x in images]
         print 'Downloading landsat by shapefile: {}'.format(shape)
 
     elif seek_multipath:
