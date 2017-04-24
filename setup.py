@@ -24,8 +24,13 @@ setup(name='Landsat578',
       version='0.1',
       setup_requires=['nose>=1.0'],
       py_modules=['landsat'],
+      url='https://github.com/dgketchum/Landsat578',
+      author='David Ketchum',
+      author_email='dgketchum@gmail.com',
       packages=['landsat',
-                'tests'],
-      test_suite='tests.test_suite.suite', install_requires=['numpy', 'gdal', 'osr'])
+                'tests',
+                'app',
+                'data'],
+      test_suite='tests.test_suite.suite', install_requires=['gdal', 'osr'])
 
 # ============= EOF =============================================
