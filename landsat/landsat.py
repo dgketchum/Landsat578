@@ -36,6 +36,7 @@ def main(args):
     if args:
 
         if args.lat:
+            print 'Starting download with latlon...'
             download_landsat((datetime.strptime(args.end, '%Y%M%d'), datetime.strptime(args.end, '%Y%M%d')),
                              args.satellite, lat_lon_tuple=(args.lat, args.lon), output_path=args.output,
                              usgs_creds=args.credentials)
@@ -47,7 +48,9 @@ def main(args):
 def download_landsat(start_end_tuple, satellite, path_row_tuple=None, lat_lon_tuple=None,
                      shape=None, output_path=None, seek_multipath=False, multipath_points=None,
                      usgs_creds=None):
+
     start_date, end_date = start_end_tuple[0], start_end_tuple[1]
+
     print 'Date range: {} to {}'.format(start_date, end_date)
 
     if shape and not seek_multipath:
