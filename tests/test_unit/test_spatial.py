@@ -18,7 +18,7 @@
 import unittest
 import pkg_resources
 
-from utils import spatial_reference_tools as srt
+from landsat import spatial_reference_tools as srt
 
 
 class SpatialTestCase(unittest.TestCase):
