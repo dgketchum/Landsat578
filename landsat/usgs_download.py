@@ -253,7 +253,7 @@ def get_candidate_scenes_list(path_row, sat_name, start_date, end_date=None):
     :return: reference overpass = str('YYYYDOY'), station str('XXX') len=3
     """
 
-    print '\nsat: {}\n'.format(sat_name)
+    # print '\nsat: {}\n'.format(sat_name)
 
     reference_overpass = web_tools.landsat_overpass_time(path_row,
                                                          start_date, sat_name)

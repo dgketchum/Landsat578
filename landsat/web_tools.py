@@ -89,6 +89,7 @@ def get_l5_overpass_data(l5_path_row, date):
 
 
 def landsat_overpass_time(lndst_path_row, start_date, satellite):
+
     delta = timedelta(days=20)
     end = start_date + delta
 
@@ -181,12 +182,6 @@ def convert_lat_lon_wrs2pr(pr_latlon, conversion_type='convert_ll_to_pr'):
 
 
 if __name__ == '__main__':
-    home = os.path.expanduser('~')
-    print 'home: {}'.format(home)
-    path_row = (37, 27)
-    lat_lon = 47.45, -107.951
-    start = datetime(2014, 05, 01)
-    print convert_lat_lon_wrs2pr(lat_lon)
-    # print convert_lat_lon_wrs2pr(path_row, conversion_type='convert_pr_to_ll')
+    pass
 
 # ==================================================================================
