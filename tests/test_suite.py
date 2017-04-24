@@ -19,7 +19,7 @@ import unittest
 
 def suite():
     print 'Testing.......................................'
-    from tests.test_integration.test_landsat import USGSLandstatTestCase
+    from tests.test_integration.test_usgs_service import USGSLandstatTestCase
     from tests.test_unit.test_web_tools import WebToolsTestCase
 
     loader = unittest.TestLoader()
