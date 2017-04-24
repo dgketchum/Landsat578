@@ -168,6 +168,7 @@ def get_credentials(usgs_path):
 
 
 def get_station_list_identifier(product):
+
     if product.startswith('LC8'):
         identifier = '4923'
         stations = ['LGN']
@@ -283,13 +284,6 @@ def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
 
 
 if __name__ == '__main__':
-    home = os.path.expanduser('~')
-    start = datetime(2007, 5, 1)
-    end = datetime(2007, 5, 30)
-    satellite = 'LT5'
-    output = os.path.join(home, 'images', satellite)
-    usgs_creds = os.path.join(home, 'images', 'usgs.txt')
-    pathrow = 37, 27
-    print get_candidate_scenes_list(pathrow, satellite, start, end)
+    pass
 
 # ===============================================================================
