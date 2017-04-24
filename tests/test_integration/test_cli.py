@@ -15,6 +15,7 @@
 # ===============================================================================
 
 import unittest
+import pkg_resources
 
 from app.landsat_download import create_parser, main
 
@@ -31,6 +32,10 @@ class CommandLineTestCase(unittest.TestCase):
         self.start = '2007-05-01'
         self.end = '2007-05-31'
         self.scene_list = ['LE70360282007122EDC00', 'LE70360282007138EDC00']
+        self.scene_list_2 = ['LE70360292007122EDC00', 'LE70360292007138EDC00']
+
+        self.wgs_tile = pkg_resources.resource_filename('data',
+                                                        'wrs2_036029_WGS.shp')
 
     def tearDown(self):
         pass
@@ -54,6 +59,14 @@ class CommandLineTestCase(unittest.TestCase):
         args = self.parser.parse_args(args_list)
         scenes = main(args)
         self.assertEqual(scenes, self.scene_list)
+
+    def test_shapefile_path_row(self):
+        print 'Testing valid shapefile...'
+        args_list = [self.sat, self.start, self.end, '--return-list',
+                     '--shapefile', self.wgs_tile]
+        args = self.parser.parse_args(args_list)
+        scenes = main(args)
+        self.assertEqual(scenes, self.scene_list_2)
 
 
 if __name__ == '__main__':
