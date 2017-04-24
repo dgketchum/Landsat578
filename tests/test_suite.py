@@ -30,8 +30,8 @@ def suite():
 
     tests = (USGSLandstatTestCase,
              WebToolsTestCase,
-             CommandLineTestCase)
-             # SpatialTestCase)
+             CommandLineTestCase,
+             SpatialTestCase)
 
     for t in tests:
         test_suite.addTest(loader.loadTestsFromTestCase(t))
