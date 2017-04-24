@@ -11,3 +11,4 @@ htmlcov
 *.pydevproject
 .DS_Store
 notes
+*.pypirc
