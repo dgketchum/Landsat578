@@ -16,7 +16,7 @@
 
 import unittest
 
-from app.cli import create_parser, main
+from app.landsat_download import create_parser, main
 
 
 class CommandLineTestCase(unittest.TestCase):

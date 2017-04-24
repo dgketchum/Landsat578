@@ -20,13 +20,18 @@ import unittest
 def suite():
     print 'Testing.......................................'
     from tests.test_integration.test_usgs_service import USGSLandstatTestCase
+    from tests.test_integration.test_cli import CommandLineTestCase
+
     from tests.test_unit.test_web_tools import WebToolsTestCase
+    from tests.test_unit.test_spatial import SpatialTestCase
 
     loader = unittest.TestLoader()
     test_suite = unittest.TestSuite()
 
     tests = (USGSLandstatTestCase,
-             WebToolsTestCase)
+             WebToolsTestCase,
+             CommandLineTestCase,
+             SpatialTestCase)
 
     for t in tests:
         test_suite.addTest(loader.loadTestsFromTestCase(t))
