@@ -17,6 +17,10 @@ class StationNotFoundError(Exception):
     pass
 
 
+class InvalidSatelliteError(Exception):
+    pass
+
+
 def connect_earthexplorer(usgs):
     # mkmitchel (https://github.com/mkmitchell) solved the token issue
     cookies = urllib2.HTTPCookieProcessor()
@@ -133,7 +137,6 @@ def get_credentials(usgs_path):
 
 
 def get_station_list_identifier(product):
-
     if product.startswith('LC8'):
         identifier = '4923'
         stations = ['LGN']
@@ -150,10 +153,9 @@ def get_station_list_identifier(product):
     return identifier, stations
 
 
-def assemble_scene_id_list(ref_time, prow, end_date, sat, delta=16):
+def assemble_scene_id_list(ref_time, prow, end_date, sat, delta=16, archive_found=False):
 
     scene_id_list = []
-    archive_found = False
 
     possible_l7_stations = ['EDC', 'SGS', 'AGS', 'ASN', 'SG1', 'CUB', 'COA']
     possible_l8_stations = ['LGN']
@@ -188,10 +190,6 @@ def assemble_scene_id_list(ref_time, prow, end_date, sat, delta=16):
                         archive_found = True
                         print 'using version: {}, location: {}'.format(version, location)
                         break
-                if archive_found:
-                    break
-            if not archive_found:
-                raise StationNotFoundError('Iterated over all version/station possibilities, check dates...')
 
         elif archive_found:
 
@@ -202,9 +200,6 @@ def assemble_scene_id_list(ref_time, prow, end_date, sat, delta=16):
             scene_id_list.append(scene_str)
 
             ref_time += timedelta(days=delta)
-
-        else:
-            raise StationNotFoundError('Did not complete scene listing...')
 
     return scene_id_list
 
@@ -230,7 +225,6 @@ def get_candidate_scenes_list(path_row, sat_name, start_date, end_date=None):
 
 
 def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
-
     usgs_creds = get_credentials(usgs_creds_txt)
     connect_earthexplorer(usgs_creds)
 
