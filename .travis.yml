@@ -34,12 +34,11 @@ install:
   - conda create --yes --quiet -n landsatenv ${PKGS} ${OPTIONAL}
   - source activate landsatenv
   - conda install --yes --file requirements.yml
-  - pip install gdal
-  - pip install codecov
+  - pip install gdal codecov coverage
 
 script:
   - export GDAL_DATA=/home/travis/miniconda2/envs/landsatenv/share/gdal
-  - python setup.py test
+  - coverage run setup.py test
 
 
 notifications:
