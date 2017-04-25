@@ -71,7 +71,7 @@ These images happen to have been taken 2007-05-02 (Day of Year, DOY: 122),
 and on 2007-05-18 (DOY 138). See NOAA's day of year [calendar.](https://www.esrl.noaa.gov/gmd/grad/neubrew/Calendar.jsp)
 
 The naming conventions of Landsat images are as follows from
-the usgs Landsat [site.](https://landsat.usgs.gov/what-are-naming-conventions-landsat-scene-identifiers)
+the USGS Landsat [site.](https://landsat.usgs.gov/what-are-naming-conventions-landsat-scene-identifiers)
 
 
 # ![Landsat](data/landsat_names.png)
