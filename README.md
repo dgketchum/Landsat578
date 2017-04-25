@@ -50,7 +50,7 @@ Within the package you downloaded, you need to call landsat_download.py.
 Dates are entered as YYYY-MM-DD format, e.g. 2008-05-31.
 
 ```
-$ landsat_download.py LE7 2007-05-01 2007-05-31 --path 38 --row 27 -o /path/to/folder --usgs-creds usgs.txt
+$ landsat_download.py LE7 2007-05-01 2007-05-31 --path 38 --row 27 -o /path/to/folder --credentials usgs.txt
 ```
 This command will find the two images that were captured by Landsat
 5 of scene 38, 27 in the month of May, 2007 and unzip them to your folder.
@@ -78,7 +78,7 @@ the usgs Landsat [site.](https://landsat.usgs.gov/what-are-naming-conventions-la
 
 You can also download by WGS decimal degrees coordinates (i.e., latitude and longitude):
 ```
-$ landsat_download.py LE7 2007-05-01 2007-05-31 --lat 46.5 --lon -107.5 --usgs-creds usgs.txt
+$ landsat_download.py LE7 2007-05-01 2007-05-31 --lat 46.5 --lon -107.5 --credentials usgs.txt
 ```
 A negative number lat is in the southern hemisphere, a negtive lon is the 
 western hemisphere.  
@@ -88,7 +88,7 @@ descending, select your scenes of interest, save the selection as a shapefile,
 and pass the shapefile to the program. Learn to do this [here](https://www.youtube.com/watch?v=CJzq92IcpYg) on the free and
 open source [QGIS](http://www.qgis.org/en/site/) (great software!).
 ```
-$ landsat_download.py LE7 2007-05-01 2007-05-31 /path/to/selected_scenes.shp
+$ landsat_download.py LE7 2007-05-01 2007-05-31 /path/to/selected_scenes.shp --credentials usgs.txt
 ```
 
 # Use a Python Script
@@ -117,6 +117,6 @@ if __name__ == '__main__':
     usgs_creds = os.path.join(home, 'usgs.txt')
     path_row = 37, 27
 ```
-This work was adapted in part from work by [DevelopmentSeed](https://github.com/olivierhagolle) and [Olivier Hagolle.](https://github.com/developmentseed)
+This work was adapted in part from work from [DevelopmentSeed](https://github.com/olivierhagolle) and [Olivier Hagolle.](https://github.com/developmentseed)
 # 2017 dgetchum
 
