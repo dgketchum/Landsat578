@@ -21,7 +21,7 @@ $ conda install Landsat578
 
 Go to the USGS [Earth Observation site](https://ers.cr.usgs.gov/register/), and start an 
 account.  Put your username and password seperated by one space in a .txt file
-for use while downloading.
+for use while downloading. Don't put spaces in your password itself.
 
 Landsat instruments orbit the earth in sun-synchronous fashion.
 They pass over each place at approximately the same 
