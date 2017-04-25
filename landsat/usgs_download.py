@@ -1,52 +1,19 @@
 # Adapted in part from Olivier Hagolle
 # https://github.com/olivierhagolle/LANDSAT-Download
-import math
 import os
 import re
-import subprocess
 import sys
+import math
 import time
 import urllib
 import urllib2
+import tarfile
 from datetime import datetime, timedelta
 
 import web_tools
 
 
-def connect_earthexplorer_proxy(proxy_info, usgs):
-    print "Establishing connection to Earthexplorer with proxy..."
-    # contruction d'un "opener" qui utilise une connexion proxy avec autorisation
-    cookies = urllib2.HTTPCookieProcessor()
-    proxy_support = urllib2.ProxyHandler({"http": "http://%(user)s:%(pass)s@%(host)s:%(port)s" % proxy_info,
-                                          "https": "http://%(user)s:%(pass)s@%(host)s:%(port)s" % proxy_info})
-    opener = urllib2.build_opener(proxy_support, cookies)
-
-    # installation
-    urllib2.install_opener(opener)
-    # deal with csrftoken required by USGS as of 7-20-2016
-    data = urllib2.urlopen("https://ers.cr.usgs.gov").read()
-    m = re.search(r'<input .*?name="csrf_token".*?value="(.*?)"', data)
-    if m:
-        token = m.group(1)
-    else:
-        print "Error : CSRF_Token not found"
-        # sys.exit(-3)
-    # parametres de connection
-    params = urllib.urlencode(dict(username=usgs['account'], password=usgs['passwd'], csrf_token=token))
-    # utilisation
-
-    request = urllib2.Request("https://ers.cr.usgs.gov", params, headers={})
-    f = urllib2.urlopen(request)
-    data = f.read()
-    f.close()
-
-    if data.find('You must sign in as a registered user to download data or place orders for USGS EROS products') > 0:
-        print "Authentification failed"
-        # sys.exit(-1)
-    return
-
-
-def connect_earthexplorer_no_proxy(usgs):
+def connect_earthexplorer(usgs):
     # mkmitchel (https://github.com/mkmitchell) solved the token issue
     cookies = urllib2.HTTPCookieProcessor()
     opener = urllib2.build_opener(cookies)
@@ -139,22 +106,16 @@ def sizeof_fmt(num):
 
 
 def unzip_image(tgzfile, outputdir):
-    success = 0
-    if os.path.exists(outputdir + '/' + tgzfile + '.tgz'):
-        print "\nunzipping..."
-        try:
-            if sys.platform.startswith('linux'):
-                subprocess.call('mkdir ' + outputdir + '/' + tgzfile, shell=True)  # Unix
-                subprocess.call('tar zxvf ' + outputdir + '/' + tgzfile + '.tgz -C ' + outputdir + '/' + tgzfile,
-                                shell=True)  # Unix
-            elif sys.platform.startswith('win'):
-                subprocess.call('tartool ' + outputdir + '/' + tgzfile + '.tgz ' + outputdir + '/' + tgzfile,
-                                shell=True)  # W32
-            success = 1
-        except TypeError:
-            print 'Failed to unzip %s' % tgzfile
-        os.remove(outputdir + '/' + tgzfile + '.tgz')
-    return success
+    target_tgz = os.path.join(outputdir, tgzfile)
+    if os.path.exists(target_tgz):
+        print 'found tgs: {} \nunzipping...'.format(target_tgz)
+        tfile = tarfile.open(target_tgz, 'r:gz')
+        tfile.extractall(outputdir)
+        print 'unzipped\ndeleting tgz: {}'.format(target_tgz)
+        os.remove(target_tgz)
+    else:
+        raise NotImplementedError('Did not find download output directory to unzip...')
+    return None
 
 
 def get_credentials(usgs_path):
@@ -268,7 +229,7 @@ def get_candidate_scenes_list(path_row, sat_name, start_date, end_date=None):
 def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
 
     usgs_creds = get_credentials(usgs_creds_txt)
-    connect_earthexplorer_no_proxy(usgs_creds)
+    connect_earthexplorer(usgs_creds)
 
     for product in scene_list:
         identifier, stations = get_station_list_identifier(product)
@@ -278,12 +239,18 @@ def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
 
         tgz_file = '{}.tgz'.format(product)
         download_chunks(url, output_dir, tgz_file)
+        print 'image: {}'.format(os.path.join(output_dir, tgz_file))
         unzip_image(tgz_file, output_dir)
 
     return None
 
 
 if __name__ == '__main__':
-    pass
+    home = os.path.expanduser('~')
+    output = os.path.join(home, 'images', 'LT5', 'd_37_27')
+    tgz = 'LT50370272007121PAC01.tgz'
+    print 'tgz: {}'.format(os.path.join(output, tgz))
+    print os.path.exists(os.path.join(output, tgz))
+    unzip_image(tgz, output)
 
 # ===============================================================================
