@@ -1,6 +1,8 @@
 # ![Landsat](data/maple.png)
 
 [![Build Status](https://travis-ci.org/dgketchum/Landsat578.svg?branch=master)](https://travis-ci.org/dgketchum/Landsat578)
+[![Test Coverage](https://codecov.io/gh/dgketchum/Landsat578)](https://codecov.io/gh/dgketchum/Landsat578/branch/master/graph/badge.svg)
+
 
 # Easy Landsat Download
 
