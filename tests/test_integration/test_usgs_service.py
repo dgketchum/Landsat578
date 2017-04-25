@@ -39,6 +39,9 @@ class USGSLandstatTestCase(unittest.TestCase):
         l5_scenes = usgs.get_candidate_scenes_list(self.known_pathrow, 'LT5', self.start_7, self.end_7)
         l7_scenes = usgs.get_candidate_scenes_list(self.known_pathrow, 'LE7', self.start_7, self.end_7)
         l8_scenes = usgs.get_candidate_scenes_list(self.known_pathrow, 'LC8', self.start_14, self.end_14)
+        print l5_scenes
+        print l7_scenes
+        print l8_scenes
         self.assertEqual(l5_scenes, self.known_l5_scene)
         self.assertEqual(l7_scenes, self.known_l7_scene)
         self.assertEqual(l8_scenes, self.known_l8_scene)

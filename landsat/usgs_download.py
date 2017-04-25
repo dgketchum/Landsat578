@@ -201,23 +201,28 @@ def find_valid_scene(ref_time, prow, sat, delta=16):
     raise StationNotFoundError('Did not find a valid scene within time frame.')
 
 
-def assemble_scene_id_list(ref_time, prow, sat, delta=16):
+def assemble_scene_id_list(ref_time, prow, sat, end_date, delta=16):
+
     scene_id_list = []
 
     padded_pr, date_part, location, archive = find_valid_scene(ref_time, prow, sat)
 
-    scene_str = '{}{}{}{}{}'.format(sat, padded_pr, date_part, location, archive)
+    while ref_time < end_date:
 
-    print 'add scene: {}, for {}'.format(scene_str,
-                                         datetime.strftime(ref_time, '%Y-%m-%d'))
-    scene_id_list.append(scene_str)
+        scene_str = '{}{}{}{}{}'.format(sat, padded_pr, date_part, location, archive)
 
-    ref_time += timedelta(days=delta)
+        print 'add scene: {}, for {}'.format(scene_str,
+                                             datetime.strftime(ref_time, '%Y-%m-%d'))
+        scene_id_list.append(scene_str)
+
+        ref_time += timedelta(days=delta)
+
+        date_part = datetime.strftime(ref_time, '%Y%j')
 
     return scene_id_list
 
 
-def get_candidate_scenes_list(path_row, sat_name, start_date, end_date=None):
+def get_candidate_scenes_list(path_row, sat_name, start_date, end_date):
     """
     
     :param path_row: path, datetime obj
@@ -232,7 +237,7 @@ def get_candidate_scenes_list(path_row, sat_name, start_date, end_date=None):
     reference_overpass = web_tools.landsat_overpass_time(path_row,
                                                          start_date, sat_name)
 
-    scene_list = assemble_scene_id_list(reference_overpass, path_row, sat_name)
+    scene_list = assemble_scene_id_list(reference_overpass, path_row, sat_name, end_date)
     return scene_list
 
 
