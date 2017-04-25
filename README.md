@@ -113,10 +113,10 @@ if __name__ == '__main__':
     start = datetime(2007, 5, 1)
     end = datetime(2007, 5, 30)
     satellite = 'LT5'
-    output = os.path.join('images',)
-    usgs_creds = os.path.join('usgs.txt')
+    output = os.path.join(home, 'images',)
+    usgs_creds = os.path.join(home, 'usgs.txt')
     path_row = 37, 27
 ```
-
+This work was adapted in part from work by [DevelopmentSeed](https://github.com/olivierhagolle) and [Olivier Hagolle.](https://github.com/developmentseed)
 # 2017 dgetchum
 
