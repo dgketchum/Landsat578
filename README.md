@@ -4,8 +4,8 @@
 
 # Easy Landsat Download
 
-Download and unzip Landsat 5, 7, and 8 (a.k.a. LT5, LE7, LC8) via 
-the USGS website automatically using a command line interface or 
+Download and unzip Landsat 5, 7, and 8 (a.k.a. LT5, LE7, LC8) images 
+via the USGS website automatically using a command line interface or 
 a simple python script.
 
 ## Install
@@ -26,8 +26,12 @@ predefined and is described by (path,row) coordinates of
 the World Reference System 2(WRS2).
 This system applies to all Landsat missions since LT4.
 Every place on Earth falls under at lease one path/row 'scene.'
+Some places fall within overlapping path/row scenes.
 
+See WRS2 over the US state of Montana. Scene 38, 27 is highlighted
+in purple. Note overlap of neighboring scenes.
 
+# ![Landsat](data/MJ_tile.png)
 
 # 2017 dgetchum
 
