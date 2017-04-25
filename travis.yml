@@ -42,4 +42,4 @@ script:
 
 
 notifications:
-  slack: nmbgmr:6025BpWw62bzddqVqFrtGLOF
+#  slack: nmbgmr:6025BpWw62bzddqVqFrtGLOF
