@@ -22,41 +22,32 @@ from vector_tools import get_pr_from_field, get_pr_multipath
 from web_tools import convert_lat_lon_wrs2pr
 
 
+class InvalidPathRowData(Exception):
+    pass
+
+
 def download_landsat(start_end_tuple, satellite, path_row_tuple=None, lat_lon_tuple=None,
                      shape=None, output_path=None, seek_multipath=False, multipath_points=None,
                      usgs_creds=None, dry_run=False):
 
     start_date, end_date = start_end_tuple[0], start_end_tuple[1]
 
-    print 'Date range: {} to {}'.format(start_date, end_date)
-
     if shape and not seek_multipath:
-        # assumes shapefile has a 'path' and a 'row' field
         images = get_pr_from_field(shape)
         image_index = [(int(x[0]), int(x[1])) for x in images]
-        print 'Downloading landsat by shapefile: {}'.format(shape)
 
     elif seek_multipath:
         image_index = get_pr_multipath(multipath_points, shape)
-        print 'Downloading landsat for multipath'
-        print 'shapefile: {}'.format(shape)
-        print 'points shapefile: {}'.format(multipath_points)
 
     elif lat_lon_tuple:
-        # for case of lat and lon
         image_index = [convert_lat_lon_wrs2pr(lat_lon_tuple)]
-        print 'Downloading landsat by lat/lon: {}'.format(lat_lon_tuple)
 
     elif path_row_tuple:
-        # for case of given path row tuple
         image_index = [path_row_tuple]
-        print 'Downloading landsat by path/row: {}'.format(path_row_tuple)
 
     else:
-        raise NotImplementedError('Must give path/row tuple, lat/lon tuple plus row/path \n'
-                                  'shapefile, or a path/rows shapefile!')
-
-    print 'Paths, rows: {}'.format(image_index)
+        raise InvalidPathRowData('Must give path/row tuple, lat/lon tuple plus row/path \n'
+                                 'shapefile, or a path/rows shapefile!')
 
     for tile in image_index:
 
@@ -77,6 +68,7 @@ def download_landsat(start_end_tuple, satellite, path_row_tuple=None, lat_lon_tu
             usgs_download.down_usgs_by_list(scenes_list, destination_path, usgs_creds)
 
             return None
+
 
 if __name__ == 'main':
     pass

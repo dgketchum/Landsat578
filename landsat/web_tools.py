@@ -22,6 +22,14 @@ from dateutil.rrule import rrule, DAILY
 from datetime import datetime, timedelta
 
 
+class OverpassNotFoundError(Exception):
+    pass
+
+
+class InvalidDateForSatellite(Exception):
+    pass
+
+
 def verify_landsat_scene_exists(scene_string):
     if scene_string.startswith('LT5'):
         url_spec = '12266'
@@ -96,7 +104,7 @@ def landsat_overpass_time(lndst_path_row, start_date, satellite):
     if satellite == 'LT5':
 
         if start_date > datetime(2013, 06, 01):
-            raise ValueError('The date requested is after L5 deactivation')
+            raise InvalidDateForSatellite('The date requested is after L5 deactivation')
 
         reference_time = get_l5_overpass_data(lndst_path_row, start_date)
         return reference_time
@@ -131,7 +139,7 @@ def landsat_overpass_time(lndst_path_row, start_date, satellite):
                 except IndexError:
                     pass
 
-        raise NotImplementedError('Did not find overpass data, check your dates...')
+        raise OverpassNotFoundError('Did not find overpass data, check your dates...')
 
 
 def convert_lat_lon_wrs2pr(pr_latlon, conversion_type='convert_ll_to_pr'):
@@ -173,7 +181,6 @@ def convert_lat_lon_wrs2pr(pr_latlon, conversion_type='convert_ll_to_pr'):
 
         lon_string = tree.xpath('//table/tr[2]/td[4]/text()')
         lon = float(re.search(r'[+-]?\d+(?:\.\d+)?', lon_string[0]).group())
-        print 'lat: {}, lon: {}'.format(lat, lon)
 
         return lat, lon
 

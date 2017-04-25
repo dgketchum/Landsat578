@@ -13,6 +13,10 @@ from datetime import datetime, timedelta
 import web_tools
 
 
+class StationNotFoundError(Exception):
+    pass
+
+
 def connect_earthexplorer(usgs):
     # mkmitchel (https://github.com/mkmitchell) solved the token issue
     cookies = urllib2.HTTPCookieProcessor()
@@ -171,11 +175,11 @@ def assemble_scene_id_list(ref_time, prow, end_date, sat, delta=16):
         padded_pr = '{}{}'.format(str(prow[0]).zfill(3), str(prow[1]).zfill(3))
 
         if not archive_found:
-            print 'Looking for correct station/version combination.............'
             for archive in ['00', '01', '02']:
 
                 for location in station_list:
 
+                    print 'Looking for version/station combination....{}{}'.format(archive, location)
                     scene_str = '{}{}{}{}{}'.format(sat, padded_pr, date_part, location, archive)
 
                     if web_tools.verify_landsat_scene_exists(scene_str):
@@ -186,6 +190,8 @@ def assemble_scene_id_list(ref_time, prow, end_date, sat, delta=16):
                         break
                 if archive_found:
                     break
+            if not archive_found:
+                raise StationNotFoundError('Iterated over all version/station possibilities, check dates...')
 
         elif archive_found:
 
@@ -198,7 +204,7 @@ def assemble_scene_id_list(ref_time, prow, end_date, sat, delta=16):
             ref_time += timedelta(days=delta)
 
         else:
-            raise NotImplementedError('Did not complete scene listing...')
+            raise StationNotFoundError('Did not complete scene listing...')
 
     return scene_id_list
 
@@ -215,11 +221,8 @@ def get_candidate_scenes_list(path_row, sat_name, start_date, end_date=None):
     :return: reference overpass = str('YYYYDOY'), station str('XXX') len=3
     """
 
-    # print '\nsat: {}\n'.format(sat_name)
-
     reference_overpass = web_tools.landsat_overpass_time(path_row,
                                                          start_date, sat_name)
-    print 'ref time: {}'.format(reference_overpass)
 
     scene_list = assemble_scene_id_list(reference_overpass, path_row,
                                         end_date, sat_name)
