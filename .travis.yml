@@ -1,4 +1,4 @@
-# This is the config file for building the project
+# This is the config file for building the Landsat578 project
 # with Travis-ci.org.
 
 language: python
