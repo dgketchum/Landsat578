@@ -85,13 +85,6 @@ $ landsat_download.py LE7 2007-05-01 2007-05-31 --lat 46.5 --lon -107.5 --creden
 A negative number lat is in the southern hemisphere, a negtive lon is the 
 western hemisphere.  
 
-If you want a bulk download of many scenes, you can get the shapefile of WRS2
-descending, select your scenes of interest, save the selection as a shapefile,
-and pass the shapefile to the program. Learn to do this [here](https://www.youtube.com/watch?v=CJzq92IcpYg) on the free and
-open source [QGIS](http://www.qgis.org/en/site/) (great software!).
-```
-$ landsat_download.py LE7 2007-05-01 2007-05-31 /path/to/selected_scenes.shp --credentials usgs.txt
-```
 
 # Use a Python Script
 
