@@ -23,8 +23,6 @@ def suite():
     from tests.test_integration.test_cli import CommandLineTestCase
 
     from tests.test_unit.test_web_tools import WebToolsTestCase
-    from tests.test_unit.test_spatial import SpatialTestCase
-    from tests.test_unit.test_vector import VectorTestCase
 
     loader = unittest.TestLoader()
     test_suite = unittest.TestSuite()
@@ -32,8 +30,7 @@ def suite():
     tests = (USGSLandstatTestCase,
              WebToolsTestCase,
              CommandLineTestCase,
-             SpatialTestCase,
-             VectorTestCase)
+             )
 
     for t in tests:
         test_suite.addTest(loader.loadTestsFromTestCase(t))

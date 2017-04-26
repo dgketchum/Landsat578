@@ -25,16 +25,16 @@ class InvalidPathRowData(Exception):
     pass
 
 
-def download_landsat(start_end_tuple, satellite, path_row_list=None, lat_lon_tuple=None,
-                     output_path=None,  usgs_creds=None, dry_run=False):
+def download_landsat(date_range, satellite, latitude=None, longitude=None, path_row_list=None,
+                     output_path=None, usgs_creds=None, dry_run=False):
 
-    start_date, end_date = start_end_tuple[0], start_end_tuple[1]
+    start_date, end_date = date_range[0], date_range[1]
 
     if path_row_list:
         image_index = path_row_list
 
-    elif lat_lon_tuple:
-        image_index = [convert_lat_lon_wrs2pr(lat_lon_tuple)]
+    elif latitude and longitude:
+        image_index = [convert_lat_lon_wrs2pr(latitude, longitude)]
 
     else:
         raise InvalidPathRowData('Must give path/row tuple, lat/lon tuple plus row/path \n'

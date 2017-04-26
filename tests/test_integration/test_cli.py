@@ -61,14 +61,6 @@ class CommandLineTestCase(unittest.TestCase):
         scenes = main(args)
         self.assertEqual(scenes, self.scene_list)
 
-    def test_shapefile_path_row(self):
-        print 'Testing valid shapefile...'
-        args_list = [self.sat, self.start, self.end, '--return-list',
-                     '--shapefile', self.wgs_tile]
-        args = self.parser.parse_args(args_list)
-        scenes = main(args)
-        self.assertEqual(scenes, self.scene_list_2)
-
 
 if __name__ == '__main__':
     unittest.main()

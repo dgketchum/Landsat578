@@ -61,11 +61,11 @@ def verify_landsat_scene_exists(scene_string):
         return True
 
 
-def get_l5_overpass_data(l5_path_row, date):
+def get_l5_overpass_data(path, row, date):
     if date > datetime(2013, 06, 01):
         raise ValueError('The date requested is after L5 deactivation')
 
-    lat, lon = convert_lat_lon_wrs2pr(l5_path_row, conversion_type='convert_pr_to_ll')
+    lat, lon = convert_lat_lon_wrs2pr(path, row, conversion_type='convert_pr_to_ll')
 
     url = 'https://cloudsgate2.larc.nasa.gov/cgi-bin/predict/predict.cgi'
     # submit form > copy POST data
@@ -101,8 +101,6 @@ def get_l5_overpass_data(l5_path_row, date):
 
 def landsat_overpass_time(lndst_path_row, start_date, satellite):
 
-
-
     delta = timedelta(days=20)
     end = start_date + delta
 
@@ -111,7 +109,7 @@ def landsat_overpass_time(lndst_path_row, start_date, satellite):
         if start_date > datetime(2013, 06, 01):
             raise InvalidDateForSatelliteError('The date requested is after L5 deactivation')
 
-        reference_time = get_l5_overpass_data(lndst_path_row, start_date)
+        reference_time = get_l5_overpass_data(lndst_path_row[0], lndst_path_row[1], start_date)
         return reference_time
 
     else:
@@ -147,14 +145,14 @@ def landsat_overpass_time(lndst_path_row, start_date, satellite):
         raise OverpassNotFoundError('Did not find overpass data, check your dates...')
 
 
-def convert_lat_lon_wrs2pr(pr_latlon, conversion_type='convert_ll_to_pr'):
+def convert_lat_lon_wrs2pr(lat, lon, conversion_type='convert_ll_to_pr'):
     base = 'https://landsat.usgs.gov/landsat/lat_long_converter/tools_latlong.php'
     unk_number = 1490995492704
 
     if conversion_type == 'convert_ll_to_pr':
 
         full_url = '{}?rs={}&rsargs[]={}&rsargs[]={}&rsargs[]=1&rsrnd={}'.format(base, conversion_type,
-                                                                                 pr_latlon[0], pr_latlon[1],
+                                                                                 lat, lon,
                                                                                  unk_number)
         r = requests.get(full_url)
         tree = html.fromstring(r.text)
@@ -176,7 +174,7 @@ def convert_lat_lon_wrs2pr(pr_latlon, conversion_type='convert_ll_to_pr'):
 
         full_url = '{}?rs={}&rsargs[]=\n' \
                    '{}&rsargs[]={}&rsargs[]=1&rsrnd={}'.format(base, conversion_type,
-                                                               pr_latlon[0], pr_latlon[1], unk_number)
+                                                               lat, lon, unk_number)
 
         r = requests.get(full_url)
         tree = html.fromstring(r.text)

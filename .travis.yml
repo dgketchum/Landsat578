@@ -1,9 +1,6 @@
 # This is the config file for building the project
 # with Travis-ci.org.
 
-dist: precise
-sudo: required
-
 language: python
 
 python:
@@ -24,24 +21,19 @@ before_install:
   - ./miniconda.sh -b
   - export PATH=/home/travis/miniconda2/bin:$PATH
   - conda update --yes --quiet conda
-  # Build package list to avoid empty package=versions; only needed for versioned pacakges
-  - PKGS="python=${PYTHON}"
-  - PKGS="${PKGS} numpy"; if [ ${NUMPY} ]; then PKGS="${PKGS}=${NUMPY}"; fi
-  - PKGS="${PKGS} pip";
 
 install:
-  - conda create --yes --quiet -n landsatenv ${PKGS} ${OPTIONAL}
+  - conda create --yes --quiet -n landsatenv
   - source activate landsatenv
   - conda install --yes --file requirements.yml
   - pip install codecov coverage
 
 script:
-  - export GDAL_DATA=/home/travis/miniconda2/envs/landsatenv/share/gdal
   - coverage run setup.py test
 
 
 notifications:
-#  slack: nmbgmr:6025BpWw62bzddqVqFrtGLOF
+  slack: nmbgmr:6025BpWw62bzddqVqFrtGLOF
 
 after_success:
   - codecov

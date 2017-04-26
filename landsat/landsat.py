@@ -16,7 +16,6 @@
 # limitations under the License.
 # ===============================================================================
 
-import pycurl
 import argparse
 from datetime import datetime
 
@@ -24,6 +23,7 @@ from download_composer import download_landsat
 
 
 def create_parser():
+
     parser = argparse.ArgumentParser(prog='landsat', description='Download and unzip landsat data.')
 
     parser.add_argument('satellite', help='Satellite name: LT5, LE7, or LC8')
@@ -34,11 +34,8 @@ def create_parser():
     parser.add_argument('--path', help='The path')
     parser.add_argument('--row', help='The row')
     parser.add_argument('-o', '--output', help='Output directory')
-    parser.add_argument('--shapefile', help='A shapefile with polygons (.shp)')
     parser.add_argument('--credentials',
                         help='Path to a text file with USGS credentials with one space between <username password>')
-    parser.add_argument('--seek-multipath', help='Search for multiple paths within shapefile coverage',
-                        action='store_true', default=False)
     parser.add_argument('--return-list', help='Just return list of images without downloading', action='store_true',
                         default=False)
 
@@ -52,7 +49,7 @@ def main(args):
             print args
             scenes = download_landsat(
                 (datetime.strptime(args.start, '%Y-%m-%d'), datetime.strptime(args.end, '%Y-%m-%d')),
-                args.satellite, lat_lon_tuple=(args.lat, args.lon), output_path=args.output,
+                args.satellite, latitude=args.lat, longitude=args.lon, output_path=args.output,
                 usgs_creds=args.credentials, dry_run=args.return_list)
 
             return scenes
@@ -62,17 +59,7 @@ def main(args):
             print args
             scenes = download_landsat(
                 (datetime.strptime(args.start, '%Y-%m-%d'), datetime.strptime(args.end, '%Y-%m-%d')),
-                args.satellite, path_row_tuple=(args.path, args.row), output_path=args.output,
-                usgs_creds=args.credentials, dry_run=args.return_list)
-
-            return scenes
-
-        elif args.shapefile:
-            print '\nStarting download with pathrow...'
-            print args
-            scenes = download_landsat(
-                (datetime.strptime(args.start, '%Y-%m-%d'), datetime.strptime(args.end, '%Y-%m-%d')),
-                args.satellite, shape=args.shapefile, output_path=args.output,
+                args.satellite, path_row_list=[(args.path, args.row)], output_path=args.output,
                 usgs_creds=args.credentials, dry_run=args.return_list)
 
             return scenes
@@ -82,7 +69,6 @@ def main(args):
 
 
 def __main__():
-
     global parser
     parser = create_parser()
     args = parser.parse_args()
@@ -93,7 +79,7 @@ if __name__ == '__main__':
     try:
         __main__()
 
-    except (KeyboardInterrupt, pycurl.error):
-        exit('Keyboard interrupt, exiting....', 1)
+    except KeyboardInterrupt:
+        exit(1)
 
 # ===============================================================================
