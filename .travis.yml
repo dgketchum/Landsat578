@@ -17,8 +17,6 @@ env:
   # Default values for common packages, override as needed
   global:
     - PYTHON=2.7
-    - TEST_SUITE=test_unit
-    - TEST_SUITE=test_integration
 
 before_install:
   - wget http://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh
@@ -26,9 +24,13 @@ before_install:
   - ./miniconda.sh -b
   - export PATH=/home/travis/miniconda2/bin:$PATH
   - conda update --yes --quiet conda
+  # Build package list to avoid empty package=versions; only needed for versioned pacakges
+  - PKGS="python=${PYTHON}"
+  - PKGS="${PKGS} numpy"; if [ ${NUMPY} ]; then PKGS="${PKGS}=${NUMPY}"; fi
+  - PKGS="${PKGS} pip";
 
 install:
-  - conda create --yes --quiet -n landsatenv
+  - conda create --yes --quiet -n landsatenv ${PKGS} ${OPTIONAL}
   - source activate landsatenv
   - conda install --yes --file requirements.yml
   - pip install codecov coverage
