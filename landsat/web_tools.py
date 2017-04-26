@@ -101,13 +101,15 @@ def get_l5_overpass_data(l5_path_row, date):
 
 def landsat_overpass_time(lndst_path_row, start_date, satellite):
 
+
+
     delta = timedelta(days=20)
     end = start_date + delta
 
     if satellite == 'LT5':
 
         if start_date > datetime(2013, 06, 01):
-            raise InvalidDateForSatellite('The date requested is after L5 deactivation')
+            raise InvalidDateForSatelliteError('The date requested is after L5 deactivation')
 
         reference_time = get_l5_overpass_data(lndst_path_row, start_date)
         return reference_time

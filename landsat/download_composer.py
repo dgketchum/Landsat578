@@ -18,7 +18,6 @@
 import os
 
 import usgs_download
-from vector_tools import get_pr_from_field, get_pr_multipath
 from web_tools import convert_lat_lon_wrs2pr
 
 
@@ -26,24 +25,16 @@ class InvalidPathRowData(Exception):
     pass
 
 
-def download_landsat(start_end_tuple, satellite, path_row_tuple=None, lat_lon_tuple=None,
-                     shape=None, output_path=None, seek_multipath=False, multipath_points=None,
-                     usgs_creds=None, dry_run=False):
+def download_landsat(start_end_tuple, satellite, path_row_list=None, lat_lon_tuple=None,
+                     output_path=None,  usgs_creds=None, dry_run=False):
 
     start_date, end_date = start_end_tuple[0], start_end_tuple[1]
 
-    if shape and not seek_multipath:
-        images = get_pr_from_field(shape)
-        image_index = [(int(x[0]), int(x[1])) for x in images]
-
-    elif seek_multipath:
-        image_index = get_pr_multipath(multipath_points, shape)
+    if path_row_list:
+        image_index = path_row_list
 
     elif lat_lon_tuple:
         image_index = [convert_lat_lon_wrs2pr(lat_lon_tuple)]
-
-    elif path_row_tuple:
-        image_index = [path_row_tuple]
 
     else:
         raise InvalidPathRowData('Must give path/row tuple, lat/lon tuple plus row/path \n'
