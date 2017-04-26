@@ -17,6 +17,8 @@ env:
   # Default values for common packages, override as needed
   global:
     - PYTHON=2.7
+    - TEST_SUITE=test_unit
+    - TEST_SUITE=test_integration
 
 before_install:
   - wget http://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh

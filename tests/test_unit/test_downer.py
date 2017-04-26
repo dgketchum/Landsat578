@@ -29,7 +29,7 @@ class DownloadTestCase(unittest.TestCase):
         self.sat = 'LT5'
         self.output = os.path.join(self.home, 'images', self.sat)
         self.usgs_creds = os.path.join(self.home, 'images', 'usgs.txt')
-        self.path_row = 37, 27
+        self.path, self.row = 37, 27
         self.known_scene = ['LT50370272007121PAC01', 'LT50370272007137PAC01']
 
     def tearDown(self):
@@ -37,7 +37,8 @@ class DownloadTestCase(unittest.TestCase):
 
     def test_downer(self):
         scene_list = download_composer.download_landsat((self.start, self.end), self.sat,
-                                                        path_row_tuple=self.path_row, dry_run=True)
+                                                        path_row_list=[(self.path, self.row)],
+                                                        dry_run=True)
         self.assertEqual(self.known_scene, scene_list)
 
 

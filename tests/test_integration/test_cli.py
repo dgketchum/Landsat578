@@ -35,8 +35,8 @@ class CommandLineTestCase(unittest.TestCase):
         self.scene_list = ['LE70360282007122EDC00', 'LE70360282007138EDC00']
         self.scene_list_2 = ['LE70360292007122EDC00', 'LE70360292007138EDC00']
 
-        self.wgs_tile = pkg_resources.resource_filename('data',
-                                                        'wrs2_036029_WGS.shp')
+        self.wgs_tile = pkg_resources.resource_filename('tests',
+                                                        'data/wrs2_036029_WGS.shp')
 
     def tearDown(self):
         pass
