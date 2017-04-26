@@ -25,7 +25,7 @@ class USGSLandstatTestCase(unittest.TestCase):
         self.start_7, self.end_7 = datetime(2007, 05, 01), datetime(2007, 05, 31)
         self.start_14, self.end_14 = datetime(2014, 05, 01), datetime(2014, 05, 31)
 
-        self.known_latlon = 47.4545, -107.9514
+        self.lat, self.lon = 47.4545, -107.9514
         self.known_pathrow = 37, 27
         # test for acquisition month of May, 2007 (L5, L7), 2024 (L8).
         self.known_l5_scene = ['LT50370272007121PAC01', 'LT50370272007137PAC01']
@@ -47,7 +47,7 @@ class USGSLandstatTestCase(unittest.TestCase):
         self.assertEqual(l8_scenes, self.known_l8_scene)
 
     def test_find_scenes_by_latlon(self):
-        ll = wt.convert_lat_lon_wrs2pr(self.known_latlon, conversion_type='convert_ll_to_pr')
+        ll = wt.convert_lat_lon_wrs2pr(self.lat, self.lon, conversion_type='convert_ll_to_pr')
         l5_scenes = usgs.get_candidate_scenes_list(ll, 'LT5', self.start_7, self.end_7)
         l7_scenes = usgs.get_candidate_scenes_list(ll, 'LE7', self.start_7, self.end_7)
         l8_scenes = usgs.get_candidate_scenes_list(ll, 'LC8', self.start_14, self.end_14)
