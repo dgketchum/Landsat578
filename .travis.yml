@@ -1,6 +1,9 @@
 # This is the config file for building the Landsat578 project
 # with Travis-ci.org.
 
+dist: precise
+sudo: required
+
 language: python
 
 python:
