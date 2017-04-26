@@ -1,4 +1,4 @@
-# ![Landsat](data/maple.png)
+# ![Landsat](tests/data/maple.png)
 
 [![Build Status](https://travis-ci.org/dgketchum/Landsat578.svg?branch=master)](https://travis-ci.org/dgketchum/Landsat578)
 [![codecov](https://codecov.io/gh/dgketchum/Landsat578/branch/master/graph/badge.svg)](https://codecov.io/gh/dgketchum/Landsat578)
@@ -40,7 +40,7 @@ available. You can get GIS data of WRS2 [here.](https://landsat.usgs.gov/pathrow
 See WRS2 over the US state of Montana. Scene 38, 27 is highlighted
 in purple. Note overlap of neighboring scenes.
 
-# ![Landsat](data/MJ_tile.png)
+# ![Landsat](tests/data/MJ_tile.png)
 
 
 # Run
@@ -76,7 +76,7 @@ The naming conventions of Landsat images are as follows from
 the USGS Landsat [site.](https://landsat.usgs.gov/what-are-naming-conventions-landsat-scene-identifiers)
 
 
-# ![Landsat](data/landsat_names.png)
+# ![Landsat](tests/data/landsat_names.png)
 
 You can also download by WGS decimal degrees coordinates (i.e., latitude and longitude):
 ```

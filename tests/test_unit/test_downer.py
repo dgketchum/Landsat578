@@ -18,7 +18,7 @@ import os
 import unittest
 from datetime import datetime
 
-from landsat import downloader
+from landsat import download_composer
 
 
 class DownloadTestCase(unittest.TestCase):
@@ -36,8 +36,8 @@ class DownloadTestCase(unittest.TestCase):
         pass
 
     def test_downer(self):
-        scene_list = downloader.download_landsat((self.start, self.end), self.sat,
-                                                 path_row_tuple=self.path_row, dry_run=True)
+        scene_list = download_composer.download_landsat((self.start, self.end), self.sat,
+                                                        path_row_tuple=self.path_row, dry_run=True)
         self.assertEqual(self.known_scene, scene_list)
 
 
