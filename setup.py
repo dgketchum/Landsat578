@@ -20,8 +20,11 @@ from setuptools import setup
 
 os.environ['TRAVIS_CI'] = 'True'
 
+with open('requirements.txt') as f:
+    INSTALL_REQUIRES = [l.strip() for l in f.readlines() if l]
+
 setup(name='Landsat578',
-      version='0.21.0',
+      version='0.3',
       description='Very simple API to download Landsat data from LT5, LE7, and LC8 from USGS',
       setup_requires=['nose>=1.0'],
       py_modules=['landsat'],
@@ -36,6 +39,6 @@ setup(name='Landsat578',
       author='David Ketchum',
       author_email='dgketchum at gmail dot com',
       packages=['landsat'],
-      test_suite='tests.test_suite.suite', install_requires=[])
+      test_suite='tests.test_suite.suite', install_requires=[INSTALL_REQUIRES])
 
 # ============= EOF =============================================

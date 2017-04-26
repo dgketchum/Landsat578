@@ -1,4 +1,4 @@
-# This is the config file for building GDAL and running its autotest suite
+# This is the config file for building the project
 # with Travis-ci.org.
 
 dist: precise
@@ -23,7 +23,6 @@ before_install:
   - chmod +x miniconda.sh
   - ./miniconda.sh -b
   - export PATH=/home/travis/miniconda2/bin:$PATH
-  - export GDAL_DATA=/home/miniconda2/envs/share/gdal:$GDAL_DATA
   - conda update --yes --quiet conda
   # Build package list to avoid empty package=versions; only needed for versioned pacakges
   - PKGS="python=${PYTHON}"
@@ -34,7 +33,7 @@ install:
   - conda create --yes --quiet -n landsatenv ${PKGS} ${OPTIONAL}
   - source activate landsatenv
   - conda install --yes --file requirements.yml
-  - pip install gdal codecov coverage
+  - pip install codecov coverage
 
 script:
   - export GDAL_DATA=/home/travis/miniconda2/envs/landsatenv/share/gdal
