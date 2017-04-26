@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-from landsat import downloader
+from landsat import download_composer
 
 if __name__ == '__main__':
     home = os.path.expanduser('~')
@@ -14,7 +14,7 @@ if __name__ == '__main__':
     # row = 27
     latitude = 45.6
     longitude = -107.9
-    downloader.download_landsat((start, end), satellite, lat_lon_tuple=(latitude, longitude),
-                                output_path=output, usgs_creds=usgs_creds, dry_run=False)
+    download_composer.download_landsat((start, end), satellite, lat_lon_tuple=(latitude, longitude),
+                                       output_path=output, usgs_creds=usgs_creds, dry_run=False)
 
 # ===============================================================================

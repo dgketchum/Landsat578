@@ -21,17 +21,21 @@ from setuptools import setup
 os.environ['TRAVIS_CI'] = 'True'
 
 setup(name='Landsat578',
-      version='0.2',
+      version='0.21.0',
       description='Very simple API to download Landsat data from LT5, LE7, and LC8 from USGS',
       setup_requires=['nose>=1.0'],
       py_modules=['landsat'],
+      license='Apache', classifiers=[
+        'Development Status :: 3 - Alpha',
+        'Intended Audience :: Science/Research',
+        'Topic :: Scientific/Engineering :: GIS',
+        'License :: OSI Approved :: Apache Software License',
+        'Programming Language :: Python :: 2.7'],
+      keywords='landsat download hydrology remote sensing',
       url='https://github.com/dgketchum/Landsat578',
       author='David Ketchum',
-      author_email='dgketchum@gmail.com',
-      packages=['landsat',
-                'tests',
-                'app',
-                'data'],
-      test_suite='tests.test_suite.suite', install_requires=['gdal', 'osr'])
+      author_email='dgketchum at gmail dot com',
+      packages=['landsat'],
+      test_suite='tests.test_suite.suite', install_requires=[])
 
 # ============= EOF =============================================

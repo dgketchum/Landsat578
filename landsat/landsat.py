@@ -20,7 +20,7 @@ import pycurl
 import argparse
 from datetime import datetime
 
-from landsat.downloader import download_landsat
+from download_composer import download_landsat
 
 
 def create_parser():
