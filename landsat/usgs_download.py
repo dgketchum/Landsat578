@@ -127,7 +127,6 @@ def unzip_image(tgzfile, outputdir):
 
 
 def get_credentials(usgs_path):
-    print 'USGS txt path: {}'.format(usgs_path)
     with file(usgs_path) as f:
         (account, passwd) = f.readline().split(' ')
         if passwd.endswith('\n'):
@@ -178,11 +177,11 @@ def find_valid_scene(ref_time, prow, sat, delta=16):
 
         if not scene_found:
 
+            print 'Looking for version/station combination....'
             for archive in ['00', '01', '02']:
 
                 for location in station_list:
 
-                    print 'Looking for version/station combination....{}{}'.format(archive, location)
                     scene_str = '{}{}{}{}{}'.format(sat, padded_pr, date_part, location, archive)
 
                     if web_tools.verify_landsat_scene_exists(scene_str):

@@ -69,6 +69,7 @@ def main(args):
 
 
 def __main__():
+
     global parser
     parser = create_parser()
     args = parser.parse_args()
