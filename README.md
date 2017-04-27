@@ -112,8 +112,8 @@ if __name__ == '__main__':
     # row = 27
     latitude = 45.6
     longitude = -107.9
-    download_composer.download_landsat((start, end), satellite, lat_lon_tuple=(latitude, longitude),
-                                       output_path=output, usgs_creds=usgs_creds, dry_run=False)
+    download_composer.download_landsat((start, end), satellite, latitude=latitude, longitude=longitude,
+                                       output_path=output, usgs_creds=usgs_creds, dry_run=True)
 
 ```
 This work was adapted in part from work from [DevelopmentSeed](https://github.com/olivierhagolle) and [Olivier Hagolle.](https://github.com/developmentseed)
