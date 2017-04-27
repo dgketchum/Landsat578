@@ -29,8 +29,10 @@ except ImportError:
 
     setup_kwargs = {'scripts': ['bin/landsat']}
 
+tag = '0.3.7'
+
 setup(name='Landsat578',
-      version='0.3.3',
+      version=tag,
       description='Very simple API to download Landsat data from LT5, LE7, and LC8 from USGS',
       setup_requires=['nose>=1.0'],
       py_modules=['landsat'],
@@ -41,10 +43,12 @@ setup(name='Landsat578',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 2.7'],
       keywords='landsat download hydrology remote sensing',
-      url='https://github.com/dgketchum/Landsat578',
       author='David Ketchum',
       author_email='dgketchum at gmail dot com',
+      platforms='Posix; MacOS X; Windows',
       packages=['landsat'],
+      download_url='https://github.com/{}/{}/archive/{}.tar.gz'.format('dgketchum', 'Landsat578', tag),
+      url='https://github.com/dgketchum',
       test_suite='tests.test_suite.suite', install_requires=['lxml==3.7.3', 'numpy==1.12.1', 'pandas==0.19.2',
                                                              'python-dateutil==2.6.0', 'pytz==2017.2',
                                                              'requests==2.13.0', 'six==1.10.0'],
