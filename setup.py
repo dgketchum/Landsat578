@@ -29,7 +29,7 @@ os.environ['TRAVIS_CI'] = 'True'
 #
 #     setup_kwargs = {'scripts': ['bin/landsat']}
 
-tag = '0.3.71'
+tag = '0.3.72'
 
 setup(name='Landsat578',
       version=tag,
