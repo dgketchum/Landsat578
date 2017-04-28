@@ -20,38 +20,28 @@ from setuptools import setup
 
 os.environ['TRAVIS_CI'] = 'True'
 
-try:
-    from setuptools import setup
-
-    setup_kwargs = {'entry_points': {'console_scripts': ['landsat=landsat.landsat:__main__']}}
-except ImportError:
-    from distutils.core import setup
-
-    setup_kwargs = {'scripts': ['bin/landsat']}
-
-tag = '0.3.7'
+tag = '0.0.1'
+name = 'satellite_image'
 
 setup(name='Landsat578',
       version=tag,
-      description='Very simple API to download Landsat data from LT5, LE7, and LC8 from USGS',
+      description='Simple API provides a class to process satellite images',
       setup_requires=['nose>=1.0'],
       py_modules=['landsat'],
       license='Apache', classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 1 - Planning',
         'Intended Audience :: Science/Research',
         'Topic :: Scientific/Engineering :: GIS',
         'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python :: 2.7'],
-      keywords='landsat download hydrology remote sensing',
+        'Programming Language :: Python :: 3.5'],
+      keywords='landsat modis hydrology remote sensing',
       author='David Ketchum',
       author_email='dgketchum at gmail dot com',
       platforms='Posix; MacOS X; Windows',
       packages=['landsat'],
-      download_url='https://github.com/{}/{}/archive/{}.tar.gz'.format('dgketchum', 'Landsat578', tag),
+      download_url='https://github.com/{}/{}/archive/{}.tar.gz'.format('dgketchum', name, tag),
       url='https://github.com/dgketchum',
-      test_suite='tests.test_suite.suite', install_requires=['lxml==3.7.3', 'numpy==1.12.1', 'pandas==0.19.2',
-                                                             'python-dateutil==2.6.0', 'pytz==2017.2',
-                                                             'requests==2.13.0', 'six==1.10.0'],
+      test_suite='tests.test_suite.suite', install_requires=[],
       entry_points={'console_scripts': ['landsat=landsat:main']}
       )
 
