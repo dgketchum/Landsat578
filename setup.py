@@ -29,7 +29,7 @@ except ImportError:
 
     setup_kwargs = {'scripts': ['bin/landsat']}
 
-tag = '0.3.74'
+tag = '0.3.75'
 
 setup(name='Landsat578',
       version=tag,
@@ -52,7 +52,6 @@ setup(name='Landsat578',
       test_suite='tests.test_suite.suite', install_requires=['lxml==3.7.3', 'numpy==1.12.1', 'pandas==0.19.2',
                                                              'python-dateutil==2.6.0', 'pytz==2017.2',
                                                              'requests==2.13.0', 'six==1.10.0'],
-      entry_points={'console_scripts': ['landsat=landsat:main']}
-      )
+      **setup_kwargs)
 
 # ============= EOF =============================================
