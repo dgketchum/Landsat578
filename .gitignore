@@ -12,4 +12,3 @@ htmlcov
 .DS_Store
 notes
 *.pypirc
-tests/
