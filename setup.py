@@ -20,16 +20,16 @@ from setuptools import setup
 
 os.environ['TRAVIS_CI'] = 'True'
 
-try:
-    from setuptools import setup
+# try:
+#     from setuptools import setup
+#
+#     setup_kwargs = {'entry_points': {'console_scripts': ['landsat=landsat.landsat:__main__']}}
+# except ImportError:
+#     from distutils.core import setup
+#
+#     setup_kwargs = {'scripts': ['bin/landsat']}
 
-    setup_kwargs = {'entry_points': {'console_scripts': ['landsat=landsat.landsat:__main__']}}
-except ImportError:
-    from distutils.core import setup
-
-    setup_kwargs = {'scripts': ['bin/landsat']}
-
-tag = '0.3.7'
+tag = '0.3.71'
 
 setup(name='Landsat578',
       version=tag,
