@@ -20,16 +20,16 @@ from setuptools import setup
 
 os.environ['TRAVIS_CI'] = 'True'
 
-# try:
-#     from setuptools import setup
-#
-#     setup_kwargs = {'entry_points': {'console_scripts': ['landsat=landsat.landsat:__main__']}}
-# except ImportError:
-#     from distutils.core import setup
-#
-#     setup_kwargs = {'scripts': ['bin/landsat']}
+try:
+    from setuptools import setup
 
-tag = '0.3.73'
+    setup_kwargs = {'entry_points': {'console_scripts': ['landsat=landsat.landsat:__main__']}}
+except ImportError:
+    from distutils.core import setup
+
+    setup_kwargs = {'scripts': ['bin/landsat']}
+
+tag = '0.3.74'
 
 setup(name='Landsat578',
       version=tag,
@@ -48,7 +48,7 @@ setup(name='Landsat578',
       platforms='Posix; MacOS X; Windows',
       packages=['landsat'],
       download_url='https://github.com/{}/{}/archive/{}.tar.gz'.format('dgketchum', 'Landsat578', tag),
-      url='https://github.com/dgketchum/',
+      url='https://github.com/dgketchum',
       test_suite='tests.test_suite.suite', install_requires=['lxml==3.7.3', 'numpy==1.12.1', 'pandas==0.19.2',
                                                              'python-dateutil==2.6.0', 'pytz==2017.2',
                                                              'requests==2.13.0', 'six==1.10.0'],
