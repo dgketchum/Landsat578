@@ -18,12 +18,12 @@ import unittest
 
 import pkg_resources
 
-import landsat
+from landsat.landsat import create_parser, main
 
 
 class CommandLineTestCase(unittest.TestCase):
     def setUp(self):
-        self.parser = landsat.create_parser()
+        self.parser = create_parser()
 
         self.lat = 45.6
         self.lon = -107.5
@@ -50,7 +50,7 @@ class CommandLineTestCase(unittest.TestCase):
         args_list = [self.sat, self.start, self.end, '--return-list',
                      '--lat', str(self.lat), '--lon', str(self.lon)]
         args = self.parser.parse_args(args_list)
-        scenes = landsat.main(args)
+        scenes = main(args)
         self.assertEqual(scenes, self.scene_list)
 
     def test_path_row(self):
@@ -58,7 +58,7 @@ class CommandLineTestCase(unittest.TestCase):
         args_list = [self.sat, self.start, self.end, '--return-list',
                      '--path', str(self.path), '--row', str(self.row)]
         args = self.parser.parse_args(args_list)
-        scenes = landsat.main(args)
+        scenes = main(args)
         self.assertEqual(scenes, self.scene_list)
 
 
