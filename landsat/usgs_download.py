@@ -51,6 +51,7 @@ def download_chunks(url, rep, nom_fic):
     """ Downloads large files in pieces
    inspired by http://josh.gourneau.com
   """
+    print 'download chunks: {}, {}, {}'.format(url, rep, nom_fic)
     try:
         req = urllib2.urlopen(url)
         # if downloaded file is html
@@ -95,6 +96,7 @@ def download_chunks(url, rep, nom_fic):
                 fp.write(chunk)
     except urllib2.HTTPError, e:
         if e.code == 500:
+            print 'file does not exist'
             pass  # File doesn't exist
         else:
             print "HTTP Error:", e.code, url
@@ -102,7 +104,7 @@ def download_chunks(url, rep, nom_fic):
     except urllib2.URLError, e:
         print "URL Error:", e.reason, url
         return False
-
+    print 'unknown French words rep: {}, nom fic: {}'.format(rep, nom_fic)
     return rep, nom_fic
 
 
@@ -122,7 +124,7 @@ def unzip_image(tgzfile, outputdir):
         print 'unzipped\ndeleting tgz: {}'.format(target_tgz)
         os.remove(target_tgz)
     else:
-        raise NotImplementedError('Did not find download output directory to unzip...')
+        raise NotImplementedError('Did not find download output directory to unzip: {}'.format(target_tgz))
     return None
 
 
@@ -251,6 +253,7 @@ def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
         url = '{}{}'.format(base_url, tail_string)
 
         tgz_file = '{}.tgz'.format(product)
+        print 'download chunks: {}, {}, {}'.format(url, output_dir, tgz_file)
         download_chunks(url, output_dir, tgz_file)
         print 'image: {}'.format(os.path.join(output_dir, tgz_file))
         unzip_image(tgz_file, output_dir)
@@ -260,8 +263,8 @@ def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
 
 if __name__ == '__main__':
     home = os.path.expanduser('~')
-    output = os.path.join(home, 'images', 'LT5', 'd_37_27')
-    tgz = 'LT50370272007121PAC01.tgz'
+    output = os.path.join(home, 'images', 'LC8')
+    tgz = 'LC08_L1TP_039027_20140518_20170307_01_T1.tar.gz'
     print 'tgz: {}'.format(os.path.join(output, tgz))
     print os.path.exists(os.path.join(output, tgz))
     unzip_image(tgz, output)
