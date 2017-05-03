@@ -2,18 +2,21 @@
 # https://github.com/olivierhagolle/LANDSAT-Download
 import os
 import re
-import sys
-import math
-import time
+import tqdm
 import urllib
 import urllib2
 import tarfile
+import requests
 from datetime import datetime, timedelta
 
 import web_tools
 
 
 class StationNotFoundError(Exception):
+    pass
+
+
+class BadRequestsResponse(Exception):
     pass
 
 
@@ -47,78 +50,26 @@ def connect_earthexplorer(usgs):
     return
 
 
-def download_chunks(url, rep, nom_fic):
-    """ Downloads large files in pieces
-   inspired by http://josh.gourneau.com
-  """
-    print 'download chunks: {}, {}, {}'.format(url, rep, nom_fic)
-    try:
-        req = urllib2.urlopen(url)
-        # if downloaded file is html
-        if req.info().gettype() == 'text/html':
-            print "error : file is in html and not an expected binary file"
-            lines = req.read()
-            if lines.find('Download Not Found') > 0:
-                raise TypeError
-            else:
-                with open("error_output.html", "w") as f:
-                    f.write(lines)
-                    print "result saved in ./error_output.html"
-                    # sys.exit(-1)
-        # if file too small
-        total_size = int(req.info().getheader('Content-Length').strip())
+def download_chunks(url, out_dir, tgz_file, test_response=False):
 
-        if (total_size < 50000):
-            print "Error: The file is too small to be a Landsat Image"
-            print url
-            # sys.exit(-1)
-        print nom_fic, total_size
-        total_size_fmt = sizeof_fmt(total_size)
+    response = requests.get(url, stream=True)
+    size = int(response.headers.get('content-length', 0))
 
-        # download
-        downloaded = 0
-        CHUNK = 1024 * 1024 * 8
-        with open(rep + '/' + nom_fic, 'wb') as fp:
-            start = time.clock()
-            print('Downloading {0} ({1}):'.format(nom_fic, total_size_fmt))
-            while True:
-                chunk = req.read(CHUNK)
-                downloaded += len(chunk)
-                done = int(50 * downloaded / total_size)
-                sys.stdout.write('\r[{1}{2}]{0:3.0f}% {3}ps'
-                                 .format(math.floor((float(downloaded)
-                                                     / total_size) * 100),
-                                         '=' * done,
-                                         ' ' * (50 - done),
-                                         sizeof_fmt((downloaded // (time.clock() - start)) / 8)))
-                sys.stdout.flush()
-                if not chunk: break
-                fp.write(chunk)
-    except urllib2.HTTPError, e:
-        if e.code == 500:
-            print 'file does not exist'
-            pass  # File doesn't exist
-        else:
-            print "HTTP Error:", e.code, url
-        return False
-    except urllib2.URLError, e:
-        print "URL Error:", e.reason, url
-        return False
-    print 'unknown French words rep: {}, nom fic: {}'.format(rep, nom_fic)
-    return rep, nom_fic
+    if test_response:
+        return response.status_code
 
+    if response.status_code == 200:
+        with open(os.path.join(out_dir, tgz_file), 'wb') as f:
+            for chunk in tqdm(response.iter_content(1024*1024*8), total=size, unit='B', unit_scale=True):
+                f.write(chunk)
 
-def sizeof_fmt(num):
-    for x in ['bytes', 'KB', 'MB', 'GB', 'TB']:
-        if num < 1024.0:
-            return "%3.1f %s" % (num, x)
-            # num /= 1024.0
+    elif response.status_code > 399:
+        raise BadRequestsResponse(Exception)
 
 
 def unzip_image(tgzfile, outputdir):
     target_tgz = os.path.join(outputdir, tgzfile)
     if os.path.exists(target_tgz):
-        print 'found tgs: {} \nunzipping...'.format(target_tgz)
         tfile = tarfile.open(target_tgz, 'r:gz')
         tfile.extractall(outputdir)
         print 'unzipped\ndeleting tgz: {}'.format(target_tgz)

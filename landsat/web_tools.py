@@ -141,6 +141,8 @@ def landsat_overpass_time(lndst_path_row, start_date, satellite):
 
                 except IndexError:
                     pass
+                except TypeError:
+                    pass
 
         raise OverpassNotFoundError('Did not find overpass data, check your dates...')
 
