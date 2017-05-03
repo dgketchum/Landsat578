@@ -2,7 +2,7 @@
 # https://github.com/olivierhagolle/LANDSAT-Download
 import os
 import re
-import tqdm
+import sys, math, time
 import urllib
 import urllib2
 import tarfile
@@ -24,7 +24,11 @@ class InvalidSatelliteError(Exception):
     pass
 
 
-def connect_earthexplorer(usgs):
+class NotaTGZError(Exception):
+    pass
+
+
+def connect_earth_explorer(usgs):
     # mkmitchel (https://github.com/mkmitchell) solved the token issue
     cookies = urllib2.HTTPCookieProcessor()
     opener = urllib2.build_opener(cookies)
@@ -50,21 +54,84 @@ def connect_earthexplorer(usgs):
     return
 
 
-def download_chunks(url, out_dir, tgz_file, test_response=False):
+def download_chunks(url, out_dir, tgz_file):
 
-    response = requests.get(url, stream=True)
-    size = int(response.headers.get('content-length', 0))
+    r = requests.get(url, stream=True)
 
-    if test_response:
-        return response.status_code
+    local_file = os.path.join(out_dir, tgz_file)
 
-    if response.status_code == 200:
-        with open(os.path.join(out_dir, tgz_file), 'wb') as f:
-            for chunk in tqdm(response.iter_content(1024*1024*8), total=size, unit='B', unit_scale=True):
+    if r.status_code == 200:
+        with open(local_file, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=1024 * 1024 * 10):
                 f.write(chunk)
 
-    elif response.status_code > 399:
-        raise BadRequestsResponse(Exception)
+        return local_file
+
+# def download_chunks(url, rep, nom_fic):
+#     """ Downloads large files in pieces
+#    inspired by http://josh.gourneau.com
+#   """
+#     print 'download chunks: {}, {}, {}'.format(url, rep, nom_fic)
+#     try:
+#         req = urllib2.urlopen(url)
+#         # if downloaded file is html
+#         if req.info().gettype() == 'text/html':
+#             print "error : file is in html and not an expected binary file"
+#             lines = req.read()
+#             if lines.find('Download Not Found') > 0:
+#                 raise TypeError
+#             else:
+#                 with open("error_output.html", "w") as f:
+#                     f.write(lines)
+#                     print "result saved in ./error_output.html"
+#                     # sys.exit(-1)
+#         # if file too small
+#         total_size = int(req.info().getheader('Content-Length').strip())
+#
+#         if (total_size < 50000):
+#             print "Error: The file is too small to be a Landsat Image"
+#             print url
+#             # sys.exit(-1)
+#         print nom_fic, total_size
+#         total_size_fmt = sizeof_fmt(total_size)
+#
+#         # download
+#         downloaded = 0
+#         CHUNK = 1024 * 1024 * 8
+#         with open(rep + '/' + nom_fic, 'wb') as fp:
+#             start = time.clock()
+#             print('Downloading {0} ({1}):'.format(nom_fic, total_size_fmt))
+#             while True:
+#                 chunk = req.read(CHUNK)
+#                 downloaded += len(chunk)
+#                 done = int(50 * downloaded / total_size)
+#                 sys.stdout.write('\r[{1}{2}]{0:3.0f}% {3}ps'
+#                                  .format(math.floor((float(downloaded)
+#                                                      / total_size) * 100),
+#                                          '=' * done,
+#                                          ' ' * (50 - done),
+#                                          sizeof_fmt((downloaded // (time.clock() - start)) / 8)))
+#                 sys.stdout.flush()
+#                 if not chunk: break
+#                 fp.write(chunk)
+#     except urllib2.HTTPError, e:
+#         if e.code == 500:
+#             pass  # File doesn't exist
+#         else:
+#             print "HTTP Error:", e.code, url
+#         return False
+#     except urllib2.URLError, e:
+#         print "URL Error:", e.reason, url
+#         return False
+#     print 'unknown French words rep: {}, nom fic: {}'.format(rep, nom_fic)
+#     return rep, nom_fic
+
+
+def sizeof_fmt(num):
+    for x in ['bytes', 'KB', 'MB', 'GB', 'TB']:
+        if num < 1024.0:
+            return "%3.1f %s" % (num, x)
+            # num /= 1024.0
 
 
 def unzip_image(tgzfile, outputdir):
@@ -195,7 +262,7 @@ def get_candidate_scenes_list(path_row, sat_name, start_date, end_date):
 
 def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
     usgs_creds = get_credentials(usgs_creds_txt)
-    connect_earthexplorer(usgs_creds)
+    connect_earth_explorer(usgs_creds)
 
     for product in scene_list:
         identifier, stations = get_station_list_identifier(product)
@@ -213,11 +280,6 @@ def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
 
 
 if __name__ == '__main__':
-    home = os.path.expanduser('~')
-    output = os.path.join(home, 'images', 'LC8')
-    tgz = 'LC08_L1TP_039027_20140518_20170307_01_T1.tar.gz'
-    print 'tgz: {}'.format(os.path.join(output, tgz))
-    print os.path.exists(os.path.join(output, tgz))
-    unzip_image(tgz, output)
+    pass
 
 # ===============================================================================

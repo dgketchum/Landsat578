@@ -16,7 +16,7 @@
 import unittest
 from datetime import datetime
 
-from landsat import usgs_download as usgs
+from landsat import usgs_setup as usgs
 from landsat import web_tools as wt
 
 

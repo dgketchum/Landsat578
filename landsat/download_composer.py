@@ -17,7 +17,7 @@
 
 import os
 
-import usgs_download
+import usgs_setup
 from web_tools import convert_lat_lon_wrs2pr
 
 
@@ -42,7 +42,7 @@ def download_landsat(date_range, satellite, latitude=None, longitude=None, path_
 
     for tile in image_index:
 
-        scenes_list = usgs_download.get_candidate_scenes_list(tile, satellite, start_date, end_date)
+        scenes_list = usgs_setup.get_candidate_scenes_list(tile, satellite, start_date, end_date)
 
         if dry_run:
 
@@ -51,12 +51,12 @@ def download_landsat(date_range, satellite, latitude=None, longitude=None, path_
         else:
 
             destination_path = os.path.join(output_path, 'd_{}_{}'.format(tile[0], tile[1]))
-            print os.path.isdir('/data01/
+
             if not os.path.exists(destination_path):
                 print 'making dir: {}'.format(destination_path)
                 os.mkdir(destination_path)
 
-            usgs_download.down_usgs_by_list(scenes_list, destination_path, usgs_creds)
+            usgs_setup.down_usgs_by_list(scenes_list, destination_path, usgs_creds)
 
             return None
 
