@@ -5,6 +5,9 @@ import download_composer
 
 if __name__ == '__main__':
     home = os.path.expanduser('~')
+    start = datetime(2014, 7, 1)
+    end = datetime(2014, 7, 16)
+    satellite = 'LC8'
     start = datetime(2007, 5, 1)
     end = datetime(2007, 5, 30)
     satellite = 'LT5'
