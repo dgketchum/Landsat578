@@ -8,9 +8,6 @@ if __name__ == '__main__':
     start = datetime(2014, 7, 1)
     end = datetime(2014, 7, 16)
     satellite = 'LC8'
-    start = datetime(2007, 5, 1)
-    end = datetime(2007, 5, 30)
-    satellite = 'LT5'
     output = os.path.join(home, 'images', satellite)
     usgs_creds = os.path.join(home, 'images', 'usgs.txt')
     # path = 37

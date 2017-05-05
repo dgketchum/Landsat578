@@ -14,6 +14,10 @@ class StationNotFoundError(Exception):
     pass
 
 
+class BadRequestsResponse(Exception):
+    pass
+
+
 class InvalidSatelliteError(Exception):
     pass
 
@@ -63,8 +67,8 @@ def download_chunks(sat, product, out_dir, usgs_creds):
 
 def unzip_image(tgzfile, outputdir):
     target_tgz = os.path.join(outputdir, tgzfile)
-    print 'target tgz: {}'.format(target_tgz)
     if os.path.exists(target_tgz):
+        print 'found tgs: {} \nunzipping...'.format(target_tgz)
         tfile = tarfile.open(target_tgz, 'r:gz')
         tfile.extractall(outputdir)
         print 'unzipped\ndeleting tgz: {}'.format(target_tgz)
