@@ -5,9 +5,9 @@ import download_composer
 
 if __name__ == '__main__':
     home = os.path.expanduser('~')
-    start = datetime(2001, 7, 1)
-    end = datetime(2001, 7, 16)
-    satellite = 'LT5'
+    start = datetime(2014, 7, 1)
+    end = datetime(2014, 7, 16)
+    satellite = 'LC8'
     output = os.path.join(home, 'images', 'sandbox')
     usgs_creds = os.path.join(home, 'images', 'usgs.txt')
     path = 39
