@@ -2,11 +2,12 @@
 # https://github.com/olivierhagolle/LANDSAT-Download
 import os
 import re
-import sys, math, time
+import sys
+import math
+import time
 import urllib
 import urllib2
 import tarfile
-import requests
 from datetime import datetime, timedelta
 
 import web_tools
@@ -16,15 +17,7 @@ class StationNotFoundError(Exception):
     pass
 
 
-class BadRequestsResponse(Exception):
-    pass
-
-
 class InvalidSatelliteError(Exception):
-    pass
-
-
-class NotaTGZError(Exception):
     pass
 
 
@@ -54,31 +47,83 @@ def connect_earth_explorer(usgs):
     return
 
 
-def download_chunks(url, out_dir, tgz_file):
+def download_chunks(url, output_dir, image):
+    """ Downloads large files in pieces
+   inspired by http://josh.gourneau.com
+  """
+    try:
+        req = urllib2.urlopen(url)
+        # if downloaded file is html
+        if req.info().gettype() == 'text/html':
+            print "error : file is in html and not an expected binary file"
+            lines = req.read()
+            if lines.find('Download Not Found') > 0:
+                raise TypeError
+            else:
+                with open("error_output.html", "w") as f:
+                    f.write(lines)
+                    print "result saved in ./error_output.html"
+                    # sys.exit(-1)
+        # if file too small
+        total_size = int(req.info().getheader('Content-Length').strip())
 
-    local_file = os.path.join(out_dir, tgz_file)
-    print 'url: {}'.format(url)
-    print 'file: {}'.format(local_file)
+        if total_size < 50000:
+            print "Error: The file is too small to be a Landsat Image"
+            print url
+            # sys.exit(-1)
+        print image, total_size
+        total_size_fmt = sizeof_fmt(total_size)
 
-    r = requests.get(url, stream=True)
+        # download
+        downloaded = 0
+        CHUNK = 1024 * 1024 * 8
+        with open(output_dir + '/' + image, 'wb') as fp:
+            start = time.clock()
+            print('Downloading {0} ({1}):'.format(image, total_size_fmt))
+            while True:
+                chunk = req.read(CHUNK)
+                downloaded += len(chunk)
+                done = int(50 * downloaded / total_size)
+                sys.stdout.write('\r[{1}{2}]{0:3.0f}% {3}ps'
+                                 .format(math.floor((float(downloaded)
+                                                     / total_size) * 100),
+                                         '=' * done,
+                                         ' ' * (50 - done),
+                                         sizeof_fmt((downloaded // (time.clock() - start)) / 8)))
+                sys.stdout.flush()
+                if not chunk: break
+                fp.write(chunk)
+    except urllib2.HTTPError, e:
+        if e.code == 500:
+            print 'error code 500: file doesnt exist'
+            pass
+        else:
+            print "HTTP Error:", e.code, url
+        return False
+    except urllib2.URLError, e:
+        print "URL Error:", e.reason, url
+        return False
 
-    if r.status_code == 200:
-        with open(local_file, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=1024 * 1024 * 10):
-                print chunk
-                f.write(chunk)
+    return output_dir, image
+
+
+def sizeof_fmt(num):
+    for x in ['bytes', 'KB', 'MB', 'GB', 'TB']:
+        if num < 1024.0:
+            return "%3.1f %s" % (num, x)
+            # num /= 1024.0
 
 
 def unzip_image(tgzfile, outputdir):
     target_tgz = os.path.join(outputdir, tgzfile)
-    print 'target tgz: {}'.format(target_tgz)
     if os.path.exists(target_tgz):
+        print 'found tgs: {} \nunzipping...'.format(target_tgz)
         tfile = tarfile.open(target_tgz, 'r:gz')
         tfile.extractall(outputdir)
         print 'unzipped\ndeleting tgz: {}'.format(target_tgz)
         os.remove(target_tgz)
     else:
-        raise NotImplementedError('Did not find download output directory to unzip: {}'.format(target_tgz))
+        raise NotImplementedError('Did not find download output directory to unzip...')
     return None
 
 
@@ -93,7 +138,7 @@ def get_credentials(usgs_path):
 
 def get_station_list_identifier(product):
     if product.startswith('LC8'):
-        identifier = '4923'
+        identifier = '12864'
         stations = ['LGN']
     elif product.startswith('LE7'):
         identifier = '3373'
@@ -197,7 +242,6 @@ def get_candidate_scenes_list(path_row, sat_name, start_date, end_date):
 
 
 def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
-
     usgs_creds = get_credentials(usgs_creds_txt)
     connect_earth_explorer(usgs_creds)
 

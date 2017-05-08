@@ -5,13 +5,13 @@ import download_composer
 
 if __name__ == '__main__':
     home = os.path.expanduser('~')
-    start = datetime(2007, 7, 1)
-    end = datetime(2007, 7, 16)
-    satellite = 'LE7'
-    output = os.path.join(home, 'images', satellite)
+    start = datetime(2014, 7, 1)
+    end = datetime(2014, 7, 16)
+    satellite = 'LC8'
+    output = os.path.join(home, 'images', 'sandbox')
     usgs_creds = os.path.join(home, 'images', 'usgs.txt')
     path = 39
-    row = 27
+    row = 28
     # latitude = 45.6
     # longitude = -107.9
     download_composer.download_landsat((start, end), satellite,
