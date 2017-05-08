@@ -50,7 +50,7 @@ def download_landsat(date_range, satellite, latitude=None, longitude=None, path_
 
         else:
 
-            destination_path = os.path.join(output_path, 'd_{}_{}'.format(tile[0], tile[1]))
+            destination_path = os.path.join(output_path, '{}_{}_{}'.format(satellite, tile[0], tile[1]))
 
             if not os.path.exists(destination_path):
                 print 'making dir: {}'.format(destination_path)

@@ -242,6 +242,7 @@ def get_candidate_scenes_list(path_row, sat_name, start_date, end_date):
 
 
 def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
+
     usgs_creds = get_credentials(usgs_creds_txt)
     connect_earth_explorer(usgs_creds)
 
@@ -250,11 +251,15 @@ def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
         base_url = 'https://earthexplorer.usgs.gov/download/'
         tail_string = '{}/{}/STANDARD/EE'.format(identifier, product)
         url = '{}{}'.format(base_url, tail_string)
-
         tgz_file = '{}.tgz'.format(product)
-        download_chunks(url, output_dir, tgz_file)
-        print 'image: {}'.format(os.path.join(output_dir, tgz_file))
-        unzip_image(tgz_file, output_dir)
+        scene_dir = os.path.join(output_dir, product)
+        if not os.path.isdir(scene_dir):
+            os.mkdir(scene_dir)
+            download_chunks(url, scene_dir, tgz_file)
+            print 'image: {}'.format(os.path.join(scene_dir, tgz_file))
+            unzip_image(tgz_file, scene_dir)
+        else:
+            raise NotImplementedError('This image already exists at {}'.format(output_dir))
 
     return None
 
