@@ -247,6 +247,7 @@ def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
     connect_earth_explorer(usgs_creds)
 
     for product in scene_list:
+        print product
         identifier, stations = get_station_list_identifier(product)
         base_url = 'https://earthexplorer.usgs.gov/download/'
         tail_string = '{}/{}/STANDARD/EE'.format(identifier, product)
