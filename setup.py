@@ -29,7 +29,7 @@ except ImportError:
 
     setup_kwargs = {'scripts': ['bin/landsat']}
 
-tag = '0.3.75'
+tag = '0.3.76'
 
 setup(name='Landsat578',
       version=tag,
@@ -54,4 +54,4 @@ setup(name='Landsat578',
                                                              'requests==2.13.0', 'six==1.10.0'],
       **setup_kwargs)
 
-# ============= EOF =============================================
+# ============= EOF ==============================================================
