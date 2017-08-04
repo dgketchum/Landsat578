@@ -18,7 +18,7 @@ import unittest
 
 
 def suite():
-    print 'Testing.......................................'
+    print('Testing.......................................')
     from tests.test_integration.test_usgs_service import USGSLandstatTestCase
     from tests.test_integration.test_cli import CommandLineTestCase
 

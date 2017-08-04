@@ -46,7 +46,7 @@ class CommandLineTestCase(unittest.TestCase):
             self.parser.parse_args([])
 
     def test_latlon(self):
-        print 'Testing valid lat lon...'
+        print('Testing valid lat lon...')
         args_list = [self.sat, self.start, self.end, '--return-list',
                      '--lat', str(self.lat), '--lon', str(self.lon)]
         args = self.parser.parse_args(args_list)
@@ -54,7 +54,7 @@ class CommandLineTestCase(unittest.TestCase):
         self.assertEqual(scenes, self.scene_list)
 
     def test_path_row(self):
-        print 'Testing valid path row...'
+        print('Testing valid path row...')
         args_list = [self.sat, self.start, self.end, '--return-list',
                      '--path', str(self.path), '--row', str(self.row)]
         args = self.parser.parse_args(args_list)

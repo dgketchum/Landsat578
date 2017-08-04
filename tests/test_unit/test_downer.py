@@ -18,7 +18,7 @@ import os
 import unittest
 from datetime import datetime
 
-from landsat import download_composer
+from landsat import download_composer as dc
 
 
 class DownloadTestCase(unittest.TestCase):
@@ -27,7 +27,7 @@ class DownloadTestCase(unittest.TestCase):
         self.start = datetime(2007, 5, 1)
         self.end = datetime(2007, 5, 30)
         self.sat = 'LT5'
-        self.output = os.path.join(self.home, 'images', self.sat)
+        self.output = os.path.join(self.home, 'images', 'sandbox', 'downer')
         self.usgs_creds = os.path.join(self.home, 'images', 'usgs.txt')
         self.path, self.row = 37, 27
         self.known_scene = ['LT50370272007121PAC01', 'LT50370272007137PAC01']
@@ -35,10 +35,19 @@ class DownloadTestCase(unittest.TestCase):
     def tearDown(self):
         pass
 
+    def test_scene_list(self):
+        scene_list = dc.download_landsat((self.start, self.end),
+                                         self.sat,
+                                         path_row_list=[(self.path, self.row)],
+                                         dry_run=True)
+        self.assertEqual(self.known_scene, scene_list)
+
     def test_downer(self):
-        scene_list = download_composer.download_landsat((self.start, self.end), self.sat,
-                                                        path_row_list=[(self.path, self.row)],
-                                                        dry_run=True)
+        scene_list = dc.download_landsat((self.start, self.end),
+                                         self.sat, output_path=self.output,
+                                         usgs_creds=self.usgs_creds,
+                                         path_row_list=[(self.path, self.row)],
+                                         dry_run=False)
         self.assertEqual(self.known_scene, scene_list)
 
 
