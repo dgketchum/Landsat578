@@ -42,7 +42,7 @@ class DownloadTestCase(unittest.TestCase):
                                          dry_run=True)
         self.assertEqual(self.known_scene, scene_list)
 
-    def test_downer(self):
+    def test_downloader(self):
         scene_list = dc.download_landsat((self.start, self.end),
                                          self.sat, output_path=self.output,
                                          usgs_creds=self.usgs_creds,
