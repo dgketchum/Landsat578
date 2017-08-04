@@ -46,7 +46,10 @@ def download_landsat(date_range, satellite, latitude=None, longitude=None, path_
 
         if dry_run:
 
-            return scenes_list
+            print scenes_list
+
+            return
+
 
         else:
 
