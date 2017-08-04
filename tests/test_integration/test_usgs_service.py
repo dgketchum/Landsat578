@@ -22,8 +22,8 @@ from landsat import web_tools as wt
 
 class USGSLandstatTestCase(unittest.TestCase):
     def setUp(self):
-        self.start_7, self.end_7 = datetime(2007, 05, 01), datetime(2007, 05, 31)
-        self.start_14, self.end_14 = datetime(2014, 05, 01), datetime(2014, 05, 31)
+        self.start_7, self.end_7 = datetime(2007, 5, 1), datetime(2007, 5, 31)
+        self.start_14, self.end_14 = datetime(2014, 5, 1), datetime(2014, 5, 31)
         self.lat, self.lon = 47.4545, -107.9514
         self.known_pathrow = 37, 27
         # test for acquisition month of May, 2007 (L5, L7), 2024 (L8).

@@ -17,15 +17,16 @@
 
 import os
 
-import usgs_download
-from web_tools import convert_lat_lon_wrs2pr
+from landsat import usgs_download
+from landsat.web_tools import convert_lat_lon_wrs2pr
 
 
 class InvalidPathRowData(Exception):
     pass
 
 
-def download_landsat(date_range, satellite, latitude=None, longitude=None, path_row_list=None,
+def download_landsat(date_range, satellite, latitude=None, longitude=None,
+                     path_row_list=None,
                      output_path=None, usgs_creds=None, dry_run=False):
 
     start_date, end_date = date_range[0], date_range[1]
@@ -42,24 +43,28 @@ def download_landsat(date_range, satellite, latitude=None, longitude=None, path_
 
     for tile in image_index:
 
-        scenes_list = usgs_download.get_candidate_scenes_list(tile, satellite, start_date, end_date)
+        scenes_list = usgs_download.get_candidate_scenes_list(tile,
+                                                              satellite,
+                                                              start_date,
+                                                              end_date)
 
         if dry_run:
 
-            print scenes_list
+            print(scenes_list)
 
             return
 
-
         else:
 
-            destination_path = os.path.join(output_path, '{}_{}_{}'.format(satellite, tile[0], tile[1]))
+            destination_path = os.path.join(output_path, '{}_{}_{}'.format(
+                satellite, tile[0], tile[1]))
 
             if not os.path.exists(destination_path):
-                print 'making dir: {}'.format(destination_path)
+                print('making dir: {}'.format(destination_path))
                 os.mkdir(destination_path)
 
-            usgs_download.down_usgs_by_list(scenes_list, destination_path, usgs_creds)
+            usgs_download.down_usgs_by_list(scenes_list,
+                                            destination_path, usgs_creds)
 
             return None
 

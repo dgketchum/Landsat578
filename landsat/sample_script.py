@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-import download_composer
+from landsat import download_composer
 
 if __name__ == '__main__':
     home = os.path.expanduser('~')

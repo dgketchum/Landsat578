@@ -6,11 +6,12 @@ import sys
 import math
 import time
 import urllib
-import urllib2
+import requests
 import tarfile
+from tqdm import tqdm
 from datetime import datetime, timedelta
 
-import web_tools
+from landsat import web_tools
 
 
 class StationNotFoundError(Exception):
@@ -18,6 +19,10 @@ class StationNotFoundError(Exception):
 
 
 class InvalidSatelliteError(Exception):
+    pass
+
+
+class BadRequestsResponse(Exception):
     pass
 
 
@@ -32,7 +37,7 @@ def connect_earth_explorer(usgs):
     if m:
         token = m.group(1)
     else:
-        print "Error : CSRF_Token not found"
+        print("Error : CSRF_Token not found")
         # sys.exit(-3)
 
     params = urllib.urlencode(dict(username=usgs['account'], password=usgs['passwd'], csrf_token=token))
@@ -42,7 +47,7 @@ def connect_earth_explorer(usgs):
     data = f.read()
     f.close()
     if data.find('You must sign in as a registered user to download data or place orders for USGS EROS products') > 0:
-        print "Authentification failed"
+        print("Authentification failed")
         # sys.exit(-1)
     return
 
@@ -52,26 +57,26 @@ def download_chunks(url, output_dir, image):
    inspired by http://josh.gourneau.com
   """
     try:
-        req = urllib2.urlopen(url)
+        req = urllib3.urlopen(url)
         # if downloaded file is html
         if req.info().gettype() == 'text/html':
-            print "error : file is in html and not an expected binary file"
+            print("error : file is in html and not an expected binary file")
             lines = req.read()
             if lines.find('Download Not Found') > 0:
                 raise TypeError
             else:
                 with open("error_output.html", "w") as f:
                     f.write(lines)
-                    print "result saved in ./error_output.html"
+                    print("result saved in ./error_output.html")
                     # sys.exit(-1)
         # if file too small
         total_size = int(req.info().getheader('Content-Length').strip())
 
         if total_size < 50000:
-            print "Error: The file is too small to be a Landsat Image"
-            print url
+            print("Error: The file is too small to be a Landsat Image")
+            print(url)
             # sys.exit(-1)
-        print image, total_size
+        print(image, total_size)
         total_size_fmt = sizeof_fmt(total_size)
 
         # download
@@ -93,18 +98,36 @@ def download_chunks(url, output_dir, image):
                 sys.stdout.flush()
                 if not chunk: break
                 fp.write(chunk)
-    except urllib2.HTTPError, e:
-        if e.code == 500:
-            print 'error code 500: file doesnt exist'
-            pass
-        else:
-            print "HTTP Error:", e.code, url
-        return False
-    except urllib2.URLError, e:
-        print "URL Error:", e.reason, url
-        return False
+    except:
+        print('error on download attempt.')
 
     return output_dir, image
+
+
+def download_image(url, output_dir, image, creds):
+    auth_req = requests.get("https://ers.cr.usgs.gov")
+    txt = auth_req.text
+    m = re.search(r'<input .*?name="csrf_token".*?value="(.*?)"', txt)
+    token = m.group(1)
+    creds['csrf_token'] = token
+
+    login_req = requests.get("https://ers.cr.usgs.gov/login", params=creds, headers={})
+    data = login_req.text
+    login_req.close()
+    if data.find('You must sign in as a registered user to download data or place orders for USGS EROS products') > 0:
+        print("Authentification failed")
+
+    response = requests.get(url)
+    size = int(response.headers.get('content-length', 0))
+
+    if response.status_code == 200:
+        with open(os.path.join(output_dir, image), 'wb') as f:
+            for chunk in tqdm(response.iter_content(1024 * 1024 * 8), total=size,
+                              unit='B', unit_scale=True):
+                f.write(chunk)
+
+    elif response.status_code > 399:
+        raise BadRequestsResponse(Exception)
 
 
 def sizeof_fmt(num):
@@ -117,10 +140,10 @@ def sizeof_fmt(num):
 def unzip_image(tgzfile, outputdir):
     target_tgz = os.path.join(outputdir, tgzfile)
     if os.path.exists(target_tgz):
-        print 'found tgs: {} \nunzipping...'.format(target_tgz)
+        print('found tgs: {} \nunzipping...'.format(target_tgz))
         tfile = tarfile.open(target_tgz, 'r:gz')
         tfile.extractall(outputdir)
-        print 'unzipped\ndeleting tgz: {}'.format(target_tgz)
+        print('unzipped\ndeleting tgz: {}'.format(target_tgz))
         os.remove(target_tgz)
     else:
         raise NotImplementedError('Did not find download output directory to unzip...')
@@ -128,7 +151,7 @@ def unzip_image(tgzfile, outputdir):
 
 
 def get_credentials(usgs_path):
-    with file(usgs_path) as f:
+    with open(usgs_path) as f:
         (account, passwd) = f.readline().split(' ')
         if passwd.endswith('\n'):
             passwd = passwd[:-1]
@@ -178,7 +201,8 @@ def find_valid_scene(ref_time, prow, sat, delta=16):
 
         if not scene_found:
 
-            print 'Looking for version/station combination....'
+            print('Looking for version/station combination....')
+
             for archive in ['00', '01', '02']:
 
                 for location in station_list:
@@ -187,7 +211,8 @@ def find_valid_scene(ref_time, prow, sat, delta=16):
 
                     if web_tools.verify_landsat_scene_exists(scene_str):
                         version = archive
-                        print 'using version: {}, location: {}'.format(version, location)
+                        print
+                        'using version: {}, location: {}'.format(version, location)
                         return padded_pr, date_part, location, archive
 
                 if scene_found:
@@ -195,24 +220,22 @@ def find_valid_scene(ref_time, prow, sat, delta=16):
 
             if not scene_found:
                 ref_time += timedelta(days=delta)
-                print 'No scene, moving {} days ahead to {}'.format(delta, datetime.strftime(ref_time, '%Y%j'))
+                print('No scene, moving {} days ahead to {}'.format(delta, datetime.strftime(ref_time, '%Y%j')))
                 attempts += 1
 
     raise StationNotFoundError('Did not find a valid scene within time frame.')
 
 
 def assemble_scene_id_list(ref_time, prow, sat, end_date, delta=16):
-
     scene_id_list = []
 
     padded_pr, date_part, location, archive = find_valid_scene(ref_time, prow, sat)
 
     while ref_time < end_date:
-
         scene_str = '{}{}{}{}{}'.format(sat, padded_pr, date_part, location, archive)
 
-        print 'add scene: {}, for {}'.format(scene_str,
-                                             datetime.strftime(ref_time, '%Y-%m-%d'))
+        print('add scene: {}, for {}'.format(scene_str,
+                                             datetime.strftime(ref_time, '%Y-%m-%d')))
         scene_id_list.append(scene_str)
 
         ref_time += timedelta(days=delta)
@@ -242,12 +265,11 @@ def get_candidate_scenes_list(path_row, sat_name, start_date, end_date):
 
 
 def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
-
     usgs_creds = get_credentials(usgs_creds_txt)
-    connect_earth_explorer(usgs_creds)
+    # connect_earth_explorer(usgs_creds)
 
     for product in scene_list:
-        print product
+        print(product)
         identifier, stations = get_station_list_identifier(product)
         base_url = 'https://earthexplorer.usgs.gov/download/'
         tail_string = '{}/{}/STANDARD/EE'.format(identifier, product)
@@ -256,8 +278,10 @@ def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
         scene_dir = os.path.join(output_dir, product)
         if not os.path.isdir(scene_dir):
             os.mkdir(scene_dir)
-            download_chunks(url, scene_dir, tgz_file)
-            print 'image: {}'.format(os.path.join(scene_dir, tgz_file))
+        if len(os.listdir(scene_dir)) < 1:
+            # download_chunks(url, scene_dir, tgz_file)
+            download_image(url, scene_dir, tgz_file, usgs_creds)
+            print('image: {}'.format(os.path.join(scene_dir, tgz_file)))
             unzip_image(tgz_file, scene_dir)
         else:
             raise NotImplementedError('This image already exists at {}'.format(output_dir))

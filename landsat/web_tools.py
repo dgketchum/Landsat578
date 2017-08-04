@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ===============================================================================
-import os
 import re
 import requests
 from lxml import html
@@ -62,7 +61,7 @@ def verify_landsat_scene_exists(scene_string):
 
 
 def get_l5_overpass_data(path, row, date):
-    if date > datetime(2013, 06, 01):
+    if date > datetime(2013, 6, 1):
         raise ValueError('The date requested is after L5 deactivation')
 
     lat, lon = convert_lat_lon_wrs2pr(path, row, conversion_type='convert_pr_to_ll')
@@ -95,7 +94,7 @@ def get_l5_overpass_data(path, row, date):
         zeniths.append(zenith)
     df = DataFrame(zeniths, index=ind, columns=[col])
 
-    print 'reference dtime overpass: {}'.format(df['zenith'].argmin())
+    print('reference dtime overpass: {}'.format(df['zenith'].argmin()))
     return df['zenith'].argmin()
 
 
@@ -106,7 +105,7 @@ def landsat_overpass_time(lndst_path_row, start_date, satellite):
 
     if satellite == 'LT5':
 
-        if start_date > datetime(2013, 06, 01):
+        if start_date > datetime(2013, 6, 1):
             raise InvalidDateForSatelliteError('The date requested is after L5 deactivation')
 
         reference_time = get_l5_overpass_data(lndst_path_row[0], lndst_path_row[1], start_date)
@@ -168,7 +167,7 @@ def convert_lat_lon_wrs2pr(lat, lon, conversion_type='convert_ll_to_pr'):
         r_string = tree.xpath('//table/tr[1]/td[4]/text()')
         row = int(re.search(r'\d+', r_string[0]).group())
 
-        print 'path: {}, row: {}'.format(path, row)
+        print('path: {}, row: {}'.format(path, row))
 
         return path, row
 
