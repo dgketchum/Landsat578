@@ -8,7 +8,7 @@ import time
 import urllib
 import requests
 import tarfile
-from tqdm import tqdm
+
 from datetime import datetime, timedelta
 
 from landsat import web_tools
@@ -114,19 +114,22 @@ def download_image(url, output_dir, image, creds):
     login_req = requests.get("https://ers.cr.usgs.gov/login", params=creds, headers={})
     data = login_req.text
     login_req.close()
-    if data.find('You must sign in as a registered user to download data or place orders for USGS EROS products') > 0:
+    if data.find('You must sign in as a registered user to download '
+                 'data or place orders for USGS EROS products') > 0:
         print("Authentification failed")
 
-    response = requests.get(url)
-    size = int(response.headers.get('content-length', 0))
+    response = requests.get(url, allow_redirects=False)
+    target_url = response.url
+
+    image_response = requests.get(target_url)
 
     if response.status_code == 200:
         with open(os.path.join(output_dir, image), 'wb') as f:
-            for chunk in tqdm(response.iter_content(1024 * 1024 * 8), total=size,
-                              unit='B', unit_scale=True):
+            for chunk in image_response.iter_content(chunk_size=1024 * 1024 * 8):
                 f.write(chunk)
-
+        x = 0
     elif response.status_code > 399:
+        print('Code {}'.format(response.status_code))
         raise BadRequestsResponse(Exception)
 
 
@@ -284,7 +287,7 @@ def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
             print('image: {}'.format(os.path.join(scene_dir, tgz_file)))
             unzip_image(tgz_file, scene_dir)
         else:
-            raise NotImplementedError('This image already exists at {}'.format(output_dir))
+            print('This image already exists at {}'.format(output_dir))
 
     return None
 
