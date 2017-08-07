@@ -19,7 +19,7 @@
 import argparse
 from datetime import datetime
 
-from download_composer import download_landsat
+from landsat.download_composer import download_landsat
 
 
 def create_parser():
@@ -45,8 +45,8 @@ def create_parser():
 def main(args):
     if args:
         if args.lat:
-            print '\nStarting download with latlon...'
-            print args
+            print('\nStarting download with latlon...')
+            print(args)
             scenes = download_landsat(
                 (datetime.strptime(args.start, '%Y-%m-%d'), datetime.strptime(args.end, '%Y-%m-%d')),
                 args.satellite, latitude=args.lat, longitude=args.lon, output_path=args.output,
@@ -55,8 +55,8 @@ def main(args):
             return scenes
 
         elif args.path:
-            print '\nStarting download with pathrow...'
-            print args
+            print('\nStarting download with pathrow...')
+            print(args)
             scenes = download_landsat(
                 (datetime.strptime(args.start, '%Y-%m-%d'), datetime.strptime(args.end, '%Y-%m-%d')),
                 args.satellite, path_row_list=[(args.path, args.row)], output_path=args.output,
