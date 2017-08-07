@@ -52,7 +52,7 @@ def download_landsat(date_range, satellite, latitude=None, longitude=None,
 
             print(scenes_list)
 
-            return
+            return scenes_list
 
         else:
 
