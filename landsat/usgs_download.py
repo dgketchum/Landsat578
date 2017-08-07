@@ -76,6 +76,15 @@ def unzip_image(tgzfile, outputdir):
     return None
 
 
+def get_credentials(usgs_path):
+    with open(usgs_path) as f:
+        (account, passwd) = f.readline().split(' ')
+        if passwd.endswith('\n'):
+            passwd = passwd[:-1]
+        usgs = {'account': account, 'passwd': passwd}
+        return usgs
+
+
 def get_station_list_identifier(product):
     if product.startswith('LC8'):
         identifier = '12864'
@@ -182,6 +191,7 @@ def get_candidate_scenes_list(path_row, sat_name, start_date, end_date):
 
 
 def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
+    usgs_creds = get_credentials(usgs_creds_txt)
 
     for product in scene_list:
         print(product)
