@@ -6,10 +6,11 @@ import sys
 import math
 import time
 import requests
-import urllib3
-import selenium
+from future.standard_library import install_aliases
+install_aliases()
+from urllib.parse import urlencode
+from urllib.request import urlopen, install_opener, build_opener, HTTPCookieProcessor, Request
 import tarfile
-
 from datetime import datetime, timedelta
 
 from landsat import web_tools
@@ -29,11 +30,11 @@ class BadRequestsResponse(Exception):
 
 def connect_earth_explorer(usgs):
     # mkmitchel (https://github.com/mkmitchell) solved the token issue
-    cookies = urllib2.HTTPCookieProcessor()
-    opener = urllib2.build_opener(cookies)
-    urllib2.install_opener(opener)
+    cookies = HTTPCookieProcessor()
+    opener = build_opener(cookies)
+    install_opener(opener)
 
-    data = urllib2.urlopen("https://ers.cr.usgs.gov").read()
+    data = urlopen("https://ers.cr.usgs.gov").read().decode('utf-8')
     m = re.search(r'<input .*?name="csrf_token".*?value="(.*?)"', data)
     if m:
         token = m.group(1)
@@ -41,14 +42,16 @@ def connect_earth_explorer(usgs):
         print("Error : CSRF_Token not found")
         # sys.exit(-3)
 
-    params = urllib.urlencode(dict(username=usgs['account'], password=usgs['passwd'], csrf_token=token))
-    request = urllib2.Request("https://ers.cr.usgs.gov/login", params, headers={})
-    f = urllib2.urlopen(request)
+    params = urlencode(dict(username=usgs['account'], password=usgs['passwd'], csrf_token=token))
+    params = params.encode('ascii')
+    request = Request("https://ers.cr.usgs.gov/login", params, headers={})
+    f = urlopen(request)
 
-    data = f.read()
+    data = f.read().decode('utf-8')
     f.close()
     if data.find('You must sign in as a registered user to download data or place orders for USGS EROS products') > 0:
-        print("Authentification failed")
+        print
+        "Authentification failed"
         # sys.exit(-1)
     return
 
@@ -57,50 +60,43 @@ def download_chunks(url, output_dir, image):
     """ Downloads large files in pieces
    inspired by http://josh.gourneau.com
   """
-    try:
-        req = urllib3.urlopen(url)
-        # if downloaded file is html
-        if req.info().gettype() == 'text/html':
-            print("error : file is in html and not an expected binary file")
-            lines = req.read()
-            if lines.find('Download Not Found') > 0:
-                raise TypeError
-            else:
-                with open("error_output.html", "w") as f:
-                    f.write(lines)
-                    print("result saved in ./error_output.html")
-                    # sys.exit(-1)
-        # if file too small
-        total_size = int(req.info().getheader('Content-Length').strip())
+    req = urlopen(url)
+    # if downloaded file is html
+    if req.info().gettype() == 'text/html':
+        print("error : file is in html and not an expected binary file")
+        lines = req.read()
+        if lines.find('Download Not Found') > 0:
+            raise TypeError
+        else:
+            with open("error_output.html", "w") as f:
+                f.write(lines)
+                print
+                "result saved in ./error_output.html"
+                # sys.exit(-1)
+    # if file too small
+    total_size = int(req.info().getheader('Content-Length').strip())
 
-        if total_size < 50000:
-            print("Error: The file is too small to be a Landsat Image")
-            print(url)
-            # sys.exit(-1)
-        print(image, total_size)
-        total_size_fmt = sizeof_fmt(total_size)
+    if total_size < 50000:
+        print("Error: The file is too small to be a Landsat Image")
 
-        # download
-        downloaded = 0
-        CHUNK = 1024 * 1024 * 8
-        with open(output_dir + '/' + image, 'wb') as fp:
-            start = time.clock()
-            print('Downloading {0} ({1}):'.format(image, total_size_fmt))
-            while True:
-                chunk = req.read(CHUNK)
-                downloaded += len(chunk)
-                done = int(50 * downloaded / total_size)
-                sys.stdout.write('\r[{1}{2}]{0:3.0f}% {3}ps'
-                                 .format(math.floor((float(downloaded)
-                                                     / total_size) * 100),
-                                         '=' * done,
-                                         ' ' * (50 - done),
-                                         sizeof_fmt((downloaded // (time.clock() - start)) / 8)))
-                sys.stdout.flush()
-                if not chunk: break
-                fp.write(chunk)
-    except:
-        print('error on download attempt.')
+    # download
+    downloaded = 0
+    CHUNK = 1024 * 1024 * 8
+    with open(output_dir + '/' + image, 'wb') as fp:
+        start = time.clock()
+        while True:
+            chunk = req.read(CHUNK)
+            downloaded += len(chunk)
+            done = int(50 * downloaded / total_size)
+            sys.stdout.write('\r[{1}{2}]{0:3.0f}% {3}ps'
+                             .format(math.floor((float(downloaded)
+                                                 / total_size) * 100),
+                                     '=' * done,
+                                     ' ' * (50 - done),
+                                     sizeof_fmt((downloaded // (time.clock() - start)) / 8)))
+            sys.stdout.flush()
+            if not chunk: break
+            fp.write(chunk)
 
     return output_dir, image
 
@@ -274,7 +270,7 @@ def get_candidate_scenes_list(path_row, sat_name, start_date, end_date):
 
 def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
     usgs_creds = get_credentials(usgs_creds_txt)
-    # connect_earth_explorer(usgs_creds)
+    connect_earth_explorer(usgs_creds)
 
     for product in scene_list:
         print(product)
@@ -287,8 +283,7 @@ def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
         if not os.path.isdir(scene_dir):
             os.mkdir(scene_dir)
         if len(os.listdir(scene_dir)) < 1:
-            # download_chunks(url, scene_dir, tgz_file)
-            download_image(url, scene_dir, tgz_file, usgs_creds)
+            download_chunks(url, scene_dir, tgz_file)
             print('image: {}'.format(os.path.join(scene_dir, tgz_file)))
             unzip_image(tgz_file, scene_dir)
         else:
