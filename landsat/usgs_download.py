@@ -2,18 +2,16 @@
 # https://github.com/olivierhagolle/LANDSAT-Download
 import os
 import re
-import sys
-import math
-import time
 import requests
 from future.standard_library import install_aliases
-install_aliases()
-from urllib.parse import urlencode
-from urllib.request import urlopen, install_opener, build_opener, HTTPCookieProcessor, Request
 import tarfile
 from datetime import datetime, timedelta
 
 from landsat import web_tools
+
+install_aliases()
+from urllib.parse import urlencode
+from urllib.request import urlopen, install_opener, build_opener, HTTPCookieProcessor, Request
 
 
 class StationNotFoundError(Exception):
@@ -28,8 +26,7 @@ class BadRequestsResponse(Exception):
     pass
 
 
-def connect_earth_explorer(usgs):
-    # mkmitchel (https://github.com/mkmitchell) solved the token issue
+def download_image(url, output_dir, image, creds):
     cookies = HTTPCookieProcessor()
     opener = build_opener(cookies)
     install_opener(opener)
@@ -40,9 +37,8 @@ def connect_earth_explorer(usgs):
         token = m.group(1)
     else:
         print("Error : CSRF_Token not found")
-        # sys.exit(-3)
 
-    params = urlencode(dict(username=usgs['account'], password=usgs['passwd'], csrf_token=token))
+    params = urlencode(dict(username=creds['account'], password=creds['passwd'], csrf_token=token))
     params = params.encode('ascii')
     request = Request("https://ers.cr.usgs.gov/login", params, headers={})
     f = urlopen(request)
@@ -50,79 +46,12 @@ def connect_earth_explorer(usgs):
     data = f.read().decode('utf-8')
     f.close()
     if data.find('You must sign in as a registered user to download data or place orders for USGS EROS products') > 0:
-        print
-        "Authentification failed"
-        # sys.exit(-1)
-    return
-
-
-def download_chunks(url, output_dir, image):
-    """ Downloads large files in pieces
-   inspired by http://josh.gourneau.com
-  """
-    req = urlopen(url)
-    # if downloaded file is html
-    if req.info().gettype() == 'text/html':
-        print("error : file is in html and not an expected binary file")
-        lines = req.read()
-        if lines.find('Download Not Found') > 0:
-            raise TypeError
-        else:
-            with open("error_output.html", "w") as f:
-                f.write(lines)
-                print
-                "result saved in ./error_output.html"
-                # sys.exit(-1)
-    # if file too small
-    total_size = int(req.info().getheader('Content-Length').strip())
-
-    if total_size < 50000:
-        print("Error: The file is too small to be a Landsat Image")
-
-    # download
-    downloaded = 0
-    CHUNK = 1024 * 1024 * 8
-    with open(output_dir + '/' + image, 'wb') as fp:
-        start = time.clock()
-        while True:
-            chunk = req.read(CHUNK)
-            downloaded += len(chunk)
-            done = int(50 * downloaded / total_size)
-            sys.stdout.write('\r[{1}{2}]{0:3.0f}% {3}ps'
-                             .format(math.floor((float(downloaded)
-                                                 / total_size) * 100),
-                                     '=' * done,
-                                     ' ' * (50 - done),
-                                     sizeof_fmt((downloaded // (time.clock() - start)) / 8)))
-            sys.stdout.flush()
-            if not chunk: break
-            fp.write(chunk)
-
-    return output_dir, image
-
-
-def download_image(url, output_dir, image, creds):
-    head = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/'
-                          '537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
-
-    session = requests.Session()
-    session.headers.update(head)
-    auth_req = session.get("https://ers.cr.usgs.gov")
-    txt = auth_req.text
-    m = re.search(r'<input .*?name="csrf_token".*?value="(.*?)"', txt)
-    token = m.group(1)
-    creds['csrf_token'] = token
-
-    login_req = session.get("https://ers.cr.usgs.gov/login", params=creds, headers={})
-    cook = login_req.cookies
-    data = login_req.text
-    login_req.close()
-    if data.find('You must sign in as a registered user to download '
-                 'data or place orders for USGS EROS products') > 0:
         print("Authentification failed")
-    response = session.get(url, headers=head, stream=True, cookies=cook)
-    cookies = [auth_req.cookies, login_req.cookies, response.cookies]
-    print(cookies)
+
+    req = urlopen(url)
+
+    uri = req.url
+    response = requests.get(uri)
 
     if response.status_code == 200:
         with open(os.path.join(output_dir, image), 'wb') as f:
@@ -270,7 +199,6 @@ def get_candidate_scenes_list(path_row, sat_name, start_date, end_date):
 
 def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
     usgs_creds = get_credentials(usgs_creds_txt)
-    connect_earth_explorer(usgs_creds)
 
     for product in scene_list:
         print(product)
@@ -283,7 +211,7 @@ def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
         if not os.path.isdir(scene_dir):
             os.mkdir(scene_dir)
         if len(os.listdir(scene_dir)) < 1:
-            download_chunks(url, scene_dir, tgz_file)
+            download_image(url, scene_dir, tgz_file, usgs_creds)
             print('image: {}'.format(os.path.join(scene_dir, tgz_file)))
             unzip_image(tgz_file, scene_dir)
         else:
