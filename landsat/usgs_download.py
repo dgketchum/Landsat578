@@ -5,7 +5,6 @@ import re
 import sys
 import math
 import time
-import urllib
 import requests
 import tarfile
 
@@ -105,6 +104,7 @@ def download_chunks(url, output_dir, image):
 
 
 def download_image(url, output_dir, image, creds):
+
     auth_req = requests.get("https://ers.cr.usgs.gov")
     txt = auth_req.text
     m = re.search(r'<input .*?name="csrf_token".*?value="(.*?)"', txt)
@@ -117,17 +117,17 @@ def download_image(url, output_dir, image, creds):
     if data.find('You must sign in as a registered user to download '
                  'data or place orders for USGS EROS products') > 0:
         print("Authentification failed")
-
-    response = requests.get(url, allow_redirects=False)
-    target_url = response.url
-
-    image_response = requests.get(target_url)
+    head = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/'
+                          '537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+    response = requests.get(url, headers=head)
+    cookies = [auth_req.cookies, login_req.cookies, response.cookies]
+    print(cookies)
 
     if response.status_code == 200:
         with open(os.path.join(output_dir, image), 'wb') as f:
-            for chunk in image_response.iter_content(chunk_size=1024 * 1024 * 8):
+            for chunk in response.iter_content(chunk_size=1024 * 1024 * 8):
                 f.write(chunk)
-        x = 0
+
     elif response.status_code > 399:
         print('Code {}'.format(response.status_code))
         raise BadRequestsResponse(Exception)
