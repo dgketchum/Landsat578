@@ -8,6 +8,7 @@ language: python
 
 python:
  - "2.7"
+ - "3.6"
 
 notifications:
   email:
@@ -39,8 +40,8 @@ script:
   - coverage run setup.py test
 
 
-#notifications:
-#  slack: nmbgmr:6025BpWw62bzddqVqFrtGLOF
+notifications:
+  slack: nmbgmr:6025BpWw62bzddqVqFrtGLOF
 
 after_success:
   - codecov
