@@ -6,6 +6,8 @@ import sys
 import math
 import time
 import requests
+import urllib3
+import selenium
 import tarfile
 
 from datetime import datetime, timedelta
@@ -104,22 +106,25 @@ def download_chunks(url, output_dir, image):
 
 
 def download_image(url, output_dir, image, creds):
+    head = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/'
+                          '537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 
-    auth_req = requests.get("https://ers.cr.usgs.gov")
+    session = requests.Session()
+    session.headers.update(head)
+    auth_req = session.get("https://ers.cr.usgs.gov")
     txt = auth_req.text
     m = re.search(r'<input .*?name="csrf_token".*?value="(.*?)"', txt)
     token = m.group(1)
     creds['csrf_token'] = token
 
-    login_req = requests.get("https://ers.cr.usgs.gov/login", params=creds, headers={})
+    login_req = session.get("https://ers.cr.usgs.gov/login", params=creds, headers={})
+    cook = login_req.cookies
     data = login_req.text
     login_req.close()
     if data.find('You must sign in as a registered user to download '
                  'data or place orders for USGS EROS products') > 0:
         print("Authentification failed")
-    head = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/'
-                          '537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
-    response = requests.get(url, headers=head)
+    response = session.get(url, headers=head, stream=True, cookies=cook)
     cookies = [auth_req.cookies, login_req.cookies, response.cookies]
     print(cookies)
 
