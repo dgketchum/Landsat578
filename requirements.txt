@@ -1,3 +1,4 @@
+future
 lxml==3.7.3
 numpy==1.12.1
 pandas==0.19.2
