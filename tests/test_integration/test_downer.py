@@ -42,6 +42,8 @@ class DownloadTestCase(unittest.TestCase):
                                          dry_run=True)
         self.assertEqual(self.known_scene, scene_list)
 
+    # can't run the download test on travis
+
     # def test_downloader(self):
     #     dc.download_landsat((self.start, self.end),
     #                         self.sat, output_path=self.output,
