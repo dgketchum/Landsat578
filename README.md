@@ -3,12 +3,15 @@
 [![Build Status](https://travis-ci.org/dgketchum/Landsat578.svg?branch=master)](https://travis-ci.org/dgketchum/Landsat578)
 [![codecov](https://codecov.io/gh/dgketchum/Landsat578/branch/master/graph/badge.svg)](https://codecov.io/gh/dgketchum/Landsat578)
 [![PyPI version](https://badge.fury.io/py/Landsat578.svg)](https://badge.fury.io/py/Landsat578)
+[![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/dgketchum/Landsat578/master/LICENSE)
 
 # Easy Landsat Download
 
 Download and unzip Landsat 5, 7, and 8 (a.k.a. LT5, LE7, LC8) images 
 via the USGS website automatically using a command line interface or 
 a simple python script.
+
+Python 2.7 and 3.6 compatible.
 
 ## Install
 To get the package from PyPi:
