@@ -49,7 +49,7 @@ setup(name='Landsat578',
       packages=['landsat'],
       download_url='https://github.com/{}/{}/archive/{}.tar.gz'.format('dgketchum', 'Landsat578', tag),
       url='https://github.com/dgketchum',
-      test_suite='tests.test_suite.suite', install_requires=['lxml==3.7.3', 'numpy==1.12.1', 'pandas==0.19.2',
+      test_suite='tests.test_suite.suite', install_requires=['lxml==3.7.3', 'numpy==1.12.1', 'pandas',
                                                              'python-dateutil==2.6.0', 'pytz==2017.2',
                                                              'requests==2.13.0', 'six==1.10.0'],
       **setup_kwargs)
