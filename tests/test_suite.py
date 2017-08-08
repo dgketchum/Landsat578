@@ -22,7 +22,7 @@ def suite():
     from tests.test_integration.test_usgs_service import USGSLandstatTestCase
     from tests.test_integration.test_cli import CommandLineTestCase
 
-    from tests.test_unit.test_downer import DownloadTestCase
+    from tests.test_integration.test_downer import DownloadTestCase
     from tests.test_unit.test_web_tools import WebToolsTestCase
 
     loader = unittest.TestLoader()
