@@ -185,10 +185,12 @@ def get_candidate_scenes_list(path_row, sat_name, start_date, end_date):
 
     reference_overpass = web_tools.landsat_overpass_time(path_row,
                                                          start_date, sat_name)
-
-    scene_list = assemble_scene_id_list(reference_overpass, path_row, sat_name, end_date)
-    return scene_list
-
+    if reference_overpass:
+        scene_list = assemble_scene_id_list(reference_overpass, path_row, sat_name, end_date)
+        return scene_list
+    
+    else:
+        return None
 
 def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
     usgs_creds = get_credentials(usgs_creds_txt)
