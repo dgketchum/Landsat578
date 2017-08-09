@@ -143,7 +143,11 @@ def landsat_overpass_time(lndst_path_row, start_date, satellite):
                 except TypeError:
                     pass
 
-        raise OverpassNotFoundError('Did not find overpass data, check your dates...')
+        print('No overpass data within {} days of {} for {}, check your dates...'.format(delta,
+                                                                                         sat_abv,
+                                                                                         start_date))
+
+
 
 
 def convert_lat_lon_wrs2pr(lat, lon, conversion_type='convert_ll_to_pr'):
