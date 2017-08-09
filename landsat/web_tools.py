@@ -143,11 +143,11 @@ def landsat_overpass_time(lndst_path_row, start_date, satellite):
                 except TypeError:
                     pass
 
+
         print('No overpass data within {} days of {} for {}, check your dates...'.format(delta,
                                                                                          sat_abv,
                                                                                          start_date))
-
-
+        return None
 
 
 def convert_lat_lon_wrs2pr(lat, lon, conversion_type='convert_ll_to_pr'):
