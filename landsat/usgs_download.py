@@ -107,7 +107,7 @@ def find_valid_scene(ref_time, prow, sat, delta=16):
 
     possible_l7_stations = ['EDC', 'SGS', 'AGS', 'ASN', 'SG1', 'CUB', 'COA']
     possible_l8_stations = ['LGN']
-    possible_l5_stations = ['PAC', 'GLC', 'ASA', 'KIR', 'MOR', 'KHC',
+    possible_l5_stations = ['AAA', 'XXX', 'PAC', 'GLC', 'ASA', 'KIR', 'MOR', 'KHC',
                             'KIS', 'CHM', 'LGS', 'MGR', 'COA', 'MPS', 'CUB']
 
     if sat == 'LC8':
