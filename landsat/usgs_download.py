@@ -160,6 +160,11 @@ def assemble_scene_id_list(ref_time, prow, sat, end_date, delta=16):
     while ref_time < end_date:
         scene_str = '{}{}{}{}{}'.format(sat, padded_pr, date_part, location, archive)
 
+        # recurse over string naming if version number switches
+        if not web_tools.verify_landsat_scene_exists(scene_str):
+            padded_pr, date_part, location, archive = find_valid_scene(ref_time, prow, sat)
+            scene_str = '{}{}{}{}{}'.format(sat, padded_pr, date_part, location, archive)
+
         print('add scene: {}, for {}'.format(scene_str,
                                              datetime.strftime(ref_time, '%Y-%m-%d')))
         scene_id_list.append(scene_str)
