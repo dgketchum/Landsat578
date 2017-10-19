@@ -7,7 +7,7 @@ from future.standard_library import install_aliases
 import tarfile
 from datetime import datetime, timedelta
 
-from landsat import web_tools
+from core import web_tools
 
 install_aliases()
 from urllib.parse import urlencode

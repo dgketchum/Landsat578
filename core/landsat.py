@@ -19,12 +19,12 @@
 import argparse
 from datetime import datetime
 
-from landsat.download_composer import download_landsat
+from core.download_composer import download_landsat
 
 
 def create_parser():
 
-    parser = argparse.ArgumentParser(prog='landsat', description='Download and unzip landsat data.')
+    parser = argparse.ArgumentParser(prog='core', description='Download and unzip core data.')
 
     parser.add_argument('satellite', help='Satellite name: LT5, LE7, or LC8')
     parser.add_argument('start', help='Start date in format YYYY-MM-DD')

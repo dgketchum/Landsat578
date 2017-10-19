@@ -17,7 +17,7 @@
 import unittest
 from datetime import datetime
 
-from landsat import web_tools
+from core import web_tools
 
 
 class WebToolsTestCase(unittest.TestCase):

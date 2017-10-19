@@ -16,8 +16,8 @@
 import unittest
 from datetime import datetime
 
-from landsat import usgs_download as usgs
-from landsat import web_tools as wt
+from core import usgs_download as usgs
+from core import web_tools as wt
 
 
 class USGSLandstatTestCase(unittest.TestCase):
