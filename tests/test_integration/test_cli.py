@@ -18,7 +18,7 @@ import unittest
 
 import pkg_resources
 
-from landsat.landsat import create_parser, main
+from core.landsat import create_parser, main
 
 
 class CommandLineTestCase(unittest.TestCase):

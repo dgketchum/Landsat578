@@ -18,7 +18,7 @@ import os
 import unittest
 from datetime import datetime
 
-from landsat import download_composer as dc
+from core import download_composer as dc
 
 
 class DownloadTestCase(unittest.TestCase):
