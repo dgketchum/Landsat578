@@ -3,12 +3,15 @@
 [![Build Status](https://travis-ci.org/dgketchum/Landsat578.svg?branch=master)](https://travis-ci.org/dgketchum/Landsat578)
 [![codecov](https://codecov.io/gh/dgketchum/Landsat578/branch/master/graph/badge.svg)](https://codecov.io/gh/dgketchum/Landsat578)
 [![PyPI version](https://badge.fury.io/py/Landsat578.svg)](https://badge.fury.io/py/Landsat578)
+[![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/dgketchum/Landsat578/master/LICENSE)
 
 # Easy Landsat Download
 
 Download and unzip Landsat 5, 7, and 8 (a.k.a. LT5, LE7, LC8) images 
 via the USGS website automatically using a command line interface or 
 a simple python script.
+
+Python 2.7 and 3.6 compatible.
 
 ## Install
 To get the package from PyPi:
@@ -94,7 +97,7 @@ If you prefer to work from a python script, use sample_script.py:
 import os
 from datetime import datetime
 
-import download_composer
+from landsat.download_composer import download_landsat
 
 if __name__ == '__main__':
     home = os.path.expanduser('~')
@@ -107,8 +110,8 @@ if __name__ == '__main__':
     # row = 27
     latitude = 45.6
     longitude = -107.9
-    download_composer.download_landsat((start, end), satellite, latitude=latitude, longitude=longitude,
-                                       output_path=output, usgs_creds=usgs_creds, dry_run=True)
+    download_landsat((start, end), satellite, latitude=latitude, longitude=longitude,
+                     output_path=output, usgs_creds=usgs_creds, dry_run=True)
 
 ```
 This work was adapted in part from work from [DevelopmentSeed](https://github.com/olivierhagolle) and [Olivier Hagolle.](https://github.com/developmentseed)

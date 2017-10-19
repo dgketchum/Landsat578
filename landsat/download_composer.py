@@ -40,15 +40,19 @@ def download_landsat(date_range, satellite, latitude=None, longitude=None,
     else:
         raise InvalidPathRowData('Must give path/row tuple, lat/lon tuple plus row/path \n'
                                  'shapefile, or a path/rows shapefile!')
-
     for tile in image_index:
 
         scenes_list = usgs_download.get_candidate_scenes_list(tile,
                                                               satellite,
                                                               start_date,
                                                               end_date)
-
-        if dry_run:
+        if not scenes_list:
+            print('No scenes for {} between {} and {}.'.format(satellite,
+                                                               datetime.strftime(start_date, '%Y-doy %j'),
+                                                               datetime.strftime(end_date, '%Y-doy %j')))
+            return None
+        
+        elif dry_run:
 
             print(scenes_list)
 

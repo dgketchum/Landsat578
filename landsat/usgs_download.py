@@ -105,7 +105,7 @@ def get_station_list_identifier(product):
 def find_valid_scene(ref_time, prow, sat, delta=16):
     scene_found = False
 
-    possible_l7_stations = ['EDC', 'SGS', 'AGS', 'ASN', 'SG1', 'CUB', 'COA']
+    possible_l7_stations = ['PAC', 'PFS', 'EDC', 'SGS', 'AGS', 'ASN', 'SG1', 'CUB', 'COA']
     possible_l8_stations = ['LGN']
     possible_l5_stations = ['PAC', 'GLC', 'ASA', 'KIR', 'MOR', 'KHC',
                             'KIS', 'CHM', 'LGS', 'MGR', 'COA', 'MPS', 'CUB']
@@ -160,6 +160,11 @@ def assemble_scene_id_list(ref_time, prow, sat, end_date, delta=16):
     while ref_time < end_date:
         scene_str = '{}{}{}{}{}'.format(sat, padded_pr, date_part, location, archive)
 
+        # recurse over string naming if version number switches
+        if not web_tools.verify_landsat_scene_exists(scene_str):
+            padded_pr, date_part, location, archive = find_valid_scene(ref_time, prow, sat)
+            scene_str = '{}{}{}{}{}'.format(sat, padded_pr, date_part, location, archive)
+
         print('add scene: {}, for {}'.format(scene_str,
                                              datetime.strftime(ref_time, '%Y-%m-%d')))
         scene_id_list.append(scene_str)
@@ -185,10 +190,12 @@ def get_candidate_scenes_list(path_row, sat_name, start_date, end_date):
 
     reference_overpass = web_tools.landsat_overpass_time(path_row,
                                                          start_date, sat_name)
-
-    scene_list = assemble_scene_id_list(reference_overpass, path_row, sat_name, end_date)
-    return scene_list
-
+    if reference_overpass:
+        scene_list = assemble_scene_id_list(reference_overpass, path_row, sat_name, end_date)
+        return scene_list
+    
+    else:
+        return None
 
 def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
     usgs_creds = get_credentials(usgs_creds_txt)
