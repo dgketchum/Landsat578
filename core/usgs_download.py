@@ -188,8 +188,9 @@ def get_candidate_scenes_list(path_row, sat_name, start_date, end_date):
     :return: reference overpass = str('YYYYDOY'), station str('XXX') len=3
     """
 
-    reference_overpass = web_tools.landsat_overpass_time(path_row,
-                                                         start_date, sat_name)
+    reference_overpass = web_tools.landsat_overpass_time(lndst_path_row=path_row,
+                                                         start_date=start_date,
+                                                         satellite=sat_name)
     if reference_overpass:
         scene_list = assemble_scene_id_list(reference_overpass, path_row, sat_name, end_date)
         return scene_list
