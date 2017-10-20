@@ -99,7 +99,6 @@ def get_l5_overpass_data(path, row, date):
 
 
 def landsat_overpass_time(lndst_path_row, start_date, satellite):
-
     delta = timedelta(days=20)
     end = start_date + delta
 
@@ -117,7 +116,7 @@ def landsat_overpass_time(lndst_path_row, start_date, satellite):
         elif satellite == 'LC8':
             sat_abv = 'L8'
 
-        base = 'https://core.usgs.gov/core/all_in_one_pending_acquisition/'
+        base = 'https://landsat.usgs.gov/landsat/all_in_one_pending_acquisition/'
         for day in rrule(DAILY, dtstart=start_date, until=end):
 
             tail = '{}/Pend_Acq/y{}/{}/{}.txt'.format(sat_abv, day.year,
@@ -143,7 +142,6 @@ def landsat_overpass_time(lndst_path_row, start_date, satellite):
                 except TypeError:
                     pass
 
-
         print('No overpass data within {} days of {} for {}, check your dates...'.format(delta,
                                                                                          sat_abv,
                                                                                          start_date))
@@ -151,8 +149,17 @@ def landsat_overpass_time(lndst_path_row, start_date, satellite):
 
 
 def convert_lat_lon_wrs2pr(lat, lon, conversion_type='convert_ll_to_pr'):
-    base = 'https://core.usgs.gov/core/lat_long_converter/tools_latlong.php'
-    unk_number = 1490995492704
+    """ 
+    :param lat: Latitude float
+    :param lon: Longitude float
+    :param conversion_type: 'convert_ll_to_pr' [coordinates to path, row]; 
+            'convert_pr_to_ll' [path, row to coordinates]
+    :return: lat, lon tuple or path, row tuple
+    """
+    base = 'https://landsat.usgs.gov/landsat/lat_long_converter/tools_latlong.php'
+    # I never figured out how to get unk_number programatically, and it changes,
+    # unknown parameter purpose
+    unk_number = 1508518830987
 
     if conversion_type == 'convert_ll_to_pr':
 
@@ -174,7 +181,6 @@ def convert_lat_lon_wrs2pr(lat, lon, conversion_type='convert_ll_to_pr'):
         print('path: {}, row: {}'.format(path, row))
 
         return path, row
-
     elif conversion_type == 'convert_pr_to_ll':
 
         full_url = '{}?rs={}&rsargs[]=\n' \

@@ -193,11 +193,12 @@ def get_candidate_scenes_list(path_row, sat_name, start_date, end_date):
     if reference_overpass:
         scene_list = assemble_scene_id_list(reference_overpass, path_row, sat_name, end_date)
         return scene_list
-    
+
     else:
         return None
 
-def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
+
+def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt, unzip=True):
     usgs_creds = get_credentials(usgs_creds_txt)
 
     for product in scene_list:
@@ -213,7 +214,8 @@ def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt):
         if len(os.listdir(scene_dir)) < 1:
             download_image(url, scene_dir, tgz_file, usgs_creds)
             print('image: {}'.format(os.path.join(scene_dir, tgz_file)))
-            unzip_image(tgz_file, scene_dir)
+            if unzip:
+                unzip_image(tgz_file, scene_dir)
         else:
             print('This image already exists at {}'.format(output_dir))
 

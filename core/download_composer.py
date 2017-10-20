@@ -16,6 +16,7 @@
 
 
 import os
+from datetime import datetime
 
 from core import usgs_download
 from core.web_tools import convert_lat_lon_wrs2pr
@@ -25,14 +26,10 @@ class InvalidPathRowData(Exception):
     pass
 
 
-def download_landsat(date_range, satellite, latitude=None, longitude=None,
-                     path_row_list=None,
-                     output_path=None, usgs_creds=None, dry_run=False):
-
-    start_date, end_date = date_range[0], date_range[1]
-
-    if path_row_list:
-        image_index = path_row_list
+def download_landsat(start, end, satellite, latitude=None, longitude=None, path=None, row=None, output_path=None,
+                     usgs_creds=None, dry_run=False, unzip=True):
+    if path:
+        image_index = path
 
     elif latitude and longitude:
         image_index = [convert_lat_lon_wrs2pr(latitude, longitude)]
@@ -44,14 +41,14 @@ def download_landsat(date_range, satellite, latitude=None, longitude=None,
 
         scenes_list = usgs_download.get_candidate_scenes_list(tile,
                                                               satellite,
-                                                              start_date,
-                                                              end_date)
+                                                              start,
+                                                              end)
         if not scenes_list:
             print('No scenes for {} between {} and {}.'.format(satellite,
-                                                               datetime.strftime(start_date, '%Y-doy %j'),
-                                                               datetime.strftime(end_date, '%Y-doy %j')))
+                                                               datetime.strftime(start, '%Y-doy %j'),
+                                                               datetime.strftime(end, '%Y-doy %j')))
             return None
-        
+
         elif dry_run:
 
             print(scenes_list)

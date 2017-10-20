@@ -14,9 +14,8 @@ if __name__ == '__main__':
     row = 27
     # latitude = 45.6
     # longitude = -107.9
-    download_composer.download_landsat((start, end), satellite,
-                                       path_row_list=[(path, row)],
-                                       output_path=output,
+    download_composer.download_landsat(start, end, satellite, path=path,
+                                       row=row, output_path=output,
                                        usgs_creds=usgs_creds)
 
 # ===============================================================================

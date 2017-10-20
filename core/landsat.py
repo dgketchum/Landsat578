@@ -48,7 +48,7 @@ def main(args):
             print('\nStarting download with latlon...')
             print(args)
             scenes = download_landsat(
-                (datetime.strptime(args.start, '%Y-%m-%d'), datetime.strptime(args.end, '%Y-%m-%d')),
+                (datetime.strptime(args.start, '%Y-%m-%d'), datetime.strptime(args.end, '%Y-%m-%d')), None,
                 args.satellite, latitude=args.lat, longitude=args.lon, output_path=args.output,
                 usgs_creds=args.credentials, dry_run=args.return_list)
 
@@ -58,9 +58,9 @@ def main(args):
             print('\nStarting download with pathrow...')
             print(args)
             scenes = download_landsat(
-                (datetime.strptime(args.start, '%Y-%m-%d'), datetime.strptime(args.end, '%Y-%m-%d')),
-                args.satellite, path_row_list=[(args.path, args.row)], output_path=args.output,
-                usgs_creds=args.credentials, dry_run=args.return_list)
+                (datetime.strptime(args.start, '%Y-%m-%d'), datetime.strptime(args.end, '%Y-%m-%d')), None,
+                args.satellite, path=[(args.path, args.row)], output_path=args.output, usgs_creds=args.credentials,
+                dry_run=args.return_list)
 
             return scenes
 
