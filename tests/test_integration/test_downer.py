@@ -41,21 +41,21 @@ class DownloadTestCase(unittest.TestCase):
                                          dry_run=True)
         self.assertEqual(self.known_scene, scene_list)
 
-    # can't run the download test on travis.
+        # can't run the download test on travis.
 
-    # def test_downloader(self):
-    #     dc.download_landsat((self.start, self.end),
-    #                         self.sat, output_path=self.output,
-    #                         usgs_creds=self.usgs_creds,
-    #                         path_row_list=[(self.path, self.row)],
-    #                         dry_run=False)
-    #     sub_folder = os.path.join(self.output, 'LT5_37_27', 'LT50370272007121PAC01')
-    #     files = os.listdir(sub_folder)
-    #     known = ['LT50370272007121PAC01_B1.TIF', 'LT50370272007121PAC01_B2.TIF', 'LT50370272007121PAC01_B3.TIF',
-    #              'LT50370272007121PAC01_B4.TIF', 'LT50370272007121PAC01_B5.TIF', 'LT50370272007121PAC01_B6.TIF',
-    #              'LT50370272007121PAC01_B7.TIF', 'LT50370272007121PAC01_GCP.txt', 'LT50370272007121PAC01_MTL.txt',
-    #              'LT50370272007121PAC01_VER.jpg', 'LT50370272007121PAC01_VER.txt', 'README.GTF']
-    #     self.assertEqual(files, known)
+        # def test_downloader(self):
+        #     dc.download_landsat((self.start, self.end),
+        #                         self.sat, output_path=self.output,
+        #                         usgs_creds=self.usgs_creds,
+        #                         path_row_list=[(self.path, self.row)],
+        #                         dry_run=False)
+        #     sub_folder = os.path.join(self.output, 'LT5_37_27', 'LT50370272007121PAC01')
+        #     files = os.listdir(sub_folder)
+        #     known = ['LT50370272007121PAC01_B1.TIF', 'LT50370272007121PAC01_B2.TIF', 'LT50370272007121PAC01_B3.TIF',
+        #              'LT50370272007121PAC01_B4.TIF', 'LT50370272007121PAC01_B5.TIF', 'LT50370272007121PAC01_B6.TIF',
+        #              'LT50370272007121PAC01_B7.TIF', 'LT50370272007121PAC01_GCP.txt', 'LT50370272007121PAC01_MTL.txt',
+        #              'LT50370272007121PAC01_VER.jpg', 'LT50370272007121PAC01_VER.txt', 'README.GTF']
+        #     self.assertEqual(files, known)
 
 
 if __name__ == '__main__':
