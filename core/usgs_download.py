@@ -176,6 +176,27 @@ def assemble_scene_id_list(ref_time, prow, sat, end_date, delta=16):
     return scene_id_list
 
 
+# def get_candidate_scenes_list(path_row, sat_name, start_date, end_date):
+#     """
+#
+#     :param path_row: path, datetime obj
+#     :param sat_name: 'LT5', 'LE7', or 'LC8'
+#     :param start_date: datetime object start image search
+#     :param end_date: datetime object finish image search
+#     :param max_cloud_cover: percent cloud cover according to USGS image metadata, float
+#     :param limit_scenes: max number scenese, int
+#     :return: reference overpass = str('YYYYDOY'), station str('XXX') len=3
+#     """
+#
+#     reference_overpass = web_tools.landsat_overpass_time(lndst_path_row=path_row,
+#                                                          start_date=start_date,
+#                                                          satellite=sat_name)
+#     if reference_overpass:
+#         scene_list = assemble_scene_id_list(reference_overpass, path_row, sat_name, end_date)
+#         return scene_list
+#
+#     else:
+#         return None
 def get_candidate_scenes_list(path_row, sat_name, start_date, end_date):
     """
     
@@ -188,15 +209,10 @@ def get_candidate_scenes_list(path_row, sat_name, start_date, end_date):
     :return: reference overpass = str('YYYYDOY'), station str('XXX') len=3
     """
 
-    reference_overpass = web_tools.landsat_overpass_time(lndst_path_row=path_row,
-                                                         start_date=start_date,
-                                                         satellite=sat_name)
-    if reference_overpass:
-        scene_list = assemble_scene_id_list(reference_overpass, path_row, sat_name, end_date)
-        return scene_list
 
-    else:
-        return None
+    pass
+
+
 
 
 def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt, zipped=False):
