@@ -36,7 +36,8 @@ class DownloadTestCase(unittest.TestCase):
         pass
 
     def test_scene_list(self):
-        scene_list = dc.download_landsat((self.start, self.end), None, self.sat, path=[(self.path, self.row)],
+        scene_list = dc.download_landsat(self.start, self.end, self.sat,
+                                         path=self.path, row=self.row,
                                          dry_run=True)
         self.assertEqual(self.known_scene, scene_list)
 
