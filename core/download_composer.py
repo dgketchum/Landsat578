@@ -26,8 +26,9 @@ class InvalidPathRowData(Exception):
     pass
 
 
-def download_landsat(start, end, satellite, latitude=None, longitude=None, path=None, row=None, output_path=None,
-                     usgs_creds=None, dry_run=False, unzip=True):
+def download_landsat(start, end, satellite, latitude=None, longitude=None,
+                     path=None, row=None, output_path=None,
+                     usgs_creds=None, dry_run=False, zipped=False):
     if path:
         image_index = [(path, row)]
 
@@ -45,8 +46,10 @@ def download_landsat(start, end, satellite, latitude=None, longitude=None, path=
                                                               end_date=end)
         if not scenes_list:
             print('No scenes for {} between {} and {}.'.format(satellite,
-                                                               datetime.strftime(start, '%Y-doy %j'),
-                                                               datetime.strftime(end, '%Y-doy %j')))
+                                                               datetime.strftime(start,
+                                                                                 '%Y-doy %j'),
+                                                               datetime.strftime(end,
+                                                                                 '%Y-doy %j')))
             return None
 
         elif dry_run:
@@ -64,8 +67,8 @@ def download_landsat(start, end, satellite, latitude=None, longitude=None, path=
                 print('making dir: {}'.format(destination_path))
                 os.mkdir(destination_path)
 
-            usgs_download.down_usgs_by_list(scenes_list,
-                                            destination_path, usgs_creds)
+            usgs_download.down_usgs_by_list(scenes_list, destination_path,
+                                            usgs_creds, zipped)
 
             return None
 

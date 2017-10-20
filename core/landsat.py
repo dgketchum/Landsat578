@@ -34,10 +34,12 @@ def create_parser():
     parser.add_argument('--path', help='The path')
     parser.add_argument('--row', help='The row')
     parser.add_argument('-o', '--output', help='Output directory')
-    parser.add_argument('--credentials',
+    parser.add_argument('-c', '--credentials',
                         help='Path to a text file with USGS credentials with one space between <username password>')
     parser.add_argument('--return-list', help='Just return list of images without downloading', action='store_true',
                         default=False)
+    parser.add_argument('--zipped', help='Download .tar.gz file(s), without unzipping',
+                        action='store_true', default=False)
 
     return parser
 
@@ -50,7 +52,7 @@ def main(args):
             scenes = download_landsat(
                 datetime.strptime(args.start, '%Y-%m-%d'), datetime.strptime(args.end, '%Y-%m-%d'),
                 args.satellite, latitude=args.lat, longitude=args.lon, output_path=args.output,
-                usgs_creds=args.credentials, dry_run=args.return_list)
+                usgs_creds=args.credentials, dry_run=args.return_list, zipped=args.zipped)
 
             return scenes
 
@@ -60,7 +62,7 @@ def main(args):
             scenes = download_landsat(
                 datetime.strptime(args.start, '%Y-%m-%d'), datetime.strptime(args.end, '%Y-%m-%d'),
                 args.satellite, path=args.path, row=args.row, output_path=args.output, usgs_creds=args.credentials,
-                dry_run=args.return_list)
+                dry_run=args.return_list, zipped=args.zipped)
 
             return scenes
 
