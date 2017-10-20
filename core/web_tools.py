@@ -180,7 +180,7 @@ def convert_lat_lon_wrs2pr(lat, lon, conversion_type='convert_ll_to_pr'):
         full_url = '{}?rs={}&rsargs[]=\n' \
                    '{}&rsargs[]={}&rsargs[]=1&rsrnd={}'.format(base, conversion_type,
                                                                lat, lon, unk_number)
-
+        # this needs to depend on something other than USGS
         r = requests.get(full_url)
         tree = html.fromstring(r.text)
 
