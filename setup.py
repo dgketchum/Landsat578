@@ -23,7 +23,7 @@ os.environ['TRAVIS_CI'] = 'True'
 try:
     from setuptools import setup
 
-    setup_kwargs = {'entry_points': {'console_scripts': ['core=core.core:__main__']}}
+    setup_kwargs = {'entry_points': {'console_scripts': ['landsat=core.landsat:__main__']}}
 except ImportError:
     from distutils.core import setup
 
@@ -43,7 +43,7 @@ setup(name='Landsat578',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.6'],
-      keywords='core download hydrology remote sensing',
+      keywords='landsat download hydrology remote sensing',
       author='David Ketchum',
       author_email='dgketchum@gmail.com',
       platforms='Posix; MacOS X; Windows',
@@ -52,7 +52,7 @@ setup(name='Landsat578',
       url='https://github.com/dgketchum',
       test_suite='tests.test_suite.suite', install_requires=['lxml', 'numpy', 'pandas',
                                                              'python-dateutil', 'pytz',
-                                                             'requests', 'six'],
+                                                             'requests', 'six', 'future'],
       **setup_kwargs)
 
 # ============= EOF ==============================================================

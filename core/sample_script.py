@@ -8,7 +8,7 @@ if __name__ == '__main__':
     start = datetime(2015, 6, 1)
     end = datetime(2015, 6, 10)
     satellite = 'LC8'
-    output = os.path.join(home, 'images', 'LC8', 'cloud_test')
+    output = os.path.join(home, 'images', 'sandbox', 'nonexistent')
     usgs_creds = os.path.join(home, 'images', 'usgs.txt')
     path = 41
     row = 27

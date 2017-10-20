@@ -65,7 +65,7 @@ def download_landsat(start, end, satellite, latitude=None, longitude=None,
 
             if not os.path.exists(destination_path):
                 print('making dir: {}'.format(destination_path))
-                os.mkdir(destination_path)
+                os.makedirs(destination_path)
 
             usgs_download.down_usgs_by_list(scenes_list, destination_path,
                                             usgs_creds, zipped)

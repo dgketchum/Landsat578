@@ -15,15 +15,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ===============================================================================
-
+import os
 import argparse
 from datetime import datetime
+import sys
 
-from core.download_composer import download_landsat
+try:
+    from core.download_composer import download_landsat
+except ImportError:
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from core.download_composer import download_landsat
 
 
 def create_parser():
-
     parser = argparse.ArgumentParser(prog='core', description='Download and unzip core data.')
 
     parser.add_argument('satellite', help='Satellite name: LT5, LE7, or LC8')
@@ -71,7 +75,6 @@ def main(args):
 
 
 def __main__():
-
     global parser
     parser = create_parser()
     args = parser.parse_args()
