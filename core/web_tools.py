@@ -124,9 +124,11 @@ def landsat_overpass_time(lndst_path_row, start_date, satellite):
                                                       day.strftime('%b-%d-%Y'))
 
             url = '{}{}'.format(base, tail)
-            r = requests.get(url).text
-
-            for line in r.splitlines():
+            r = requests.get(url)
+            if r.status_code > 399:
+                continue
+            txt = r.text
+            for line in txt.splitlines():
                 l = line.split()
                 try:
                     if l[0] == str(lndst_path_row[0]):
