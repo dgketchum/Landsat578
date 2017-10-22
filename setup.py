@@ -50,9 +50,9 @@ setup(name='Landsat578',
       packages=['core'],
       download_url='https://github.com/{}/{}/archive/{}.tar.gz'.format('dgketchum', 'Landsat578', tag),
       url='https://github.com/dgketchum',
-      test_suite='tests.test_suite.suite', install_requires=['lxml', 'numpy', 'pandas',
+      test_suite='tests.test_suite.suite', install_requires=['lxml', 'numpy', 'pandas', 'pyyaml',
                                                              'python-dateutil', 'pytz',
-                                                             'requests', 'six', 'future'],
+                                                             'requests', 'six', 'future', 'yaml'],
       **setup_kwargs)
 
 # ============= EOF ==============================================================
