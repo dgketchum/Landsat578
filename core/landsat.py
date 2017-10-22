@@ -44,47 +44,52 @@ def create_parser():
                         default=False)
     parser.add_argument('--zipped', help='Download .tar.gz file(s), without unzipping',
                         action='store_true', default=False)
+    parser.add_argument('--file', help='')
 
     return parser
 
 
-def main(args):
-    if args:
-        if args.lat:
-            print('\nStarting download with latlon...')
-            print(args)
-            scenes = download_landsat(
-                datetime.strptime(args.start, '%Y-%m-%d'), datetime.strptime(args.end, '%Y-%m-%d'),
-                args.satellite, latitude=args.lat, longitude=args.lon, output_path=args.output,
-                usgs_creds=args.credentials, dry_run=args.return_list, zipped=args.zipped)
-
-            return scenes
-
-        elif args.path:
-            print('\nStarting download with pathrow...')
-            print(args)
-            scenes = download_landsat(
-                datetime.strptime(args.start, '%Y-%m-%d'), datetime.strptime(args.end, '%Y-%m-%d'),
-                args.satellite, path=args.path, row=args.row, output_path=args.output, usgs_creds=args.credentials,
-                dry_run=args.return_list, zipped=args.zipped)
-
-            return scenes
-
-        else:
-            raise NotImplementedError('Was not executed.')
-
-
-def __main__():
-    global parser
+def main():
     parser = create_parser()
     args = parser.parse_args()
-    exit(main(args))
+
+    if args:
+        print(args)
+
+        fmt = '%Y-%m-%d'
+        start = datetime.strptime(args.start, fmt)
+        end = datetime.strptime(args.end, fmt)
+
+        cfg = {'output_path': args.output,
+               'usgs_cred': args.credentials,
+               'dry_run': args.return_list,
+               'zipped': args.zipped}
+
+        if args.file:
+            print('\nStarting download with configuration file {}'.format(args.file))
+            with open(args.file, 'r') as rfile:
+                ycfg = yaml.load(rfile)
+                cfg.update(ycfg)
+        elif args.lat:
+            print('\nStarting download with latlon...')
+            cfg['latitude'] = args.lat
+            cfg['longitude'] = args.lon
+        elif args.path:
+            print('\nStarting download with pathrow...')
+            cfg['path'] = args.path
+            cfg['row'] = args.row
+
+        else:
+            print 'invalid args. Need to specify at least one of the following: path, lat or file'
+            return
+
+        scenes = download_landsat(start, end, sat, **cfg)
+        return scenes
 
 
 if __name__ == '__main__':
     try:
-        __main__()
-
+        main()
     except KeyboardInterrupt:
         exit(1)
 
