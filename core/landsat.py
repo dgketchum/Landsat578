@@ -55,10 +55,7 @@ def create_parser():
     return parser
 
 
-def main():
-    parser = create_parser()
-    args = parser.parse_args()
-
+def main(args):
     if args:
         print(args)
 
@@ -93,10 +90,13 @@ def main():
         return scenes
 
 
+def cli_runner():
+    parser = create_parser()
+    args = parser.parse_args()
+    return main(args)
+
+
 if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        exit(1)
+    cli_runner()
 
 # ===============================================================================
