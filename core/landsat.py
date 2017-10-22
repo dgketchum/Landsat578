@@ -17,8 +17,10 @@
 # ===============================================================================
 import os
 import argparse
-from datetime import datetime
 import sys
+import yaml
+from datetime import datetime
+
 
 try:
     from core.download_composer import download_landsat
