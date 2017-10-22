@@ -89,7 +89,7 @@ def main(args):
 def cli_runner():
     parser = create_parser()
     args = parser.parse_args()
-    return landsat(args)
+    return main(args)
 
 
 if __name__ == '__main__':
