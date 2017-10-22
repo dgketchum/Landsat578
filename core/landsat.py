@@ -62,9 +62,10 @@ def main(args):
         fmt = '%Y-%m-%d'
         start = datetime.strptime(args.start, fmt)
         end = datetime.strptime(args.end, fmt)
+        sat = args.satellite
 
         cfg = {'output_path': args.output,
-               'usgs_cred': args.credentials,
+               'usgs_creds': args.credentials,
                'dry_run': args.return_list,
                'zipped': args.zipped}
 
@@ -73,17 +74,17 @@ def main(args):
             with open(args.file, 'r') as rfile:
                 ycfg = yaml.load(rfile)
                 cfg.update(ycfg)
-        elif args.lat:
+        elif args.latitude:
             print('\nStarting download with latlon...')
-            cfg['latitude'] = args.lat
-            cfg['longitude'] = args.lon
+            cfg['latitude'] = args.latitude
+            cfg['longitude'] = args.longitude
         elif args.path:
             print('\nStarting download with pathrow...')
             cfg['path'] = args.path
             cfg['row'] = args.row
 
         else:
-            print 'invalid args. Need to specify at least one of the following: path, lat or file'
+            print('invalid args. Need to specify at least one of the following: path, lat or file')
             return
 
         scenes = download_landsat(start, end, sat, **cfg)
