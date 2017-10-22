@@ -33,17 +33,19 @@ def create_parser():
     parser.add_argument('satellite', help='Satellite name: LT5, LE7, or LC8')
     parser.add_argument('start', help='Start date in format YYYY-MM-DD')
     parser.add_argument('end', help='End date in format YYYY-MM-DD')
-    parser.add_argument('--lat', help='Latitude, decimal degrees', type=str)
-    parser.add_argument('--lon', help='Longitude, decimal degrees', type=str)
-    parser.add_argument('--path', help='The path')
-    parser.add_argument('--row', help='The row')
+    parser.add_argument('-lat', '--latitude', help='Latitude, decimal degrees', type=str)
+    parser.add_argument('-lon', '--longitude', help='Longitude, decimal degrees', type=str)
+    parser.add_argument('-p', '--path', help='The path')
+    parser.add_argument('-r', '--row', help='The row')
     parser.add_argument('-o', '--output', help='Output directory')
     parser.add_argument('-cred', '--credentials',
                         help='Path to a text file with USGS credentials with one space between <username password>')
+
     parser.add_argument('-conf', '--configuration', help='Path to your configuration file. If a directory is provided,'
                                                          'a template cofiguration file will be created there.')
     parser.add_argument('--return-list', help='Just return list of images without downloading', action='store_true',
                         default=False)
+
     parser.add_argument('--zipped', help='Download .tar.gz file(s), without unzipping',
                         action='store_true', default=False)
 
