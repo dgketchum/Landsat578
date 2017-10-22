@@ -17,7 +17,6 @@ import unittest
 from datetime import datetime
 
 from core import usgs_download as usgs
-from core import web_tools as wt
 
 
 class USGSLandstatTestCase(unittest.TestCase):
@@ -25,28 +24,39 @@ class USGSLandstatTestCase(unittest.TestCase):
         self.start_7, self.end_7 = datetime(2007, 5, 1), datetime(2007, 5, 31)
         self.start_14, self.end_14 = datetime(2014, 5, 1), datetime(2014, 5, 31)
         self.lat, self.lon = 47.4545, -107.9514
-        self.known_pathrow = 37, 27
+        self.path, self.row = 37, 27
         # test for acquisition month of May, 2007 (L5, L7), 2024 (L8).
-        self.known_l5_scene = ['LT50370272007121PAC01', 'LT50370272007137PAC01']
-        self.known_l7_scene = ['LE70370272007129EDC00', 'LE70370272007145EDC00']
-        self.known_l8_scene = ['LC80370272014124LGN01', 'LC80370272014140LGN01']
+        self.known_l5_scene = ['LT50370272007137PAC01', 'LT50370272007121PAC01']
+        self.known_l7_scene = ['LE70370272007145EDC00', 'LE70370272007129EDC00']
+        self.known_l8_scene = ['LC80370272014140LGN01', 'LC80370272014124LGN01']
 
     def tearDown(self):
         pass
 
     def test_find_scenes_by_pathrow(self):
-        l5_scenes = usgs.get_candidate_scenes_list(self.known_pathrow, 'LT5', self.start_7, self.end_7)
-        l7_scenes = usgs.get_candidate_scenes_list(self.known_pathrow, 'LE7', self.start_7, self.end_7)
-        l8_scenes = usgs.get_candidate_scenes_list(self.known_pathrow, 'LC8', self.start_14, self.end_14)
+        l5_scenes = usgs.get_candidate_scenes_list(path=self.path, row=self.row, sat_name='LT5',
+                                                   start_date=self.start_7, end_date=self.end_7,
+                                                   max_cloud_cover=100)
+        l7_scenes = usgs.get_candidate_scenes_list(path=self.path, row=self.row, sat_name='LE7',
+                                                   start_date=self.start_7, end_date=self.end_7,
+                                                   max_cloud_cover=100)
+        l8_scenes = usgs.get_candidate_scenes_list(path=self.path, row=self.row, sat_name='LC8',
+                                                   start_date=self.start_14, end_date=self.end_14,
+                                                   max_cloud_cover=100)
         self.assertEqual(l5_scenes, self.known_l5_scene)
         self.assertEqual(l7_scenes, self.known_l7_scene)
         self.assertEqual(l8_scenes, self.known_l8_scene)
 
     def test_find_scenes_by_latlon(self):
-        ll = wt.convert_lat_lon_wrs2pr(self.lat, self.lon, conversion_type='convert_ll_to_pr')
-        l5_scenes = usgs.get_candidate_scenes_list(ll, 'LT5', self.start_7, self.end_7)
-        l7_scenes = usgs.get_candidate_scenes_list(ll, 'LE7', self.start_7, self.end_7)
-        l8_scenes = usgs.get_candidate_scenes_list(ll, 'LC8', self.start_14, self.end_14)
+        l5_scenes = usgs.get_candidate_scenes_list(path=self.path, row=self.row, sat_name='LT5',
+                                                   start_date=self.start_7, end_date=self.end_7,
+                                                   max_cloud_cover=100)
+        l7_scenes = usgs.get_candidate_scenes_list(path=self.path, row=self.row, sat_name='LE7',
+                                                   start_date=self.start_7, end_date=self.end_7,
+                                                   max_cloud_cover=100)
+        l8_scenes = usgs.get_candidate_scenes_list(path=self.path, row=self.row, sat_name='LC8',
+                                                   start_date=self.start_14, end_date=self.end_14,
+                                                   max_cloud_cover=100)
         self.assertEqual(l5_scenes, self.known_l5_scene)
         self.assertEqual(l7_scenes, self.known_l7_scene)
         self.assertEqual(l8_scenes, self.known_l8_scene)

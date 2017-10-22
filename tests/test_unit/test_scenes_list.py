@@ -17,10 +17,10 @@
 import unittest
 from datetime import datetime
 
-from core.usgs_download import get_candidate_scenes_url_list
+from core.usgs_download import get_candidate_scenes_list
 
 
-class MyTestCase(unittest.TestCase):
+class ScenesListTestCase(unittest.TestCase):
     def setUp(self):
         # known overpasses for pr 37, 27
         self.path, self.row = 37, 27
@@ -38,19 +38,19 @@ class MyTestCase(unittest.TestCase):
                                'LE70430331999181EDC00']
 
     def test_get_scenes_list(self):
-        scenes = get_candidate_scenes_url_list(path=self.path, row=self.row,
-                                               sat_name='LE7',
-                                               start_date=self.search_start,
-                                               end_date=self.search_end)
+        scenes = get_candidate_scenes_list(path=self.path, row=self.row,
+                                           sat_name='LE7',
+                                           start_date=self.search_start,
+                                           end_date=self.search_end)
 
         self.assertEqual(scenes, self.le7_known)
 
     def test_get_scenes_early_l7(self):
-        scenes = get_candidate_scenes_url_list(path=self.early_test_path,
-                                               row=self.early_test_row,
-                                               sat_name='LE7',
-                                               start_date=self.early_start,
-                                               end_date=self.early_end)
+        scenes = get_candidate_scenes_list(path=self.early_test_path,
+                                           row=self.early_test_row,
+                                           sat_name='LE7',
+                                           start_date=self.early_start,
+                                           end_date=self.early_end)
         self.assertEqual(scenes, self.early_known_l7)
 
 

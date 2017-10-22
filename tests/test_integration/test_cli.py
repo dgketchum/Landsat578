@@ -51,6 +51,7 @@ class CommandLineTestCase(unittest.TestCase):
                      '--lat', str(self.lat), '--lon', str(self.lon)]
         args = self.parser.parse_args(args_list)
         scenes = main(args)
+        scenes.reverse()
         self.assertEqual(scenes, self.scene_list)
 
     def test_path_row(self):
@@ -59,6 +60,7 @@ class CommandLineTestCase(unittest.TestCase):
                      '--path', str(self.path), '--row', str(self.row)]
         args = self.parser.parse_args(args_list)
         scenes = main(args)
+        scenes.reverse()
         self.assertEqual(scenes, self.scene_list)
 
 
