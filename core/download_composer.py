@@ -28,49 +28,46 @@ class InvalidPathRowData(Exception):
 
 def download_landsat(start, end, satellite, latitude=None, longitude=None,
                      path=None, row=None, output_path=None,
-                     usgs_creds=None, dry_run=False, zipped=False):
+                     usgs_creds=None, dry_run=False, zipped=False, max_cloud=70):
     if path:
-        image_index = [(path, row)]
+        pass
 
     elif latitude and longitude:
-        image_index = [convert_lat_lon_wrs2pr(latitude, longitude)]
+        path, row = convert_lat_lon_wrs2pr(latitude, longitude)
 
     else:
         raise InvalidPathRowData('Must give path/row tuple, lat/lon tuple plus row/path \n'
                                  'shapefile, or a path/rows shapefile!')
-    for tile in image_index:
 
-        scenes_list = usgs_download.get_candidate_scenes_list(path_row=tile,
-                                                              sat_name=satellite,
-                                                              start_date=start,
-                                                              end_date=end)
-        if not scenes_list:
-            print('No scenes for {} between {} and {}.'.format(satellite,
-                                                               datetime.strftime(start,
-                                                                                 '%Y-doy %j'),
-                                                               datetime.strftime(end,
-                                                                                 '%Y-doy %j')))
-            return None
+    scenes_list = usgs_download.get_candidate_scenes_list(path=path, row=row, sat_name=satellite, start_date=start,
+                                                          end_date=end, max_cloud_cover=max_cloud)
+    if not scenes_list:
+        print('No scenes for {} between {} and {}.'.format(satellite,
+                                                           datetime.strftime(start,
+                                                                             '%Y-doy %j'),
+                                                           datetime.strftime(end,
+                                                                             '%Y-doy %j')))
+        return None
 
-        elif dry_run:
+    elif dry_run:
 
-            print(scenes_list)
+        print(scenes_list)
 
-            return scenes_list
+        return scenes_list
 
-        else:
+    else:
 
-            destination_path = os.path.join(output_path, '{}_{}_{}'.format(
-                satellite, tile[0], tile[1]))
+        destination_path = os.path.join(output_path, '{}_{}_{}'.format(
+            satellite, path, row))
 
-            if not os.path.exists(destination_path):
-                print('making dir: {}'.format(destination_path))
-                os.makedirs(destination_path)
+        if not os.path.exists(destination_path):
+            print('making dir: {}'.format(destination_path))
+            os.makedirs(destination_path)
 
-            usgs_download.down_usgs_by_list(scenes_list, destination_path,
-                                            usgs_creds, zipped)
+        usgs_download.down_usgs_by_list(scenes_list, destination_path,
+                                        usgs_creds, zipped)
 
-            return None
+        return None
 
 
 if __name__ == 'main':
