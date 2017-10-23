@@ -41,37 +41,6 @@ class WebToolsTestCase(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_verify_landsat_scene(self):
-        self.assertNotEqual(web_tools.verify_landsat_scene_exists(self.known_scene_l5),
-                            web_tools.verify_landsat_scene_exists(self.bad_scene5))
-        self.assertNotEqual(web_tools.verify_landsat_scene_exists(self.known_scene_l7),
-                            web_tools.verify_landsat_scene_exists(self.bad_scene7))
-        self.assertNotEqual(web_tools.verify_landsat_scene_exists(self.known_scene_l8),
-                            web_tools.verify_landsat_scene_exists(self.bad_scene8))
-
-        self.assertTrue(web_tools.verify_landsat_scene_exists(self.known_scene_l5))
-        self.assertTrue(web_tools.verify_landsat_scene_exists(self.known_scene_l7))
-        self.assertTrue(web_tools.verify_landsat_scene_exists(self.known_scene_l8))
-
-    def test_l5_overpass_get(self):
-        expect = web_tools.get_l5_overpass_data(self.path, self.row, self.search_start)
-        known = self.overpass_l5
-        self.assertEqual((known.year, known.month, known.day),
-                         (expect.year, expect.month, expect.day))
-
-    def test_landsat_overpass_time(self):
-        sats = ['LT5', 'LE7', 'LC8']
-        knowns = [self.overpass_l5, self.overpass_l7, self.overpass_l8]
-        for sat, known in zip(sats, knowns):
-            if sat == 'LC8':
-                start = datetime(2014, 5, 16)
-            else:
-                start = self.search_start
-
-            expect = web_tools.landsat_overpass_time((self.path, self.row), start, sat)
-            self.assertEqual((known.year, known.month, known.day),
-                             (expect.year, expect.month, expect.day))
-
     def test_wrs2_latlon_convert(self):
         expect_latlon = web_tools.convert_lat_lon_wrs2pr(self.path, self.row, conversion_type='convert_pr_to_ll')
         self.assertEqual(self.lat, expect_latlon[0])

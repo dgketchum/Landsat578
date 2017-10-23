@@ -30,7 +30,7 @@ class DownloadTestCase(unittest.TestCase):
         self.output = os.path.join(self.home, 'images', 'sandbox', 'downer')
         self.usgs_creds = os.path.join(self.home, 'images', 'usgs.txt')
         self.path, self.row = 37, 27
-        self.known_scene = ['LT50370272007121PAC01', 'LT50370272007137PAC01']
+        self.known_scene = ['LT50370272007137PAC01', 'LT50370272007121PAC01']
 
     def tearDown(self):
         pass
