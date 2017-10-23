@@ -60,11 +60,7 @@ def main(args):
         end = datetime.strptime(args.end, fmt)
         sat = args.satellite
 
-        output = args.output
-        if output is None:
-            output = os.getcwd()
-
-        cfg = {'output_path': output,
+        cfg = {'output_path': args.output,
                'usgs_cred': args.credentials,
                'dry_run': args.return_list,
                'zipped': args.zipped}
