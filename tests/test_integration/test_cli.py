@@ -64,6 +64,7 @@ class CommandLineTestCase(unittest.TestCase):
         self.assertEqual(scenes, self.scene_list)
 
     def test_config(self):
+        # TODO: add config file download run tests
         pass
 
 if __name__ == '__main__':
