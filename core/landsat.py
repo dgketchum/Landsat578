@@ -58,6 +58,7 @@ def main(args):
         fmt = '%Y-%m-%d'
         start = datetime.strptime(args.start, fmt)
         end = datetime.strptime(args.end, fmt)
+        sat = args.satellite
 
         cfg = {'output_path': args.output,
                'usgs_cred': args.credentials,
@@ -79,7 +80,7 @@ def main(args):
             cfg['row'] = args.row
 
         else:
-            print 'invalid args. Need to specify at least one of the following: path, lat or file'
+            print('invalid args. Need to specify at least one of the following: path, lat or file')
             return
 
         scenes = download_landsat(start, end, sat, **cfg)

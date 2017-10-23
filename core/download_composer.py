@@ -50,7 +50,6 @@ def download_landsat(start, end, satellite, latitude=None, longitude=None,
                                                                                  '%Y-doy %j'),
                                                                datetime.strftime(end,
                                                                                  '%Y-doy %j')))
-            return None
 
         elif dry_run:
 
@@ -59,18 +58,23 @@ def download_landsat(start, end, satellite, latitude=None, longitude=None,
             return scenes_list
 
         else:
+            if output_path is None:
+                output_path = os.getcwd()
+                print('using current working dir as output_path={}'.format(output_path))
 
-            destination_path = os.path.join(output_path, '{}_{}_{}'.format(
-                satellite, tile[0], tile[1]))
+            if os.path.isdir(output_path):
+                destination_path = os.path.join(output_path, '{}_{}_{}'.format(
+                    satellite, tile[0], tile[1]))
 
-            if not os.path.exists(destination_path):
-                print('making dir: {}'.format(destination_path))
-                os.makedirs(destination_path)
+                if not os.path.exists(destination_path):
+                    print('making dir: {}'.format(destination_path))
+                    os.makedirs(destination_path)
 
-            usgs_download.down_usgs_by_list(scenes_list, destination_path,
-                                            usgs_creds, zipped)
+                usgs_download.down_usgs_by_list(scenes_list, destination_path,
+                                                usgs_creds, zipped)
+            else:
+                print('invalid output directory. "{}" does not exist'.format(output_path))
 
-            return None
 
 
 if __name__ == 'main':
