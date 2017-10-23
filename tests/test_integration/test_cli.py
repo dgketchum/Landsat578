@@ -63,6 +63,8 @@ class CommandLineTestCase(unittest.TestCase):
         scenes.reverse()
         self.assertEqual(scenes, self.scene_list)
 
+    def test_config(self):
+        pass
 
 if __name__ == '__main__':
     unittest.main()
