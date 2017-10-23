@@ -5,10 +5,8 @@
     <orderEntry type="jdk" jdkName="Python 3.6.2 (~/anaconda2/envs/lstdowner/bin/python3.6)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
-  <component name="PackageRequirementsSettings">
-    <option name="requirementsPath" value="" />
-  </component>
   <component name="TestRunnerService">
-    <option name="PROJECT_TEST_RUNNER" value="Unittests" />
+    <option name="projectConfiguration" value="Nosetests" />
+    <option name="PROJECT_TEST_RUNNER" value="Nosetests" />
   </component>
 </module>

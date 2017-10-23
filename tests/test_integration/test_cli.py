@@ -18,7 +18,7 @@ import unittest
 
 import pkg_resources
 
-from core.landsat import create_parser, main
+from landsat.landsat import create_parser, main
 
 
 class CommandLineTestCase(unittest.TestCase):
@@ -51,7 +51,6 @@ class CommandLineTestCase(unittest.TestCase):
                      '--lat', str(self.lat), '--lon', str(self.lon)]
         args = self.parser.parse_args(args_list)
         scenes = main(args)
-        scenes.reverse()
         self.assertEqual(scenes, self.scene_list)
 
     def test_path_row(self):
@@ -60,12 +59,7 @@ class CommandLineTestCase(unittest.TestCase):
                      '--path', str(self.path), '--row', str(self.row)]
         args = self.parser.parse_args(args_list)
         scenes = main(args)
-        scenes.reverse()
         self.assertEqual(scenes, self.scene_list)
-
-    def test_config_file(self):
-        # TODO: add test for a config file input
-        pass
 
 
 if __name__ == '__main__':
