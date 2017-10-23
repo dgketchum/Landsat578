@@ -80,7 +80,7 @@ def main(args):
             cfg['row'] = args.row
 
         else:
-            print 'invalid args. Need to specify at least one of the following: path, lat or file'
+            print('invalid args. Need to specify at least one of the following: path, lat or file')
             return
 
         scenes = download_landsat(start, end, sat, **cfg)
