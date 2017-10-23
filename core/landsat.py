@@ -58,8 +58,13 @@ def main(args):
         fmt = '%Y-%m-%d'
         start = datetime.strptime(args.start, fmt)
         end = datetime.strptime(args.end, fmt)
+        sat = args.satellite
 
-        cfg = {'output_path': args.output,
+        output = args.output
+        if output is None:
+            output = os.getcwd()
+
+        cfg = {'output_path': output,
                'usgs_cred': args.credentials,
                'dry_run': args.return_list,
                'zipped': args.zipped}
