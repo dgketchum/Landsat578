@@ -116,12 +116,12 @@ def get_candidate_scenes_list(path, row, sat_name, start_date, end_date, max_clo
     start = start_date.strftime('%Y-%m-%d')
     end = end_date.strftime('%Y-%m-%d')
     meta_url = 'https://earthexplorer.usgs.gov/EE/InventoryStream/'
-    query = 'pathrow?start_path={a}&end_path={a}&start_row={b}&end_row={b}&sensor={c}&' \
-            'start_date={d}&end_date={e}&format=CSV'.format(a=path,
-                                                            b=row,
-                                                            c=sensor,
-                                                            d=start,
-                                                            e=end)
+    query = 'pathrow?start_path={path}&end_path={path}&start_row={row}&end_row={row}&sensor={sensor}&' \
+            'start_date={start}&end_date={end}&format=CSV'.format(path=path,
+                                                                  row=row,
+                                                                  sensor=sensor,
+                                                                  start=start,
+                                                                  end=end)
     url = '{}{}'.format(meta_url, query)
     csv = read_csv(url, header=0)
     csv = csv[csv['cloudCoverFull'] <= max_cloud_cover]

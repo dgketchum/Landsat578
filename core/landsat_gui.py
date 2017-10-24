@@ -14,10 +14,26 @@
 # limitations under the License.
 # ===============================================================================
 import time
-from traits.api import HasTraits, Enum, Date, Button, Str
+from traits.api import HasTraits, Enum, Date, Button, Str, BaseFloat, Bool, Directory, Int, Property
 from traitsui.api import View, Item, UItem, Controller, VGroup, HGroup, TextEditor
 
 from core.download_composer import download_landsat
+
+
+class LatFloat(BaseFloat):
+    def validate(self, obj, name, value):
+        if value > 90 or value < -90:
+            return self.error(obj, name, value)
+        else:
+            return value
+
+
+class LonFloat(BaseFloat):
+    def validate(self, obj, name, value):
+        if value > 180 or value < -180:
+            return self.error(obj, name, value)
+        else:
+            return value
 
 
 # here is a gui down in a true MVC pattern.  See passed EOF for shortened form
@@ -26,10 +42,37 @@ class LandsatDownloadModel(HasTraits):
     start_date = Date
     end_date = Date
     log_txt = Str
+    lat = LatFloat
+    lon = LonFloat
+    latlon_enabled = Bool
+    output_path = Directory
+    pathrow_enabled = Bool
+    path = Int
+    row = Int
+    download_enabled = Property(depends_on='latlon_enabled, pathrow_enabled')
+
+    def _get_download_enabled(self):
+        return self.pathrow_enabled or self.latlon_enabled
+
+    def _latlon_enabled_changed(self, new):
+        if new:
+            self.pathrow_enabled = False
+
+    def _pathrow_enabled_changed(self, new):
+        if new:
+            self.latlon_enabled = False
 
     def do_download(self):
         self._log('starting download start={}, end={}, sat={}'.format(self.start_date, self.end_date, self.satellite))
-        download_landsat(self.start_date, self.end_date, self.satellite)
+        kw = {}
+        if self.latlon_enabled:
+            kw['lat'] = self.lat
+            kw['lon'] = self.lon
+
+        if self.output_path:
+            kw['output_path'] = self.output_path
+
+        download_landsat(self.start_date, self.end_date, self.satellite, **kw)
         self._log('download finished')
 
     def _log(self, msg):
@@ -46,16 +89,24 @@ class LandsatController(Controller):
 
 
 LANDSAT_VIEW = View(VGroup(VGroup(Item('satellite'), show_border=True, label='General'),
-                           VGroup(UItem('start_date', style='custom'), show_border=True, label='Start'),
-                           VGroup(UItem('end_date', style='custom'), show_border=True, label='End')),
-                    UItem('controller.download_button'),
+                           HGroup(VGroup(UItem('start_date', style='custom'), show_border=True, label='Start'),
+                                  VGroup(UItem('end_date', style='custom'), show_border=True, label='End'))),
+                    HGroup(UItem('latlon_enabled'),
+                           Item('lat', label='Latitude', enabled_when='latlon_enabled'),
+                           Item('lon', label='Longitude', enabled_when='latlon_enabled'),
+                           label='LatLon',
+                           show_border=True),
+                    HGroup(UItem('pathrow_enabled'),
+                           Item('path'), Item('row'),
+                           show_border=True, label='PathRow'),
+                    HGroup(Item('output_path'), show_border=True),
+                    UItem('controller.download_button', enabled_when='download_enabled'),
                     VGroup(UItem('log_txt', style='custom',
                                  editor=TextEditor(read_only=True)),
                            show_border=True, label='Log'),
                     resizable=True,
                     width=0.5,
-                    title='Configure Landsat Downloader',
-                    buttons=['OK', 'Cancel'])
+                    title='Configure Landsat Downloader')
 
 if __name__ == '__main__':
     m = LandsatDownloadModel()

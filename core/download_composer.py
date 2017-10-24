@@ -41,12 +41,13 @@ def download_landsat(start, end, satellite, latitude=None, longitude=None,
 
     scenes_list = usgs_download.get_candidate_scenes_list(path=path, row=row, sat_name=satellite, start_date=start,
                                                           end_date=end, max_cloud_cover=max_cloud)
+    fmt = '%Y-doy %j'
     if not scenes_list:
         print('No scenes for {} between {} and {}.'.format(satellite,
-                                                           datetime.strftime(start,
-                                                                             '%Y-doy %j'),
-                                                           datetime.strftime(end,
-                                                                             '%Y-doy %j')))
+                                                           start.strftimer(fmt),
+                                                           end.strftime(fmt)))
+                                                           # datetime.strftime(start, fmt),
+                                                           # datetime.strftime(end, fmt)))
         return None
 
     elif dry_run:
@@ -56,11 +57,13 @@ def download_landsat(start, end, satellite, latitude=None, longitude=None,
         return scenes_list
 
     else:
+        if output_path is None:
+            output_path = os.getcwd()
 
         destination_path = os.path.join(output_path, '{}_{}_{}'.format(
             satellite, path, row))
 
-        if not os.path.exists(destination_path):
+        if not os.path.isdir(destination_path):
             print('making dir: {}'.format(destination_path))
             os.makedirs(destination_path)
 
