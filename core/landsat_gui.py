@@ -13,8 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ===============================================================================
-from traits.api import HasTraits, Enum, Date, Button
-from traitsui.api import View, Item, UItem, Controller
+import time
+from traits.api import HasTraits, Enum, Date, Button, Str
+from traitsui.api import View, Item, UItem, Controller, VGroup, HGroup, TextEditor
 
 from core.download_composer import download_landsat
 
@@ -24,9 +25,17 @@ class LandsatDownloadModel(HasTraits):
     satellite = Enum('LT5', 'LE7', 'LC8')
     start_date = Date
     end_date = Date
+    log_txt = Str
 
     def do_download(self):
+        self._log('starting download start={}, end={}, sat={}'.format(self.start_date, self.end_date, self.satellite))
         download_landsat(self.start_date, self.end_date, self.satellite)
+        self._log('download finished')
+
+    def _log(self, msg):
+        print msg
+        msg = '{} - {}'.format(time.time(), msg)
+        self.log_txt = '{}{}\n'.format(self.log_txt, msg)
 
 
 class LandsatController(Controller):
@@ -36,10 +45,15 @@ class LandsatController(Controller):
         self.model.do_download()
 
 
-LANDSAT_VIEW = View(Item('start_date', style='custom'),
-                    Item('end_date', style='custom'),
-                    Item('satellite'),
-                    Item('controller.download_button'),
+LANDSAT_VIEW = View(VGroup(VGroup(Item('satellite'), show_border=True, label='General'),
+                           VGroup(UItem('start_date', style='custom'), show_border=True, label='Start'),
+                           VGroup(UItem('end_date', style='custom'), show_border=True, label='End')),
+                    UItem('controller.download_button'),
+                    VGroup(UItem('log_txt', style='custom',
+                                 editor=TextEditor(read_only=True)),
+                           show_border=True, label='Log'),
+                    resizable=True,
+                    width=0.5,
                     title='Configure Landsat Downloader',
                     buttons=['OK', 'Cancel'])
 
