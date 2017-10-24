@@ -21,6 +21,36 @@ from datetime import datetime
 from core import download_composer as dc
 
 
+class NevadaDownloadTestCase(unittest.TestCase):
+    def setUp(self):
+        # known overpasses for pr 43, 30
+        self.path, self.row = 43, 30
+        self.search_start = datetime(2015, 6, 15)
+        self.search_end = datetime(2015, 6, 27)
+        self.le7_known = ['LE70430302015177EDC00']
+        self.home = os.path.expanduser('~')
+        self.output = os.path.join(self.home, 'images', 'sandbox', 'downer')
+        self.usgs_creds = os.path.join(self.home, 'images', 'usgs.txt')
+        self.known_scene = ['LE70430302015177EDC00']
+        self.search_start = datetime(2015, 6, 15)
+        self.search_end = datetime(2015, 6, 27)
+
+    def test_downloader(self):
+        dc.download_landsat(start=self.search_start, end=self.search_end,
+                            satellite='LE7', output_path=self.output,
+                            usgs_creds=self.usgs_creds,
+                            path=self.path, row=self.row,
+                            dry_run=False)
+
+        sub_folder = os.path.join(self.output, 'LE7_040_030', 'LE70430302015177EDC00')
+        files = os.listdir(sub_folder)
+        known = ['LT50370272007121PAC01_B1.TIF', 'LT50370272007121PAC01_B2.TIF', 'LT50370272007121PAC01_B3.TIF',
+                 'LT50370272007121PAC01_B4.TIF', 'LT50370272007121PAC01_B5.TIF', 'LT50370272007121PAC01_B6.TIF',
+                 'LT50370272007121PAC01_B7.TIF', 'LT50370272007121PAC01_GCP.txt', 'LT50370272007121PAC01_MTL.txt',
+                 'LT50370272007121PAC01_VER.jpg', 'LT50370272007121PAC01_VER.txt', 'README.GTF']
+        self.assertEqual(files, known)
+
+
 class DownloadTestCase(unittest.TestCase):
     def setUp(self):
         self.home = os.path.expanduser('~')

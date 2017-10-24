@@ -22,9 +22,9 @@ def suite():
     from tests.test_integration.test_usgs_service import USGSLandstatTestCase
     from tests.test_integration.test_cli import CommandLineTestCase
 
-    from tests.test_integration.test_downer import DownloadTestCase
+    from tests.test_integration.test_downer import NevadaDownloadTestCase
     from tests.test_unit.test_web_tools import WebToolsTestCase
-    from tests.test_unit.test_scenes_list import ScenesListTestCase
+    from tests.test_unit.test_scenes_list import ScenesListTestCaseL7Multi
 
     loader = unittest.TestLoader()
     test_suite = unittest.TestSuite()
@@ -32,8 +32,8 @@ def suite():
     tests = (USGSLandstatTestCase,
              WebToolsTestCase,
              CommandLineTestCase,
-             DownloadTestCase,
-             ScenesListTestCase)
+             NevadaDownloadTestCase,
+             ScenesListTestCaseL7Multi)
 
     for t in tests:
         test_suite.addTest(loader.loadTestsFromTestCase(t))

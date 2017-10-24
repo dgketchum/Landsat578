@@ -20,7 +20,24 @@ from datetime import datetime
 from core.usgs_download import get_candidate_scenes_list
 
 
-class ScenesListTestCase(unittest.TestCase):
+class ScenesListTestCaseL7Single(unittest.TestCase):
+    def setUp(self):
+        # known overpasses for pr 43, 30
+        self.path, self.row = 43, 30
+        self.search_start = datetime(2015, 6, 15)
+        self.search_end = datetime(2015, 6, 27)
+        self.le7_known = ['LE70430302015177EDC00']
+
+    def test_get_scenes_list(self):
+        scenes = get_candidate_scenes_list(path=self.path, row=self.row,
+                                           sat_name='LE7',
+                                           start_date=self.search_start,
+                                           end_date=self.search_end)
+
+        self.assertEqual(scenes, self.le7_known)
+
+
+class ScenesListTestCaseL7Multi(unittest.TestCase):
     def setUp(self):
         # known overpasses for pr 37, 27
         self.path, self.row = 37, 27
