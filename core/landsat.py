@@ -21,12 +21,15 @@ import sys
 import yaml
 from datetime import datetime
 
-
 try:
     from core.download_composer import download_landsat
 except ImportError:
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     from core.download_composer import download_landsat
+
+
+class TooFewInputsError(Exception):
+    pass
 
 
 def create_parser():
@@ -84,8 +87,8 @@ def main(args):
             cfg['row'] = args.row
 
         else:
-            print('invalid args. Need to specify at least one of the following: path, lat or file')
-            return
+            raise TooFewInputsError('Must specify path and row, or latitude and longitude, '
+                                    'or the path to file with one of these pairs')
 
         scenes = download_landsat(start, end, sat, **cfg)
         return scenes
