@@ -42,7 +42,7 @@ def create_parser():
     parser.add_argument('-lon', '--longitude', help='Longitude, decimal degrees', type=str)
     parser.add_argument('-p', '--path', help='The path')
     parser.add_argument('-r', '--row', help='The row')
-    parser.add_argument('-o', '--output', help='Output directory')
+    parser.add_argument('-o', '--output', help='Output directory', default=os.getcwd())
     parser.add_argument('-cred', '--credentials',
                         help='Path to a text file with USGS credentials with one space between <username password>')
 
