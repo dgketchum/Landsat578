@@ -94,10 +94,10 @@ def get_station_list_identifier(product):
         identifier = '12864'
         stations = ['LGN']
     elif product.startswith('LE7'):
-        identifier = '3373'
+        identifier = '12267'
         stations = ['EDC', 'SGS', 'AGS', 'ASN', 'SG1', 'CUB', 'COA']
     elif product.startswith('LT5'):
-        identifier = '3119'
+        identifier = '12266'
         stations = ['GLC', 'ASA', 'KIR', 'MOR', 'KHC', 'PAC',
                     'KIS', 'CHM', 'LGS', 'MGR', 'COA', 'MPS', 'CUB']
     else:
