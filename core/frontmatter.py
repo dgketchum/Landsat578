@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ===============================================================================
-ASCII_ART="""
+ASCII_ART = """
   _                     _  _____      _______ _____ ______ ___  
  | |                   | |/ ____|  /\|__   __| ____|____  / _ \ 
  | |     __ _ _ __   __| | (___   /  \  | |  | |__     / / (_) |
@@ -23,7 +23,10 @@ ASCII_ART="""
                                                                 
                                                                 
 """
+
+
 def frontmatter():
     print(ASCII_ART)
     print("Written by DGKetchum 2017")
+
 # ============= EOF =============================================

@@ -22,19 +22,22 @@ import sys
 import yaml
 from datetime import datetime
 
-from core.frontmatter import frontmatter
 
 try:
+    from core.frontmatter import frontmatter
     from core.download_composer import download_landsat
 except ImportError:
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from core.frontmatter import frontmatter
     from core.download_composer import download_landsat
+
+SATNAMES = ('LT5', 'LE7', 'LC8')
 
 
 def create_parser():
     parser = argparse.ArgumentParser(prog='landsat', description='Download and unzip landsat data.')
 
-    parser.add_argument('satellite', help='Satellite name: LT5, LE7, or LC8')
+    parser.add_argument('satellite', help='Satellite name: {}'.format(','.join(SATNAMES)))
     parser.add_argument('start', help='Start date in format YYYY-MM-DD')
     parser.add_argument('end', help='End date in format YYYY-MM-DD')
     parser.add_argument('-lat', '--latitude', help='Latitude, decimal degrees', type=str)
@@ -62,9 +65,6 @@ def create_parser():
 
 def main(args):
     if args:
-
-        print(args)
-
         logger = setup_logging(args.verbose)
 
         # the logger object does need to be passed around. if its needed in another module simply use
@@ -73,9 +73,26 @@ def main(args):
         logger.debug(args)
 
         fmt = '%Y-%m-%d'
-        start = datetime.strptime(args.start, fmt)
-        end = datetime.strptime(args.end, fmt)
+
+        def check_date(d):
+            try:
+                return datetime.strptime(d, fmt)
+            except ValueError,e:
+                logger.critical(e)
+                logger.critical('Invalid start date. Must be in YYYY-MM-DD')
+
+        start = check_date(args.start)
+        if not start:
+            return
+        end = check_date(args.end)
+        if not end:
+            return
+
         sat = args.satellite
+        if sat not in SATNAMES:
+
+            logger.critical('Invalid Satellite name: {}. Must be {}'.format(sat, SATNAMES))
+            return
 
         cfg = {'output_path': args.output,
                'usgs_cred': args.credentials,
@@ -84,7 +101,7 @@ def main(args):
 
         if args.file:
             logger.info('Starting download with configuration file {}'.format(args.file))
-            print('\nStarting download with configuration file {}'.format(args.file))
+            # print('\nStarting download with configuration file {}'.format(args.file))
             with open(args.file, 'r') as rfile:
                 ycfg = yaml.load(rfile)
                 cfg.update(ycfg)
@@ -94,12 +111,13 @@ def main(args):
             cfg['longitude'] = args.longitude
         elif args.path:
             logger.info('Starting download with pathrow...')
-            print('\nStarting download with pathrow...')
+            # print('\nStarting download with pathrow...')
             cfg['path'] = args.path
             cfg['row'] = args.row
 
         else:
-            print('invalid args. Need to specify at least one of the following: path, lat or file')
+            logger.critical('Invalid args. Need to specify at least one of the following: path, lat or file')
+            # print('invalid args. Need to specify at least one of the following: path, lat or file')
             return
 
         scenes = download_landsat(start, end, sat, **cfg)
