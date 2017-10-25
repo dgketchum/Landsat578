@@ -15,12 +15,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ===============================================================================
+import logging
 import os
 import argparse
 import sys
 import yaml
 from datetime import datetime
 
+from core.frontmatter import frontmatter
 
 try:
     from core.download_composer import download_landsat
@@ -50,14 +52,25 @@ def create_parser():
 
     parser.add_argument('--zipped', help='Download .tar.gz file(s), without unzipping',
                         action='store_true', default=False)
-    parser.add_argument('--file', help='')
+    parser.add_argument('--file', help=''),
+    parser.add_argument('-v', '--verbose',
+                        action='store_true',
+                        help='Display DEBUG level messages', default=False)
 
     return parser
 
 
 def main(args):
     if args:
+
         print(args)
+
+        logger = setup_logging(args.verbose)
+
+        # the logger object does need to be passed around. if its needed in another module simply use
+        # logger = logging.getLogger()
+
+        logger.debug(args)
 
         fmt = '%Y-%m-%d'
         start = datetime.strptime(args.start, fmt)
@@ -70,15 +83,17 @@ def main(args):
                'zipped': args.zipped}
 
         if args.file:
+            logger.info('Starting download with configuration file {}'.format(args.file))
             print('\nStarting download with configuration file {}'.format(args.file))
             with open(args.file, 'r') as rfile:
                 ycfg = yaml.load(rfile)
                 cfg.update(ycfg)
         elif args.latitude:
-            print('\nStarting download with latlon...')
+            logger.info('Starting download with latlon...')
             cfg['latitude'] = args.latitude
             cfg['longitude'] = args.longitude
         elif args.path:
+            logger.info('Starting download with pathrow...')
             print('\nStarting download with pathrow...')
             cfg['path'] = args.path
             cfg['row'] = args.row
@@ -91,7 +106,22 @@ def main(args):
         return scenes
 
 
+def setup_logging(verbose=False):
+    logger = logging.getLogger()
+    if verbose:
+        logger.setLevel(logging.DEBUG)
+
+    h = logging.StreamHandler()
+
+    fmt = '%(name)-10s: %(asctime)s %(levelname)-9s %(message)s'
+    h.setFormatter(logging.Formatter(fmt))
+    logger.addHandler(h)
+
+    return logger
+
+
 def cli_runner():
+    frontmatter()
     parser = create_parser()
     args = parser.parse_args()
     return main(args)
