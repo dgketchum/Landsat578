@@ -39,7 +39,7 @@ class ScenesDownerTestCaseL7Early(unittest.TestCase):
                                      output_path=self.output,
                                      start=self.search_start,
                                      usgs_creds=self.usgs_creds,
-                                     end=self.search_end, max_cloud=100)
+                                     end=self.search_end, max_cloud_percent=100)
 
         sub_folder = os.path.join(self.output, 'LE7_37_27', 'LE70370271999187EDC00')
         files = os.listdir(sub_folder)

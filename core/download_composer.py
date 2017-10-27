@@ -28,7 +28,7 @@ class InvalidPathRowData(Exception):
 
 def download_landsat(start=None, end=None, satellite=None, latitude=None, longitude=None,
                      path=None, row=None, output_path=None,
-                     usgs_creds=None, return_list=False, zipped=False, max_cloud=70):
+                     usgs_creds=None, return_list=False, zipped=False, max_cloud_percent=70):
     if path:
         pass
 
@@ -40,7 +40,7 @@ def download_landsat(start=None, end=None, satellite=None, latitude=None, longit
                                  'shapefile, or a path/rows shapefile!')
 
     scenes_list = usgs_download.get_candidate_scenes_list(path=path, row=row, sat_name=satellite, start_date=start,
-                                                          end_date=end, max_cloud_cover=max_cloud)
+                                                          end_date=end, max_cloud_cover=max_cloud_percent)
     if not scenes_list:
         print('No scenes for {} between {} and {}.'.format(satellite,
                                                            datetime.strftime(start,
