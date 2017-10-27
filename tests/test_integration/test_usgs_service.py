@@ -13,10 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ===============================================================================
+import os
 import unittest
+
 from datetime import datetime
 
 from core import usgs_download as usgs
+from core import download_composer as dc
+from core.usgs_download import InvalidCredentialsResponse
 
 
 class USGSLandstatTestCase(unittest.TestCase):
@@ -61,8 +65,26 @@ class USGSLandstatTestCase(unittest.TestCase):
         self.assertEqual(l7_scenes, self.known_l7_scene)
         self.assertEqual(l8_scenes, self.known_l8_scene)
 
-    # def test_usgs_response(self):
-    #     self.assertEqual(200, 200)
+
+class DownloadBadCredsTestCase(unittest.TestCase):
+    def setUp(self):
+        self.home = os.path.expanduser('~')
+        self.start = datetime(2007, 5, 1)
+        self.end = datetime(2007, 5, 30)
+        self.sat = 'LT5'
+        self.output = os.path.join(self.home, 'images', 'sandbox', 'downer')
+        self.bad_usgs_creds = 'tests/data/bad_creds.txt'
+        self.path, self.row = 37, 27
+
+    def test_bad_credentials(self):
+        try:
+            dc.download_landsat(start=self.start, end=self.end,
+                                satellite=self.sat, output_path=self.output,
+                                usgs_creds=self.bad_usgs_creds,
+                                path=self.path, row=self.row,
+                                return_list=False)
+        except InvalidCredentialsResponse:
+            self.assertIsInstance([1, 2], list)
 
 
 if __name__ == '__main__':
