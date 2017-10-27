@@ -13,12 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ===============================================================================
-
+import os
 import unittest
 
 import pkg_resources
 
 from core.landsat import create_parser, main
+from core.landsat import TooFewInputsError
 
 
 class CommandLineTestCase(unittest.TestCase):
@@ -43,12 +44,14 @@ class CommandLineTestCase(unittest.TestCase):
         pass
 
     def test_empty_args(self):
-        with self.assertRaises(SystemExit):
-            self.parser.parse_args([])
+        with self.assertRaises(TooFewInputsError):
+            args = self.parser.parse_args([])
+            scenes = main(args)
 
     def test_latlon(self):
         print('Testing valid lat lon...')
-        args_list = [self.sat, self.start, self.end, '--return-list',
+        args_list = ['--satellite', self.sat, '--start', self.start, '--end',
+                     self.end, '--return-list',
                      '--lat', str(self.lat), '--lon', str(self.lon)]
         args = self.parser.parse_args(args_list)
         scenes = main(args)
@@ -57,22 +60,33 @@ class CommandLineTestCase(unittest.TestCase):
 
     def test_path_row(self):
         print('Testing valid path row...')
-        args_list = [self.sat, self.start, self.end, '--return-list',
+        args_list = ['--satellite', self.sat, '--start', self.start, '--end',
+                     self.end, '--return-list',
                      '--path', str(self.path), '--row', str(self.row)]
         args = self.parser.parse_args(args_list)
         scenes = main(args)
         scenes.reverse()
         self.assertEqual(scenes, self.scene_list)
 
-    def test_config_no_config_provided(self):
-        dirname = 'tests/data'
-        args_list = ['--configuration', dirname]
-        args = self.parser.parse_args(args_list)
-        main(args)
-        pass
+    # this cause systemexit, use only to make your own config
+    # def test_config_no_config_provided(self):
+    #     dirname = 'data'
+    #     if __name__ == '__main__':
+    #         dirname = 'tests/data'
+    #     args_list = ['--configuration', dirname]
+    #     args = self.parser.parse_args(args_list)
+    #     main(args)
+    #     pass
 
     def test_config(self):
-        args_list = ['--configuration', 'tests/data/test_downloader_config.yml']
+        # test suite needs handler to remove test-level dir
+        root = 'tests'
+        base = os.path.join('data', 'test_downloader_config.yml')
+        filepath = os.path.join(root, base)
+        if not os.path.isfile(filepath):
+            filepath = base
+
+        args_list = ['--configuration', filepath]
         args = self.parser.parse_args(args_list)
         scenes = main(args)
         self.assertEqual(scenes, self.config_scenes)
