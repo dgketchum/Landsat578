@@ -74,7 +74,7 @@ class CommandLineTestCase(unittest.TestCase):
     def test_config(self):
         args_list = ['--configuration', 'tests/data/downloader_config.yml']
         args = self.parser.parse_args(args_list)
-        main(args)
+        scenes = main(args)
 
 if __name__ == '__main__':
     unittest.main()

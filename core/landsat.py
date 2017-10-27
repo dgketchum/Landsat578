@@ -34,17 +34,17 @@ class TooFewInputsError(Exception):
 
 DEFAULT_CFG = '''
 # date format: 'YYYY-MM-DD'
-start: 
-end: 
-path: 
-row: 
+start: '2007-05-01'
+end: '2007-05-31'
+path: 43
+row: 30
 latitude:
 longitude:
-output: /path/to/parent_directory
+output_path: None
 satellite: LT5
-credentials: /path/to/credentials
-zipped: False
+usgs_creds: /path/to/usgs_creds.txt
 return_list: False
+zipped: False
 '''
 
 
@@ -80,14 +80,10 @@ def main(args):
         print(args)
 
         fmt = '%Y-%m-%d'
-        if not args.configuration:
-            start = datetime.strptime(args.start, fmt)
-            end = datetime.strptime(args.end, fmt)
-            sat = args.satellite
 
         cfg = {'output_path': args.output,
                'usgs_creds': args.credentials,
-               'dry_run': args.return_list,
+               'return_list': args.return_list,
                'zipped': args.zipped}
 
         if args.configuration:
@@ -99,24 +95,31 @@ def main(args):
             with open(args.configuration, 'r') as rfile:
                 ycfg = yaml.load(rfile)
                 cfg.update(ycfg)
-                start = datetime.strptime(cfg['start'], fmt)
-                end = datetime.strptime(cfg['end'], fmt)
-                sat = cfg['satellite']
+            cfg['start'] = datetime.strptime(cfg['start'], fmt)
+            cfg['end'] = datetime.strptime(cfg['end'], fmt)
+            scenes = download_landsat(**cfg)
 
-        elif args.latitude:
-            print('\nStarting download with latlon...')
-            cfg['latitude'] = args.latitude
-            cfg['longitude'] = args.longitude
-        elif args.path:
-            print('\nStarting download with pathrow...')
-            cfg['path'] = args.path
-            cfg['row'] = args.row
+        if not args.configuration:
+            start = datetime.strptime(args.start, fmt)
+            end = datetime.strptime(args.end, fmt)
+            sat = args.satellite
 
-        else:
-            raise TooFewInputsError('Must specify path and row, or latitude and longitude, '
-                                    'or the path to file with one of these pairs')
+            if args.latitude:
+                print('\nStarting download with latlon...')
+                cfg['latitude'] = args.latitude
+                cfg['longitude'] = args.longitude
+                scenes = download_landsat(start, end, sat, **cfg)
 
-        scenes = download_landsat(start, end, sat, **cfg)
+            elif args.path:
+                print('\nStarting download with pathrow...')
+                cfg['path'] = args.path
+                cfg['row'] = args.row
+                scenes = download_landsat(start, end, sat, **cfg)
+
+            else:
+                raise TooFewInputsError('Must specify path and row, or latitude and longitude, '
+                                        'or the path to file with one of these pairs')
+
         return scenes
 
 

@@ -80,7 +80,7 @@ class NevadaDownloadTestCase(unittest.TestCase):
                             satellite='LE7', output_path=self.output,
                             usgs_creds=self.usgs_creds,
                             path=self.path, row=self.row,
-                            dry_run=False)
+                            return_list=False)
 
         sub_folder = os.path.join(self.output, 'LE7_43_30', 'LE70430302015177EDC00')
         files = os.listdir(sub_folder)
@@ -120,7 +120,7 @@ class DownloadTestCase(unittest.TestCase):
     def test_scene_list(self):
         scene_list = dc.download_landsat(self.start, self.end, self.sat,
                                          path=self.path, row=self.row,
-                                         dry_run=True)
+                                         return_list=True)
         self.assertEqual(self.known_scene, scene_list)
 
         # can't run the download test on travis.
@@ -130,7 +130,7 @@ class DownloadTestCase(unittest.TestCase):
                             satellite=self.sat, output_path=self.output,
                             usgs_creds=self.usgs_creds,
                             path=self.path, row=self.row,
-                            dry_run=False)
+                            return_list=False)
         sub_folder = os.path.join(self.output, 'LT5_37_27', 'LT50370272007121PAC01')
         files = os.listdir(sub_folder)
         known = ['LT05_L1TP_037027_20070501_20160910_01_T1_ANG.txt',
