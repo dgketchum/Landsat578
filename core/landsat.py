@@ -92,7 +92,7 @@ def main(args):
 
         if args.configuration:
             if os.path.isdir(args.configuration):
-                print('Creating template configuration file at {}.'.format(args.file))
+                print('Creating template configuration file at {}.'.format(args.configuration))
                 check_config(args.configuration)
 
             print('\nStarting download with configuration file {}'.format(args.configuration))
@@ -104,6 +104,9 @@ def main(args):
             scenes = download_landsat(**cfg)
 
         if not args.configuration:
+            if not args.start:
+                raise TooFewInputsError('Must specify path and row, or latitude and longitude, '
+                                        'or the path to file with one of these pairs')
             start = datetime.strptime(args.start, fmt)
             end = datetime.strptime(args.end, fmt)
             sat = args.satellite
@@ -119,10 +122,6 @@ def main(args):
                 cfg['path'] = args.path
                 cfg['row'] = args.row
                 scenes = download_landsat(start, end, sat, **cfg)
-
-            else:
-                raise TooFewInputsError('Must specify path and row, or latitude and longitude, '
-                                        'or the path to file with one of these pairs')
 
         return scenes
 
