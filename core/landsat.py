@@ -32,12 +32,28 @@ class TooFewInputsError(Exception):
     pass
 
 
+DEFAULT_CFG = '''
+# date format: 'YYYY-MM-DD'
+start: 
+end: 
+path: 
+row: 
+latitude:
+longitude:
+output: /path/to/parent_directory
+satellite: LT5
+credentials: /path/to/credentials
+zipped: False
+return_list: False
+'''
+
+
 def create_parser():
     parser = argparse.ArgumentParser(prog='landsat', description='Download and unzip landsat data.')
 
-    parser.add_argument('satellite', help='Satellite name: LT5, LE7, or LC8')
-    parser.add_argument('start', help='Start date in format YYYY-MM-DD')
-    parser.add_argument('end', help='End date in format YYYY-MM-DD')
+    parser.add_argument('--satellite', help='Satellite name: LT5, LE7, or LC8')
+    parser.add_argument('--start', help='Start date in format YYYY-MM-DD')
+    parser.add_argument('--end', help='End date in format YYYY-MM-DD')
     parser.add_argument('-lat', '--latitude', help='Latitude, decimal degrees', type=str)
     parser.add_argument('-lon', '--longitude', help='Longitude, decimal degrees', type=str)
     parser.add_argument('-p', '--path', help='The path')
@@ -48,6 +64,7 @@ def create_parser():
 
     parser.add_argument('-conf', '--configuration', help='Path to your configuration file. If a directory is provided,'
                                                          'a template cofiguration file will be created there.')
+
     parser.add_argument('--return-list', help='Just return list of images without downloading', action='store_true',
                         default=False)
 
@@ -63,20 +80,29 @@ def main(args):
         print(args)
 
         fmt = '%Y-%m-%d'
-        start = datetime.strptime(args.start, fmt)
-        end = datetime.strptime(args.end, fmt)
-        sat = args.satellite
+        if not args.configuration:
+            start = datetime.strptime(args.start, fmt)
+            end = datetime.strptime(args.end, fmt)
+            sat = args.satellite
 
         cfg = {'output_path': args.output,
-               'usgs_cred': args.credentials,
+               'usgs_creds': args.credentials,
                'dry_run': args.return_list,
                'zipped': args.zipped}
 
-        if args.file:
+        if args.configuration:
+            if os.path.isdir(args.configuration):
+                print('Creating template configuration file at {}.'.format(args.file))
+                check_config(args.configuration)
+
             print('\nStarting download with configuration file {}'.format(args.file))
-            with open(args.file, 'r') as rfile:
+            with open(args.configuration, 'r') as rfile:
                 ycfg = yaml.load(rfile)
                 cfg.update(ycfg)
+                start = datetime.strptime(cfg['start'], fmt)
+                end = datetime.strptime(cfg['end'], fmt)
+                sat = cfg['satellite']
+
         elif args.latitude:
             print('\nStarting download with latlon...')
             cfg['latitude'] = args.latitude
@@ -98,6 +124,22 @@ def cli_runner():
     parser = create_parser()
     args = parser.parse_args()
     return main(args)
+
+
+def check_config(dirname):
+    path = os.path.join(dirname, 'downloader_config.yml')
+    print('\n*****A default config file {} will be written'.format(path))
+
+    with open(path, 'w') as wfile:
+        print('-------------- DEFAULT CONFIG -----------------')
+        print(DEFAULT_CFG)
+        print('-----------------------------------------------')
+        wfile.write(DEFAULT_CFG)
+
+    print('***** Please edit the config file at {} and run the downer again *****\n'.format(
+        dirname))
+
+    sys.exit()
 
 
 if __name__ == '__main__':

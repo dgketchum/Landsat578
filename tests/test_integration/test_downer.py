@@ -133,10 +133,20 @@ class DownloadTestCase(unittest.TestCase):
                             dry_run=False)
         sub_folder = os.path.join(self.output, 'LT5_37_27', 'LT50370272007121PAC01')
         files = os.listdir(sub_folder)
-        known = ['LT50370272007121PAC01_B1.TIF', 'LT50370272007121PAC01_B2.TIF', 'LT50370272007121PAC01_B3.TIF',
-                 'LT50370272007121PAC01_B4.TIF', 'LT50370272007121PAC01_B5.TIF', 'LT50370272007121PAC01_B6.TIF',
-                 'LT50370272007121PAC01_B7.TIF', 'LT50370272007121PAC01_GCP.txt', 'LT50370272007121PAC01_MTL.txt',
-                 'LT50370272007121PAC01_VER.jpg', 'LT50370272007121PAC01_VER.txt', 'README.GTF']
+        known = ['LT05_L1TP_037027_20070501_20160910_01_T1_ANG.txt',
+                 'LT05_L1TP_037027_20070501_20160910_01_T1_B1.TIF',
+                 'LT05_L1TP_037027_20070501_20160910_01_T1_B2.TIF',
+                 'LT05_L1TP_037027_20070501_20160910_01_T1_B3.TIF',
+                 'LT05_L1TP_037027_20070501_20160910_01_T1_B4.TIF',
+                 'LT05_L1TP_037027_20070501_20160910_01_T1_B5.TIF',
+                 'LT05_L1TP_037027_20070501_20160910_01_T1_B6.TIF',
+                 'LT05_L1TP_037027_20070501_20160910_01_T1_B7.TIF',
+                 'LT05_L1TP_037027_20070501_20160910_01_T1_BQA.TIF',
+                 'LT05_L1TP_037027_20070501_20160910_01_T1_GCP.txt',
+                 'LT05_L1TP_037027_20070501_20160910_01_T1_MTL.txt',
+                 'LT05_L1TP_037027_20070501_20160910_01_T1_VER.jpg',
+                 'LT05_L1TP_037027_20070501_20160910_01_T1_VER.txt',
+                 'README.GTF']
         self.assertEqual(files, known)
         shutil.rmtree(sub_folder)
 

@@ -14,6 +14,7 @@
 # limitations under the License.
 # ===============================================================================
 
+import os
 import unittest
 
 import pkg_resources
@@ -63,9 +64,17 @@ class CommandLineTestCase(unittest.TestCase):
         scenes.reverse()
         self.assertEqual(scenes, self.scene_list)
 
-    def test_config(self):
-        # TODO: add config file download run tests
+    def test_config_no_config_provided(self):
+        dirname = 'tests/data'
+        args_list = ['--configuration', dirname]
+        args = self.parser.parse_args(args_list)
+        main(args)
         pass
+
+    def test_config(self):
+        args_list = ['--configuration', 'tests/data/downloader_config.yml']
+        args = self.parser.parse_args(args_list)
+        main(args)
 
 if __name__ == '__main__':
     unittest.main()
