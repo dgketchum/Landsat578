@@ -26,9 +26,9 @@ class InvalidPathRowData(Exception):
     pass
 
 
-def download_landsat(start, end, satellite, latitude=None, longitude=None,
+def download_landsat(start=None, end=None, satellite=None, latitude=None, longitude=None,
                      path=None, row=None, output_path=None,
-                     usgs_creds=None, dry_run=False, zipped=False, max_cloud=70):
+                     usgs_creds=None, return_list=False, zipped=False, max_cloud=70):
     if path:
         pass
 
@@ -49,7 +49,7 @@ def download_landsat(start, end, satellite, latitude=None, longitude=None,
                                                                              '%Y-doy %j')))
         return None
 
-    elif dry_run:
+    elif return_list:
 
         print(scenes_list)
 
