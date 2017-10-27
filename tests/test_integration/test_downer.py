@@ -16,9 +16,49 @@
 
 import os
 import unittest
+import shutil
 from datetime import datetime
 
 from core import download_composer as dc
+
+
+class ScenesDownerTestCaseL7Early(unittest.TestCase):
+    def setUp(self):
+        # known overpasses for pr 37, 27
+        self.path, self.row = 37, 27
+        self.search_start = datetime(1999, 6, 1)
+        self.search_end = datetime(1999, 7, 30)
+        self.le7_known = ['LE70370271999187EDC00']
+        self.home = os.path.expanduser('~')
+        self.output = os.path.join(self.home, 'images', 'sandbox', 'downer')
+        self.usgs_creds = os.path.join(self.home, 'images', 'usgs.txt')
+
+    def test_down_scenes_list(self):
+        scenes = dc.download_landsat(path=self.path, row=self.row,
+                                     satellite='LE7',
+                                     output_path=self.output,
+                                     start=self.search_start,
+                                     usgs_creds=self.usgs_creds,
+                                     end=self.search_end, max_cloud=100)
+
+        sub_folder = os.path.join(self.output, 'LE7_37_27', 'LE70370271999187EDC00')
+        files = os.listdir(sub_folder)
+        known = ['LE07_L1TP_037027_19990706_20161003_01_T1_ANG.txt',
+                 'LE07_L1TP_037027_19990706_20161003_01_T1_B1.TIF',
+                 'LE07_L1TP_037027_19990706_20161003_01_T1_B2.TIF',
+                 'LE07_L1TP_037027_19990706_20161003_01_T1_B3.TIF',
+                 'LE07_L1TP_037027_19990706_20161003_01_T1_B4.TIF',
+                 'LE07_L1TP_037027_19990706_20161003_01_T1_B5.TIF',
+                 'LE07_L1TP_037027_19990706_20161003_01_T1_B6_VCID_1.TIF',
+                 'LE07_L1TP_037027_19990706_20161003_01_T1_B6_VCID_2.TIF',
+                 'LE07_L1TP_037027_19990706_20161003_01_T1_B7.TIF',
+                 'LE07_L1TP_037027_19990706_20161003_01_T1_B8.TIF',
+                 'LE07_L1TP_037027_19990706_20161003_01_T1_BQA.TIF',
+                 'LE07_L1TP_037027_19990706_20161003_01_T1_GCP.txt',
+                 'LE07_L1TP_037027_19990706_20161003_01_T1_MTL.txt',
+                 'README.GTF']
+        self.assertEqual(files, known)
+        shutil.rmtree(sub_folder)
 
 
 class NevadaDownloadTestCase(unittest.TestCase):
@@ -42,13 +82,25 @@ class NevadaDownloadTestCase(unittest.TestCase):
                             path=self.path, row=self.row,
                             dry_run=False)
 
-        sub_folder = os.path.join(self.output, 'LE7_040_030', 'LE70430302015177EDC00')
+        sub_folder = os.path.join(self.output, 'LE7_43_30', 'LE70430302015177EDC00')
         files = os.listdir(sub_folder)
-        known = ['LT50370272007121PAC01_B1.TIF', 'LT50370272007121PAC01_B2.TIF', 'LT50370272007121PAC01_B3.TIF',
-                 'LT50370272007121PAC01_B4.TIF', 'LT50370272007121PAC01_B5.TIF', 'LT50370272007121PAC01_B6.TIF',
-                 'LT50370272007121PAC01_B7.TIF', 'LT50370272007121PAC01_GCP.txt', 'LT50370272007121PAC01_MTL.txt',
-                 'LT50370272007121PAC01_VER.jpg', 'LT50370272007121PAC01_VER.txt', 'README.GTF']
+        known = ['gap_mask',
+                 'LE07_L1TP_043030_20150626_20160902_01_T1_ANG.txt',
+                 'LE07_L1TP_043030_20150626_20160902_01_T1_B1.TIF',
+                 'LE07_L1TP_043030_20150626_20160902_01_T1_B2.TIF',
+                 'LE07_L1TP_043030_20150626_20160902_01_T1_B3.TIF',
+                 'LE07_L1TP_043030_20150626_20160902_01_T1_B4.TIF',
+                 'LE07_L1TP_043030_20150626_20160902_01_T1_B5.TIF',
+                 'LE07_L1TP_043030_20150626_20160902_01_T1_B6_VCID_1.TIF',
+                 'LE07_L1TP_043030_20150626_20160902_01_T1_B6_VCID_2.TIF',
+                 'LE07_L1TP_043030_20150626_20160902_01_T1_B7.TIF',
+                 'LE07_L1TP_043030_20150626_20160902_01_T1_B8.TIF',
+                 'LE07_L1TP_043030_20150626_20160902_01_T1_BQA.TIF',
+                 'LE07_L1TP_043030_20150626_20160902_01_T1_GCP.txt',
+                 'LE07_L1TP_043030_20150626_20160902_01_T1_MTL.txt',
+                 'README.GTF']
         self.assertEqual(files, known)
+        shutil.rmtree(sub_folder)
 
 
 class DownloadTestCase(unittest.TestCase):
@@ -86,6 +138,7 @@ class DownloadTestCase(unittest.TestCase):
                  'LT50370272007121PAC01_B7.TIF', 'LT50370272007121PAC01_GCP.txt', 'LT50370272007121PAC01_MTL.txt',
                  'LT50370272007121PAC01_VER.jpg', 'LT50370272007121PAC01_VER.txt', 'README.GTF']
         self.assertEqual(files, known)
+        shutil.rmtree(sub_folder)
 
 
 if __name__ == '__main__':
