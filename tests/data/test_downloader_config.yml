@@ -10,3 +10,4 @@ satellite: LT5
 usgs_creds: /data01/images/usgs.txt
 return_list: True
 zipped: False
+max_cloud_percent: 100

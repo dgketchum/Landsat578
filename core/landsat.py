@@ -45,6 +45,7 @@ satellite: LT5
 usgs_creds: /path/to/usgs_creds.txt
 return_list: False
 zipped: False
+max_cloud_percent: 100
 '''
 
 
@@ -70,7 +71,10 @@ def create_parser():
 
     parser.add_argument('--zipped', help='Download .tar.gz file(s), without unzipping',
                         action='store_true', default=False)
-    parser.add_argument('--file', help='')
+
+    parser.add_argument('--max-cloud-percent', help='Maximum percent of of image obscured by clouds accepted,'
+                                                    ' type integer',
+                        default=None)
 
     return parser
 
@@ -91,7 +95,7 @@ def main(args):
                 print('Creating template configuration file at {}.'.format(args.file))
                 check_config(args.configuration)
 
-            print('\nStarting download with configuration file {}'.format(args.file))
+            print('\nStarting download with configuration file {}'.format(args.configuration))
             with open(args.configuration, 'r') as rfile:
                 ycfg = yaml.load(rfile)
                 cfg.update(ycfg)

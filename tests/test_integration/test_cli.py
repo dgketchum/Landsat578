@@ -14,7 +14,6 @@
 # limitations under the License.
 # ===============================================================================
 
-import os
 import unittest
 
 import pkg_resources
@@ -38,6 +37,7 @@ class CommandLineTestCase(unittest.TestCase):
 
         self.wgs_tile = pkg_resources.resource_filename('tests',
                                                         'data/wrs2_036029_WGS.shp')
+        self.config_scenes = ['LT50430302007147PAC01', 'LT50430302007131PAC01']
 
     def tearDown(self):
         pass
@@ -72,9 +72,10 @@ class CommandLineTestCase(unittest.TestCase):
         pass
 
     def test_config(self):
-        args_list = ['--configuration', 'tests/data/downloader_config.yml']
+        args_list = ['--configuration', 'tests/data/test_downloader_config.yml']
         args = self.parser.parse_args(args_list)
         scenes = main(args)
+        self.assertEqual(scenes, self.config_scenes)
 
 if __name__ == '__main__':
     unittest.main()
