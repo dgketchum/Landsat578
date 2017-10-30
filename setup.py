@@ -27,7 +27,7 @@ try:
 except ImportError:
     from distutils.core import setup
 
-    setup_kwargs = {'scripts': ['bin/core']}
+    setup_kwargs = {'scripts': ['bin/landsat']}
 
 tag = '0.3.80'
 
