@@ -74,7 +74,7 @@ def create_parser():
 
     parser.add_argument('--max-cloud-percent', help='Maximum percent of of image obscured by clouds accepted,'
                                                     ' type integer',
-                        default=None)
+                        default=100)
 
     return parser
 

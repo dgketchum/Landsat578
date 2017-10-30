@@ -28,7 +28,7 @@ class InvalidPathRowData(Exception):
 
 def download_landsat(start=None, end=None, satellite=None, latitude=None, longitude=None,
                      path=None, row=None, output_path=None,
-                     usgs_creds=None, return_list=False, zipped=False, max_cloud_percent=70):
+                     usgs_creds=None, return_list=False, zipped=False, max_cloud_percent=100):
     if path:
         pass
 
