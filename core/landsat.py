@@ -102,7 +102,6 @@ def main(args):
             cfg['start'] = datetime.strptime(cfg['start'], fmt)
             cfg['end'] = datetime.strptime(cfg['end'], fmt)
             scenes = download_landsat(**cfg)
-            return scenes
 
         if not args.configuration:
             if not args.start:
@@ -124,6 +123,7 @@ def main(args):
                 cfg['row'] = args.row
                 scenes = download_landsat(start, end, sat, **cfg)
 
+        if args.return_list:
             return scenes
 
 
