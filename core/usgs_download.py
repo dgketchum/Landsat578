@@ -24,6 +24,10 @@ class BadRequestsResponse(Exception):
     pass
 
 
+class InvalidCredentialsResponse(Exception):
+    pass
+
+
 def download_image(url, output_dir, image, creds):
     cookies = HTTPCookieProcessor()
     opener = build_opener(cookies)
@@ -43,8 +47,10 @@ def download_image(url, output_dir, image, creds):
 
     data = f.read().decode('utf-8')
     f.close()
-    if data.find('You must sign in as a registered user to download data or place orders for USGS EROS products') > 0:
+    if data.find('Invalid username/password') > 0:
         print("Authentification failed")
+        raise InvalidCredentialsResponse('Check your credentials, '
+                                         'they were rejected by USGS')
 
     req = urlopen(url)
 
@@ -88,10 +94,10 @@ def get_station_list_identifier(product):
         identifier = '12864'
         stations = ['LGN']
     elif product.startswith('LE7'):
-        identifier = '3373'
+        identifier = '12267'
         stations = ['EDC', 'SGS', 'AGS', 'ASN', 'SG1', 'CUB', 'COA']
     elif product.startswith('LT5'):
-        identifier = '3119'
+        identifier = '12266'
         stations = ['GLC', 'ASA', 'KIR', 'MOR', 'KHC', 'PAC',
                     'KIS', 'CHM', 'LGS', 'MGR', 'COA', 'MPS', 'CUB']
     else:
