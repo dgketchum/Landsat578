@@ -18,9 +18,9 @@ import unittest
 
 from datetime import datetime
 
-from core import usgs_download as usgs
-from core import download_composer as dc
-from core.usgs_download import InvalidCredentialsResponse
+from landsat import usgs_download as usgs
+from landsat import download_composer as dc
+from landsat.usgs_download import InvalidCredentialsResponse
 
 
 class USGSLandstatTestCase(unittest.TestCase):
