@@ -18,8 +18,8 @@ import unittest
 
 import pkg_resources
 
-from core.landsat import create_parser, main
-from core.landsat import TooFewInputsError
+from landsat.landsat import create_parser, main
+from landsat.landsat import TooFewInputsError
 
 
 class CommandLineTestCase(unittest.TestCase):

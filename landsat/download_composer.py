@@ -18,8 +18,8 @@
 import os
 from datetime import datetime
 
-from core import usgs_download
-from core.web_tools import convert_lat_lon_wrs2pr
+from landsat import usgs_download
+from landsat.web_tools import convert_lat_lon_wrs2pr
 
 
 class InvalidPathRowData(Exception):

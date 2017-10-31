@@ -16,7 +16,7 @@
 from traits.api import HasTraits, Enum, Date, Button
 from traitsui.api import View, Item, UItem, Controller
 
-from core.download_composer import download_landsat
+from landsat.download_composer import download_landsat
 
 
 # here is a gui down in a true MVC pattern.  See passed EOF for shortened form

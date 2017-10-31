@@ -19,7 +19,7 @@
 # import shutil
 # from datetime import datetime
 #
-# from core import download_composer as dc
+# from landsat import download_composer as dc
 #
 #
 # class ScenesDownerTestCaseL7Early(unittest.TestCase):
