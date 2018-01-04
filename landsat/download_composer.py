@@ -19,7 +19,7 @@ import os
 from datetime import datetime
 
 from .usgs_download import get_candidate_scenes_list
-from landsat.web_tools import convert_lat_lon_wrs2pr
+from .web_tools import convert_lat_lon_wrs2pr
 
 
 class InvalidPathRowData(Exception):

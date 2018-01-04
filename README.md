@@ -97,7 +97,7 @@ If you prefer to work from a python script, use sample_script.py:
 import os
 from datetime import datetime
 
-from landsat.download_composer import download_landsat
+from .download_composer import download_landsat
 
 if __name__ == '__main__':
     home = os.path.expanduser('~')
