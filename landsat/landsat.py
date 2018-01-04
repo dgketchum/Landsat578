@@ -22,10 +22,10 @@ import yaml
 from datetime import datetime
 
 try:
-    from landsat.download_composer import download_landsat
+    from .download_composer import download_landsat
 except ImportError:
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from landsat.download_composer import download_landsat
+    from .download_composer import download_landsat
 
 
 class TooFewInputsError(Exception):
