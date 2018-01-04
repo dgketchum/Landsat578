@@ -18,7 +18,7 @@
 import os
 from datetime import datetime
 
-from landsat import usgs_download
+from .usgs_download import get_candidate_scenes_list
 from landsat.web_tools import convert_lat_lon_wrs2pr
 
 
@@ -39,7 +39,7 @@ def download_landsat(start=None, end=None, satellite=None, latitude=None, longit
         raise InvalidPathRowData('Must give path/row tuple, lat/lon tuple plus row/path \n'
                                  'shapefile, or a path/rows shapefile!')
 
-    scenes_list = usgs_download.get_candidate_scenes_list(path=path, row=row, sat_name=satellite, start_date=start,
+    scenes_list = get_candidate_scenes_list(path=path, row=row, sat_name=satellite, start_date=start,
                                                           end_date=end, max_cloud_cover=max_cloud_percent)
     if not scenes_list:
         print('No scenes for {} between {} and {}.'.format(satellite,
