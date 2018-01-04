@@ -40,7 +40,7 @@ def download_landsat(start=None, end=None, satellite=None, latitude=None, longit
                                  'shapefile, or a path/rows shapefile!')
 
     scenes_list = get_candidate_scenes_list(path=path, row=row, sat_name=satellite, start_date=start,
-                                                          end_date=end, max_cloud_cover=max_cloud_percent)
+                                            end_date=end, max_cloud_cover=max_cloud_percent)
     if not scenes_list:
         print('No scenes for {} between {} and {}.'.format(satellite,
                                                            datetime.strftime(start,
