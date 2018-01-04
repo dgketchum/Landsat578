@@ -42,8 +42,8 @@ script:
 
 
 notifications:
-  slack: nmbgmr:6025BpWw62bzddqVqFrtGLOF
-  slack: nasa-roses-et:0LxEURt2iGM02RuMNlkextib
+#  slack: nmbgmr:6025BpWw62bzddqVqFrtGLOF
+#  slack: nasa-roses-et:0LxEURt2iGM02RuMNlkextib
 
 after_success:
   - codecov
