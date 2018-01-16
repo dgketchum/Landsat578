@@ -18,7 +18,7 @@
 import os
 from datetime import datetime
 
-from .usgs_download import get_candidate_scenes_list
+from .usgs_download import get_candidate_scenes_list, down_usgs_by_list
 from .web_tools import convert_lat_lon_wrs2pr
 
 
@@ -64,8 +64,8 @@ def download_landsat(start=None, end=None, satellite=None, latitude=None, longit
             print('making dir: {}'.format(destination_path))
             os.makedirs(destination_path)
 
-        usgs_download.down_usgs_by_list(scenes_list, destination_path,
-                                        usgs_creds, zipped)
+        down_usgs_by_list(scenes_list, destination_path,
+                          usgs_creds, zipped)
 
         return None
 
