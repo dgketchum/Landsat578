@@ -46,7 +46,7 @@ your specified start and end dates.  You must choose a satellite.
 Within the package you downloaded, you need to call landsat.py.
 Dates are entered as YYYY-MM-DD format, e.g. 2008-05-31.
 
-Easiest to to modigy `downloader_config.yml` and then run:
+Easiest to to modify `downloader_config.yml` and then run:
 ```
 $ landsat -conf downloader_config.yml
 ```
