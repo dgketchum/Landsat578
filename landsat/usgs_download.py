@@ -146,16 +146,19 @@ def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt, zipped=False):
         tail_string = '{}/{}/STANDARD/EE'.format(identifier, product)
         url = '{}{}'.format(base_url, tail_string)
         tgz_file = '{}.tgz'.format(product)
-        scene_dir = os.path.join(output_dir, product)
-        if not os.path.isdir(scene_dir):
-            os.mkdir(scene_dir)
-        if len(os.listdir(scene_dir)) < 1:
-            download_image(url, scene_dir, tgz_file, usgs_creds)
-            print('image: {}'.format(os.path.join(scene_dir, tgz_file)))
-            if not zipped:
-                unzip_image(tgz_file, scene_dir)
+        if not zipped:
+            scene_dir = os.path.join(output_dir, product)
+            if not os.path.isdir(scene_dir):
+                os.mkdir(scene_dir)
+            if len(os.listdir(scene_dir)) < 1:
+                download_image(url, scene_dir, tgz_file, usgs_creds)
+                print('image: {}'.format(os.path.join(scene_dir, tgz_file)))
+                if not zipped:
+                    unzip_image(tgz_file, scene_dir)
+            else:
+                print('This image already exists at {}'.format(output_dir))
         else:
-            print('This image already exists at {}'.format(output_dir))
+            download_image(url, output_dir, tgz_file, usgs_creds)
 
     return None
 
