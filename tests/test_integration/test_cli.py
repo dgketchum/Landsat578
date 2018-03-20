@@ -91,6 +91,19 @@ class CommandLineTestCase(unittest.TestCase):
         scenes = main(args)
         self.assertEqual(scenes, self.config_scenes)
 
+    def test_pymetric_config(self):
+        # test suite needs handler to remove test-level dir
+        root = 'tests'
+        base = os.path.join('data', 'test_downloader_pymetric_config.yml')
+        filepath = os.path.join(root, base)
+        if not os.path.isfile(filepath):
+            filepath = base
+
+        args_list = ['--configuration', filepath]
+        args = self.parser.parse_args(args_list)
+        scenes = main(args)
+        self.assertEqual(scenes, self.config_scenes)
+
 if __name__ == '__main__':
     unittest.main()
 
