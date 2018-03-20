@@ -43,6 +43,10 @@ longitude:
 output_path: None
 satellite: LT5
 usgs_creds: /path/to/usgs_creds.txt
+# pymetric directory structure: e.g. D:/pyMETRIC/harney/landsat/path/row/year
+# mutually exclusive with output, put None if output is specified, and zipped: True
+pymetric_root: D:/pyMETRIC/root
+clear_scenes: D:/pyMETRIC/misc/clear_scenes.txt
 return_list: False
 zipped: False
 max_cloud_percent: 100
@@ -65,6 +69,8 @@ def create_parser():
 
     parser.add_argument('-conf', '--configuration', help='Path to your configuration file. If a directory is provided,'
                                                          'a template cofiguration file will be created there.')
+    parser.add_argument('-cs', '--clear-scenes', help='Path to your clear scenes file.')
+    parser.add_argument('-pym', '--pymetric-root', help='Path to your pyMETRIC study area root dir.')
 
     parser.add_argument('--return-list', help='Just return list of images without downloading', action='store_true',
                         default=False)
@@ -88,7 +94,9 @@ def main(args):
         cfg = {'output_path': args.output,
                'usgs_creds': args.credentials,
                'return_list': args.return_list,
-               'zipped': args.zipped}
+               'zipped': args.zipped,
+               'pymetric_root': args.pymetric_root,
+               'clear_scenes': args.clear_scenes}
 
         if args.configuration:
             if os.path.isdir(args.configuration):
