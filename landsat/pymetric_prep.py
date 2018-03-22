@@ -65,17 +65,18 @@ def orgainize_directory(pymetric_rt, paths, rows, years):
         print('Making landsat dir in {}'.format(pymetric_rt))
         os.mkdir(landsat)
     for path in paths:
-            for row in rows:
-                for year in years:
-                    dst_dir = os.path.join(landsat, str(path), str(row),
-                                           str(year))
-                    try:
-                        os.makedirs(dst_dir)
-                        print('Made {}'.format(dst_dir))
-                    except FileNotFoundError:
-                        pass
-                    except FileExistsError:
-                        pass
+        for row in rows:
+            for year in years:
+                dst_dir = os.path.join(landsat, str(path), str(row),
+                                       str(year))
+                try:
+                    os.makedirs(dst_dir)
+                    print('Made {}'.format(dst_dir))
+                except FileNotFoundError:
+                    pass
+                except FileExistsError:
+                    pass
+
 
 if __name__ == '__main__':
     home = os.path.expanduser('~')
