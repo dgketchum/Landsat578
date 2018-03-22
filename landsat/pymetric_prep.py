@@ -32,7 +32,7 @@ def pymetric_preparation(clear_scenes, pymetric_root, usgs_creds):
     paths = []
     rows = []
 
-    lst = read_csv(clear_scenes).iloc[:, 0].tolist()
+    lst = read_csv(clear_scenes, header=None).iloc[:, 0].tolist()
     for item in lst:
         sat = item[:4].replace('0', '')
         dt = datetime.strptime(item[-8:], '%Y%m%d')
@@ -53,7 +53,8 @@ def pymetric_preparation(clear_scenes, pymetric_root, usgs_creds):
     for scene in scenes_list:
         out = os.path.join(pymetric_root, 'landsat', scene[3:6], scene[6:9],
                            scene[9:13])
-        down_usgs_by_list(list([scene]), usgs_creds_txt=usgs_creds, zipped=True,
+        down_usgs_by_list(list([scene]), usgs_creds_txt=usgs_creds,
+                          zipped=True,
                           output_dir=out)
     return None
 
