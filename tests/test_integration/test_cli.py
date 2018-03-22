@@ -97,9 +97,11 @@ class CommandLineTestCase(unittest.TestCase):
         filepath = os.path.join(root, base)
         args_list = ['--configuration', filepath]
         args = self.parser.parse_args(args_list)
-        scenes = main(args)
-        print(scenes)
-        self.assertEqual(scenes, self.config_scenes)
+        main(args)
+        self.assertTrue(os.path.isfile('/data01/images/landsat/041/027/2015/LE07_041027_20150308.tgz'))
+        self.assertTrue(os.path.isfile('/data01/images/landsat/041/027/2015/LE07_041027_20150409.tgz'))
+        os.remove('/data01/images/landsat/041/027/2015/LE70410272015067EDC00.tgz')
+        os.remove('/data01/images/landsat/041/027/2015/LE07_041027_20150409.tgz')
 
 
 if __name__ == '__main__':

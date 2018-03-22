@@ -13,7 +13,7 @@ usgs_creds: /data01/images/usgs.txt
 # mutually exclusive with output, put None if output is specified, and zipped: True
 # make sure to leave output_path, satellite, path, row, latitude, and logitude empty
 pymetric_root: /data01/images/
-clear_scenes: /data01/images/clear_scenes.txt
+clear_scenes: /data01/images/clear_scenes_test.txt
 return_list: True
 zipped: False
 max_cloud_percent: 100
