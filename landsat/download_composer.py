@@ -20,7 +20,6 @@ from datetime import datetime
 
 from .usgs_download import get_candidate_scenes_list, down_usgs_by_list
 from .web_tools import convert_lat_lon_wrs2pr
-from .pymetric_prep import pymetric_preparation
 
 
 class InvalidPathRowData(Exception):
@@ -29,17 +28,12 @@ class InvalidPathRowData(Exception):
 
 def download_landsat(start=None, end=None, satellite=None, latitude=None, longitude=None,
                      path=None, row=None, output_path=None,
-                     usgs_creds=None, return_list=False, zipped=False, max_cloud_percent=100,
-                     clear_scenes=None, pymetric_root=None):
+                     usgs_creds=None, return_list=False, zipped=False, max_cloud_percent=100):
     if path:
         pass
 
     elif latitude and longitude:
         path, row = convert_lat_lon_wrs2pr(latitude, longitude)
-
-    elif clear_scenes:
-        # all downloadiing and organization is thus called from pymetric_prep
-        pymetric_preparation(clear_scenes, pymetric_root, usgs_creds)
 
     else:
         raise InvalidPathRowData('Must give path/row tuple, lat/lon tuple plus row/path \n'
