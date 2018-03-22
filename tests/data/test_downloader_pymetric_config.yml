@@ -1,7 +1,7 @@
 
 # date format: 'YYYY-MM-DD'
-start: '2007-05-01'
-end: '2007-05-31'
+start:
+end:
 path:
 row:
 latitude:
@@ -15,5 +15,5 @@ usgs_creds: /data01/images/usgs.txt
 pymetric_root: /data01/images/
 clear_scenes: /data01/images/clear_scenes.txt
 return_list: True
-zipped: True
+zipped: False
 max_cloud_percent: 100
