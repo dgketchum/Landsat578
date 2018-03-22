@@ -23,9 +23,17 @@ from datetime import datetime
 
 try:
     from .download_composer import download_landsat
+
 except ImportError:
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     from .download_composer import download_landsat
+
+try:
+    from .pymetric_prep import pymetric_preparation
+
+except ImportError:
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from .pymetric_prep import pymetric_preparation
 
 
 class TooFewInputsError(Exception):
@@ -107,9 +115,13 @@ def main(args):
             with open(args.configuration, 'r') as rfile:
                 ycfg = yaml.load(rfile)
                 cfg.update(ycfg)
-            cfg['start'] = datetime.strptime(cfg['start'], fmt)
-            cfg['end'] = datetime.strptime(cfg['end'], fmt)
-            scenes = download_landsat(**cfg)
+            if cfg['pymetric_root']:
+                pymetric_preparation(cfg['clear_scenes'], cfg['pymetric_root'],
+                                     cfg['usgs_creds'])
+            else:
+                cfg['start'] = datetime.strptime(cfg['start'], fmt)
+                cfg['end'] = datetime.strptime(cfg['end'], fmt)
+                scenes = download_landsat(**cfg)
 
         if not args.configuration:
             if not args.start:
