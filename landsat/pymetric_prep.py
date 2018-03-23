@@ -35,7 +35,7 @@ def pymetric_preparation(clear_scenes, pymetric_root, usgs_creds):
     lst = read_csv(clear_scenes, header=None).iloc[:, 0].tolist()
     for item in lst:
         sat = item[:4].replace('0', '')
-        dt = datetime.strptime(item[-8:], '%Y%m%d'.lstrip())
+        dt = datetime.strptime(item[-8:], '%Y%m%d')
         start = dt - timedelta(days=1)
         end = dt + timedelta(days=1)
         path, row = item[5:8], item[8:11]
