@@ -102,9 +102,7 @@ def main(args):
         cfg = {'output_path': args.output,
                'usgs_creds': args.credentials,
                'return_list': args.return_list,
-               'zipped': args.zipped,
-               'pymetric_root': args.pymetric_root,
-               'clear_scenes': args.clear_scenes}
+               'zipped': args.zipped}
 
         if args.configuration:
             if os.path.isdir(args.configuration):
@@ -115,9 +113,9 @@ def main(args):
             with open(args.configuration, 'r') as rfile:
                 ycfg = yaml.load(rfile)
                 cfg.update(ycfg)
-            if cfg['pymetric_root']:
-                pymetric_preparation(cfg['clear_scenes'], cfg['pymetric_root'],
-                                     cfg['usgs_creds'])
+            if args.pymetric_root:
+                pymetric_preparation(args.clear_scenes, args.pymetric_root,
+                                     args.usgs_creds)
             else:
                 cfg['start'] = datetime.strptime(cfg['start'], fmt)
                 cfg['end'] = datetime.strptime(cfg['end'], fmt)
@@ -143,7 +141,7 @@ def main(args):
                 cfg['row'] = args.row
                 scenes = download_landsat(start, end, sat, **cfg)
 
-        if args.return_list:
+        if cfg['return_list']:
             return scenes
 
 
