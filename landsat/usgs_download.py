@@ -71,9 +71,9 @@ def unzip_image(tgzfile, outputdir):
     target_tgz = os.path.join(outputdir, tgzfile)
     if os.path.exists(target_tgz):
         print('found tgs: {} \nunzipping...'.format(target_tgz))
-        tfile = tarfile.open(target_tgz, 'r:gz')
-        tfile.extractall(outputdir)
-        print('unzipped\ndeleting tgz: {}'.format(target_tgz))
+        with tarfile.open(target_tgz, 'r:gz') as tgz:
+            tgz.extractall(outputdir)
+            print('unzipped\ndeleting tgz: {}'.format(target_tgz))
         os.remove(target_tgz)
     else:
         raise NotImplementedError('Did not find download output directory to unzip...')
