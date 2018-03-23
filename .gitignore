@@ -12,3 +12,6 @@ htmlcov
 .DS_Store
 notes
 *.pypirc
+tests/__pycache__/
+tests/test_integration/__pycache__/
+tests/test_unit/__pycache__/

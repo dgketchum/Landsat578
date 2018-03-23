@@ -16,57 +16,58 @@
 
 
 import os
+from datetime import datetime
 
-from landsat import usgs_download
-from landsat.web_tools import convert_lat_lon_wrs2pr
+from .usgs_download import get_candidate_scenes_list, down_usgs_by_list
+from .web_tools import convert_lat_lon_wrs2pr
 
 
 class InvalidPathRowData(Exception):
     pass
 
 
-def download_landsat(date_range, satellite, latitude=None, longitude=None,
-                     path_row_list=None,
-                     output_path=None, usgs_creds=None, dry_run=False):
-
-    start_date, end_date = date_range[0], date_range[1]
-
-    if path_row_list:
-        image_index = path_row_list
+def download_landsat(start=None, end=None, satellite=None, latitude=None, longitude=None,
+                     path=None, row=None, output_path=None,
+                     usgs_creds=None, return_list=False, zipped=False, max_cloud_percent=100):
+    if path:
+        pass
 
     elif latitude and longitude:
-        image_index = [convert_lat_lon_wrs2pr(latitude, longitude)]
+        path, row = convert_lat_lon_wrs2pr(latitude, longitude)
 
     else:
         raise InvalidPathRowData('Must give path/row tuple, lat/lon tuple plus row/path \n'
                                  'shapefile, or a path/rows shapefile!')
 
-    for tile in image_index:
+    scenes_list = get_candidate_scenes_list(path=path, row=row, sat_name=satellite, start_date=start,
+                                            end_date=end, max_cloud_cover=max_cloud_percent)
+    if not scenes_list:
+        print('No scenes for {} between {} and {}.'.format(satellite,
+                                                           datetime.strftime(start,
+                                                                             '%Y-doy %j'),
+                                                           datetime.strftime(end,
+                                                                             '%Y-doy %j')))
+        return None
 
-        scenes_list = usgs_download.get_candidate_scenes_list(tile,
-                                                              satellite,
-                                                              start_date,
-                                                              end_date)
+    elif return_list:
 
-        if dry_run:
+        print(scenes_list)
 
-            print(scenes_list)
+        return scenes_list
 
-            return scenes_list
+    else:
 
-        else:
+        destination_path = os.path.join(output_path, '{}_{}_{}'.format(
+            satellite, path, row))
 
-            destination_path = os.path.join(output_path, '{}_{}_{}'.format(
-                satellite, tile[0], tile[1]))
+        if not os.path.exists(destination_path):
+            print('making dir: {}'.format(destination_path))
+            os.makedirs(destination_path)
 
-            if not os.path.exists(destination_path):
-                print('making dir: {}'.format(destination_path))
-                os.mkdir(destination_path)
+        down_usgs_by_list(scenes_list, destination_path,
+                          usgs_creds, zipped)
 
-            usgs_download.down_usgs_by_list(scenes_list,
-                                            destination_path, usgs_creds)
-
-            return None
+        return None
 
 
 if __name__ == 'main':
