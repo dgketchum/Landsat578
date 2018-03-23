@@ -1,0 +1,13 @@
+
+start: '2007-05-01'
+end: '2007-05-31'
+path: 43
+row: 30
+latitude:
+longitude:
+output_path: None
+satellite: LT5
+usgs_creds: /data01/images/usgs.txt
+return_list: True
+zipped: False
+max_cloud_percent: 100
