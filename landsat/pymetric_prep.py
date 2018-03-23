@@ -35,16 +35,16 @@ def pymetric_preparation(clear_scenes, pymetric_root, usgs_creds):
     lst = read_csv(clear_scenes, header=None).iloc[:, 0].tolist()
     for item in lst:
         sat = item[:4].replace('0', '')
-        dt = datetime.strptime(item[-8:], '%Y%m%d')
+        dt = datetime.strptime(item[-8:], '%Y%m%d'.lstrip())
         start = dt - timedelta(days=1)
         end = dt + timedelta(days=1)
         path, row = item[5:8], item[8:11]
         if start.year not in years:
             years.append(start.year)
         if path not in paths:
-            paths.append(path)
+            paths.append(path.lstrip('0'))
         if row not in rows:
-            rows.append(row)
+            rows.append(row.lstrip('0'))
 
         scene = get_candidate_scenes_list(path, row, sat, start, end)
         scenes_list.append(scene[0])
