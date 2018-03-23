@@ -64,8 +64,7 @@ def download_landsat(start=None, end=None, satellite=None, latitude=None, longit
             print('making dir: {}'.format(destination_path))
             os.makedirs(destination_path)
 
-        down_usgs_by_list(scenes_list, destination_path,
-                          usgs_creds, zipped)
+        down_usgs_by_list(scenes_list, destination_path, usgs_creds, zipped)
 
         return None
 

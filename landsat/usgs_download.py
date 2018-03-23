@@ -136,7 +136,8 @@ def get_candidate_scenes_list(path, row, sat_name, start_date, end_date, max_clo
     return scene_list
 
 
-def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt, zipped=False):
+def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt, zipped=False,
+                      alt_name=None):
     usgs_creds = get_credentials(usgs_creds_txt)
 
     for product in scene_list:
@@ -145,7 +146,14 @@ def down_usgs_by_list(scene_list, output_dir, usgs_creds_txt, zipped=False):
         base_url = 'https://earthexplorer.usgs.gov/download/'
         tail_string = '{}/{}/STANDARD/EE'.format(identifier, product)
         url = '{}{}'.format(base_url, tail_string)
-        tgz_file = '{}.tgz'.format(product)
+
+        if alt_name:
+            tgz_file = '{}.tar.gz'.format(alt_name)
+            print('Downloading {} as name {}'.format(product, tgz_file))
+        else:
+
+            tgz_file = '{}.tgz'.format(product)
+
         if not zipped:
             scene_dir = os.path.join(output_dir, product)
             if not os.path.isdir(scene_dir):

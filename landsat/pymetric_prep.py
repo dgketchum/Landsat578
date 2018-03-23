@@ -50,12 +50,12 @@ def pymetric_preparation(clear_scenes, pymetric_root, usgs_creds):
         scenes_list.append(scene[0])
 
     orgainize_directory(pymetric_root, paths, rows, years)
-    for scene in scenes_list:
+    for scene, name in zip(scenes_list, lst):
         out = os.path.join(pymetric_root, 'landsat', scene[3:6].lstrip('0'), scene[6:9].lstrip('0'),
                            scene[9:13])
-        down_usgs_by_list(list([scene]), usgs_creds_txt=usgs_creds,
-                          zipped=True,
-                          output_dir=out)
+        down_usgs_by_list(list([scene]), output_dir=out,
+                          usgs_creds_txt=usgs_creds, zipped=True,
+                          alt_name=name)
     return None
 
 
@@ -73,7 +73,9 @@ def orgainize_directory(pymetric_rt, paths, rows, years):
                 try:
                     os.makedirs(dst_dir)
                     print('Made {}'.format(dst_dir))
-                except:
+                except Exception as e:
+                    print('Exception {}'.format(e))
+                    print('...skipping creation...')
                     pass
 
 

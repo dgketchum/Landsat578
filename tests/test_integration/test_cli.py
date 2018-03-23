@@ -99,8 +99,8 @@ class CommandLineTestCase(unittest.TestCase):
         args_list = ['--configuration', filepath]
         args = self.parser.parse_args(args_list)
         main(args)
-        self.assertTrue(os.path.isfile('/data01/images/landsat/041/027/2015/LE70410272015067EDC00.tgz'))
-        os.remove('/data01/images/landsat/041/027/2015/LE70410272015067EDC00.tgz')
+        self.assertTrue(os.path.isfile('/data01/images/landsat/041/027/2015/LC08_041028_20170828.tar.gz'))
+        os.remove('/data01/images/landsat/041/027/2015/LC08_041028_20170828.tar.gz')
 
 
 if __name__ == '__main__':
