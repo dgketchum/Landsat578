@@ -51,7 +51,7 @@ def pymetric_preparation(clear_scenes, pymetric_root, usgs_creds):
 
     orgainize_directory(pymetric_root, paths, rows, years)
     for scene in scenes_list:
-        out = os.path.join(pymetric_root, 'landsat', scene[3:6], scene[6:9],
+        out = os.path.join(pymetric_root, 'landsat', scene[3:6].lstrip('0'), scene[6:9].lstrip('0'),
                            scene[9:13])
         down_usgs_by_list(list([scene]), usgs_creds_txt=usgs_creds,
                           zipped=True,
