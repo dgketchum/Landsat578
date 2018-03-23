@@ -23,13 +23,13 @@ os.environ['TRAVIS_CI'] = 'True'
 try:
     from setuptools import setup
 
-    setup_kwargs = {'entry_points': {'console_scripts': ['landsat=landsat.landsat:__main__']}}
+    setup_kwargs = {'entry_points': {'console_scripts': ['landsat=landsat.landsat:cli_runner']}}
 except ImportError:
     from distutils.core import setup
 
     setup_kwargs = {'scripts': ['bin/landsat']}
 
-tag = '0.3.78'
+tag = '0.4.4'
 
 setup(name='Landsat578',
       version=tag,
@@ -52,7 +52,7 @@ setup(name='Landsat578',
       url='https://github.com/dgketchum',
       test_suite='tests.test_suite.suite', install_requires=['lxml', 'numpy', 'pandas',
                                                              'python-dateutil', 'pytz',
-                                                             'requests', 'six'],
+                                                             'requests', 'six', 'future', 'pyyaml'],
       **setup_kwargs)
 
 # ============= EOF ==============================================================
