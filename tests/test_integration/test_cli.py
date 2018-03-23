@@ -91,15 +91,15 @@ class CommandLineTestCase(unittest.TestCase):
         scenes = main(args)
         self.assertEqual(scenes, self.config_scenes)
 
-    # def test_pymetric_config(self):
-    #     root = 'tests'
-    #     base = pkg_resources.resource_filename('tests', 'data/test_downloader_pymetric_config.yml')
-    #     filepath = os.path.join(root, base)
-    #     args_list = ['--configuration', filepath]
-    #     args = self.parser.parse_args(args_list)
-    #     main(args)
-    #     self.assertTrue(os.path.isfile('/data01/images/landsat/041/027/2015/LE70410272015067EDC00.tgz'))
-    #     os.remove('/data01/images/landsat/041/027/2015/LE70410272015067EDC00.tgz')
+    def test_pymetric_config(self):
+        root = 'tests'
+        base = pkg_resources.resource_filename('tests', 'data/test_downloader_pymetric_config.yml')
+        filepath = os.path.join(root, base)
+        args_list = ['--configuration', filepath]
+        args = self.parser.parse_args(args_list)
+        main(args)
+        self.assertTrue(os.path.isfile('/data01/images/landsat/041/027/2015/LE70410272015067EDC00.tgz'))
+        os.remove('/data01/images/landsat/041/027/2015/LE70410272015067EDC00.tgz')
 
 
 if __name__ == '__main__':
