@@ -113,9 +113,9 @@ def main(args):
             with open(args.configuration, 'r') as rfile:
                 ycfg = yaml.load(rfile)
                 cfg.update(ycfg)
-            if args.pymetric_root:
-                pymetric_preparation(args.clear_scenes, args.pymetric_root,
-                                     args.usgs_creds)
+            if cfg['pymetric_root']:
+                pymetric_preparation(cfg['clear_scenes'], cfg['pymetric_root'],
+                                     cfg['usgs_creds'])
             else:
                 cfg['start'] = datetime.strptime(cfg['start'], fmt)
                 cfg['end'] = datetime.strptime(cfg['end'], fmt)
