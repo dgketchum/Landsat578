@@ -73,9 +73,7 @@ def orgainize_directory(pymetric_rt, paths, rows, years):
                 try:
                     os.makedirs(dst_dir)
                     print('Made {}'.format(dst_dir))
-                except FileNotFoundError:
-                    pass
-                except FileExistsError:
+                except:
                     pass
 
 
