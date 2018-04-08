@@ -113,10 +113,11 @@ def main(args):
             with open(args.configuration, 'r') as rfile:
                 ycfg = yaml.load(rfile)
                 cfg.update(ycfg)
-            if cfg['pymetric_root']:
+
+            try:
                 pymetric_preparation(cfg['clear_scenes'], cfg['pymetric_root'],
                                      cfg['usgs_creds'])
-            else:
+            except KeyError:
                 cfg['start'] = datetime.strptime(cfg['start'], fmt)
                 cfg['end'] = datetime.strptime(cfg['end'], fmt)
                 scenes = download_landsat(**cfg)
