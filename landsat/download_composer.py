@@ -15,50 +15,35 @@
 # ===============================================================================
 
 
-from datetime import datetime
-
-from .usgs_download import get_candidate_scenes_list, down_usgs_by_list
 from .web_tools import convert_lat_lon_wrs2pr
+from .google_download import get_candidate_scenes_list, down_google_by_url_list
 
 
 class InvalidPathRowData(Exception):
     pass
 
 
-def download_landsat(start=None, end=None, satellite=None, latitude=None, longitude=None,
-                     path=None, row=None, output_path=None,
-                     usgs_creds=None, return_list=False, zipped=False, max_cloud_percent=100):
+def download_landsat(start=None, end=None, satellite=None, latitude=None, longitude=None, path=None, row=None,
+                     output_path=None, return_list=False, zipped=False, max_cloud_percent=100):
     if path:
         pass
-
     elif latitude and longitude:
         path, row = convert_lat_lon_wrs2pr(latitude, longitude)
-
     else:
         raise InvalidPathRowData('Must give path/row tuple, lat/lon tuple plus row/path \n'
                                  'shapefile, or a path/rows shapefile!')
-
-    scenes_list = get_candidate_scenes_list(path=path, row=row, sat_name=satellite, start_date=start,
-                                            end_date=end, max_cloud_cover=max_cloud_percent)
+    scenes_list, urls = get_candidate_scenes_list(path=path, row=row, sat_number=satellite, start_date=start,
+                                                  end_date=end, max_cloud_cover=max_cloud_percent)
     if not scenes_list:
-        print('No scenes for {} between {} and {}.'.format(satellite,
-                                                           datetime.strftime(start,
-                                                                             '%Y-doy %j'),
-                                                           datetime.strftime(end,
-                                                                             '%Y-doy %j')))
+        print('No scenes for {} between {} and {}.'.format(satellite, start, end))
         return None
 
     elif return_list:
-
         print(scenes_list)
-
         return scenes_list
 
     else:
-
-        down_usgs_by_list(scenes_list, output_path,
-                          usgs_creds, zipped)
-
+        down_google_by_url_list(scenes_list, output_path, zipped)
         return None
 
 

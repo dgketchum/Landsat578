@@ -120,7 +120,7 @@ def main(args):
             except KeyError:
                 cfg['start'] = datetime.strptime(cfg['start'], fmt)
                 cfg['end'] = datetime.strptime(cfg['end'], fmt)
-                scenes = download_landsat(**cfg)
+                scenes = download_landsat()
 
         if not args.configuration:
             if not args.start:
@@ -134,13 +134,13 @@ def main(args):
                 print('\nStarting download with latlon...')
                 cfg['latitude'] = args.latitude
                 cfg['longitude'] = args.longitude
-                scenes = download_landsat(start, end, sat, **cfg)
+                scenes = download_landsat(start, end, sat)
 
             elif args.path:
                 print('\nStarting download with pathrow...')
                 cfg['path'] = args.path
                 cfg['row'] = args.row
-                scenes = download_landsat(start, end, sat, **cfg)
+                scenes = download_landsat(start, end, sat)
 
         if cfg['return_list']:
             return scenes

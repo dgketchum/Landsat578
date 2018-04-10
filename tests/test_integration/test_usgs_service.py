@@ -78,11 +78,8 @@ class DownloadBadCredsTestCase(unittest.TestCase):
 
     def test_bad_credentials(self):
         try:
-            dc.download_landsat(start=self.start, end=self.end,
-                                satellite=self.sat, output_path=self.output,
-                                usgs_creds=self.bad_usgs_creds,
-                                path=self.path, row=self.row,
-                                return_list=False)
+            dc.download_landsat(start=self.start, end=self.end, satellite=self.sat, path=self.path, row=self.row,
+                                output_path=self.output, return_list=False)
         except InvalidCredentialsResponse:
             self.assertIsInstance([1, 2], list)
 
