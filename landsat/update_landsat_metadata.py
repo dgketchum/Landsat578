@@ -16,7 +16,6 @@
 
 import os
 import gzip
-import pickle
 from numpy import unique
 from datetime import datetime
 from pandas import read_csv
@@ -28,6 +27,8 @@ ZIP_PATH = 'index.csv.gz'
 fmt = '%Y%m%d'
 date = datetime.strftime(datetime.now(), fmt)
 LATEST = 'scenes_{}'.format(date)
+
+PARSE_DATES = ['DATE_ACQUIRED', 'SENSING_TIME']
 
 
 def update():
@@ -59,20 +60,19 @@ def download_latest_metadata():
 
 
 def split_list(_list=LATEST):
-    csv = read_csv(_list)
-    m = {}
+    csv = read_csv(_list, parse_dates=PARSE_DATES)
     sats = unique(csv.SPACECRAFT_ID).tolist()
     for sat in sats:
         df = csv[csv.SPACECRAFT_ID == sat]
         df.to_pickle(sat)
 
-    os.remove(ZIP_PATH)
-    os.remove(LATEST)
+    # os.remove(ZIP_PATH)
+    # os.remove(LATEST)
 
     return None
 
 
 if __name__ == '__main__':
-    scenes = os.path.dirname(__file__).replace('landsat', 'scene_list])
+    scenes = os.path.dirname(__file__).replace('landsat', 'scene_list')
     update()
-    # ========================= EOF ================================================================
+# ========================= EOF ================================================================

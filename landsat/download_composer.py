@@ -15,7 +15,6 @@
 # ===============================================================================
 
 
-import os
 from datetime import datetime
 
 from .usgs_download import get_candidate_scenes_list, down_usgs_by_list
