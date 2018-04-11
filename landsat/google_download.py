@@ -15,9 +15,17 @@
 # =============================================================================================
 
 import os
+import tarfile
+import shutil
+from warnings import warn
 from pandas import read_pickle
 from datetime import datetime as dt
 from requests import get
+
+try:
+    from urllib.parse import urlparse, urlunparse, ParseResult
+except ImportError:
+    from urlparse import urlparse, urlunparse, ParseResult
 
 from fiona import open as fopen
 from shapely.geometry import shape, Point
@@ -39,9 +47,12 @@ class MissingInitData(Exception):
 
 class GoogleDownload(object):
     def __init__(self, satellite_number, start_date, end_date,
-                 path=None, row=None, latitude=None, longitude=None, max_cloud=70):
+                 path=None, row=None, latitude=None, longitude=None, max_cloud=70,
+                 instrument=None):
 
-        self.sat = satellite_number
+        self.sat_num = satellite_number
+        self.sat_name = 'LANDSAT_{}'.format(self.sat_num)
+        self.instrument = instrument
         self.start = dt.strptime(start_date, fmt)
         self.end = dt.strptime(end_date, fmt)
         self.cloud = max_cloud
@@ -65,6 +76,35 @@ class GoogleDownload(object):
         self._check_scenes_lists()
         self._get_candidate_scenes()
 
+    def download(self, output_dir, zipped=False,
+                 alt_name=None):
+
+        self.output = output_dir
+        for ind, row in self.scenes_df.iterrows():
+            for band in self.band_map[self.sat_name]:
+
+                url = self._make_url(row, band)
+
+                dst = os.path.join(self.output, row.SCENE_ID, os.path.basename(url))
+
+                out_dir = os.path.join(self.output, row.SCENE_ID)
+                if not os.path.isdir(out_dir):
+                    os.mkdir(out_dir)
+
+                if not os.path.isfile(dst):
+                    self._fetch_image(url, dst)
+                else:
+                    print('{} exists'.format(dst))
+
+            if zipped:
+                tgz_file = '{}.tar.gz'.format(row.SCENE_ID)
+                self._zip_image(tgz_file, out_dir)
+            if alt_name:
+                tgz_file = '{}.tar.gz'.format(alt_name)
+                self._zip_image(tgz_file, out_dir)
+
+        return None
+
     def _check_pr_lat_lon(self):
         if self.p and self.r:
             pass
@@ -81,7 +121,7 @@ class GoogleDownload(object):
             if s not in list_dir:
                 print('Appears there is not scenes list, downloading and processing...')
                 update()
-        path = os.path.join(self.scenes, 'LANDSAT_{}'.format(self.sat))
+        path = os.path.join(self.scenes, 'LANDSAT_{}'.format(self.sat_num))
         self.scenes_abspath = path
 
     def _get_candidate_scenes(self):
@@ -90,48 +130,11 @@ class GoogleDownload(object):
                     & (self.start < df.DATE_ACQUIRED) & (df.DATE_ACQUIRED < self.end)]
         df.dropna(subset=['PRODUCT_ID'], inplace=True, axis=0)
         self.scenes_df = df
+        if df.shape[0] == 0:
+            warn('There are no images for the satellite, time period, and cloud cover constraints provided.')
         self.urls = df.BASE_URL.values.tolist()
         self.product_ids = df.PRODUCT_ID.values.tolist()
         self.scene_ids = df.SCENE_ID.values.tolist()
-
-    def download(self, output_dir, zipped=False,
-                 alt_name=None):
-
-        self.output = output_dir
-        for product in self.urls:
-
-            if alt_name:
-                tgz_file = '{}.tar.gz'.format(alt_name)
-                self.fetch_image(product)
-                self.zip_image()
-
-            if zipped:
-                self.fetch_image(product)
-                self.zip_image()
-
-            else:
-                self.fetch_image(product)
-
-        return None
-
-    def _fetch_image(self, product, outdir=None):
-        if not outdir:
-            self.output = os.getcwd()
-
-        req = get(product, stream=True)
-
-        if req.status_code != 200:
-            print('Code {}'.format(req.status_code))
-            raise BadRequestsResponse(Exception)
-
-        with open(product, 'wb') as f:
-            print('Downloading {}'.format(product))
-            for chunk in req.iter_content(chunk_size=1024):
-                if chunk:
-                    f.write(chunk)
-
-    def zip_image(self):
-        pass
 
     def _pr_from_latlon(self):
 
@@ -162,12 +165,47 @@ class GoogleDownload(object):
 
              'LANDSAT_8': ['B1.TIF', 'B2.TIF', 'B3.TIF', 'B4.TIF', 'B5.TIF', 'B6.TIF',
                            'B7.TIF', 'B8.TIF', 'B9.TIF', 'B10.TIF', 'B11.TIF', 'BQA.TIF', 'MTL.txt']}
+        return b
+
+    @staticmethod
+    def _make_url(row, band):
+
+        parse = urlparse('http://storage.googleapis.com/gcp-public-data-landsat/LC08/01/037/029/'
+                         'LC08_L1TP_037029_20130602_20170310_01_T1/LC08_L1TP_037029_20130602_20170310_01_T1_B2.TIF')
+
+        base = row.BASE_URL.replace('gs://', '')
+        path = '{}/{}_{}'.format(base, row.PRODUCT_ID, band)
+        url = urlunparse([parse.scheme, parse.netloc, path, '', '', ''])
+        return url
+
+    @staticmethod
+    def _fetch_image(url, destination_path=None):
+
+        if not destination_path:
+            destination_path = os.path.join(os.getcwd(), os.path.basename(url))
+
+        response = get(url, stream=True)
+        if response.status_code == 200:
+            with open(destination_path, 'wb') as f:
+                for chunk in response.iter_content(chunk_size=1024 * 1024 * 8):
+                    f.write(chunk)
+
+        elif response.status_code > 399:
+            print('Code {}'.format(response.status_code))
+            raise BadRequestsResponse(Exception)
+
+    @staticmethod
+    def _zip_image(output_filename, source_dir):
+        out_location = os.path.dirname(source_dir)
+        with tarfile.open(os.path.join(out_location, output_filename), "w:gz") as tar:
+            tar.add(source_dir)
+        shutil.rmtree(source_dir)
 
 
 if __name__ == '__main__':
     home = os.path.expanduser('~')
-    g = GoogleDownload(8, '2013-05-01', '2013-10-21', path=39, row=27, max_cloud=20)
-    out = os.path.join(home, 'landsat_data')
-    g.download(out)
+    g = GoogleDownload(8, '2013-07-01', '2013-07-21', path=39, row=27, max_cloud=20)
+    out = os.path.join(home, 'landsat_images')
+    g.download(out, zipped=True)
 
 # ========================= EOF ================================================================
