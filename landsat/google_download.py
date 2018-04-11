@@ -81,6 +81,7 @@ class GoogleDownload(object):
 
         self.output = output_dir
         for ind, row in self.scenes_df.iterrows():
+            print('Image {} for {}'.format(row.SCENE_ID, row.DATE_ACQUIRED))
             for band in self.band_map[self.sat_name]:
 
                 url = self._make_url(row, band)
@@ -187,6 +188,7 @@ class GoogleDownload(object):
         response = get(url, stream=True)
         if response.status_code == 200:
             with open(destination_path, 'wb') as f:
+                print('Getting {}'.format(os.path.basename(url)))
                 for chunk in response.iter_content(chunk_size=1024 * 1024 * 8):
                     f.write(chunk)
 
@@ -206,6 +208,6 @@ if __name__ == '__main__':
     home = os.path.expanduser('~')
     g = GoogleDownload(8, '2013-07-01', '2013-07-21', path=39, row=27, max_cloud=20)
     out = os.path.join(home, 'landsat_images')
-    g.download(out, zipped=True)
+    g.download(out, zipped=False)
 
 # ========================= EOF ================================================================
