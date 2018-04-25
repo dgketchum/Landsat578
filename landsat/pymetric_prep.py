@@ -16,7 +16,6 @@
 
 import os
 from pandas import read_csv
-from .usgs_download import get_candidate_scenes_list, down_usgs_by_list
 from datetime import datetime, timedelta
 
 """

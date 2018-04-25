@@ -66,9 +66,6 @@ def split_list(_list=LATEST):
         df = csv[csv.SPACECRAFT_ID == sat]
         df.to_pickle(sat)
 
-    # os.remove(ZIP_PATH)
-    # os.remove(LATEST)
-
     return None
 
 

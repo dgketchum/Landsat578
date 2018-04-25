@@ -19,19 +19,15 @@ import unittest
 
 def suite():
     print('Testing.......................................')
-    from tests.test_integration.test_usgs_service import USGSLandstatTestCase
     from tests.test_integration.test_cli import CommandLineTestCase
 
     # from tests.test_integration.test_downer import NevadaDownloadTestCase
-    from tests.test_unit.test_web_tools import WebToolsTestCase
     from tests.test_unit.test_scenes_list import ScenesListTestCaseL7Multi
 
     loader = unittest.TestLoader()
     test_suite = unittest.TestSuite()
 
-    tests = (USGSLandstatTestCase,
-             WebToolsTestCase,
-             CommandLineTestCase,
+    tests = (
              # NevadaDownloadTestCase,
              ScenesListTestCaseL7Multi)
 
