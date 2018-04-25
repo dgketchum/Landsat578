@@ -8,8 +8,8 @@
 # Easy Landsat Download
 
 Download and unzip Landsat 5, 7, and 8 (a.k.a. LT5, LE7, LC8) images 
-via the USGS website automatically using a command line interface or 
-a simple python script.
+via the Google service automatically using a command line interface or
+a simple python script. (Now you can get all Landsat [1, 2, 3, 4, 5, 7, 8]!)
 
 Python 2.7 and 3.6 compatible.
 
@@ -18,10 +18,6 @@ To get the package from PyPi:
 ```
 $ pip install Landsat578
 ```
-
-Go to the USGS [Earth Observation site](https://ers.cr.usgs.gov/register/), and start an 
-account.  Put your username and password seperated by one space in a .txt file
-for use while downloading. Don't put spaces in your password itself.
 
 Landsat instruments orbit the earth in sun-synchronous fashion.
 They pass over each place at approximately the same 
