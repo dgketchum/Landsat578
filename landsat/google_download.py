@@ -23,18 +23,20 @@ from datetime import datetime as dt
 from requests import get
 
 try:
-    from urllib.parse import urlparse, urlunparse, ParseResult
+    from urllib.parse import urlparse, urlunparse
 except ImportError:
-    from urlparse import urlparse, urlunparse, ParseResult
+    from urlparse import urlparse, urlunparse
 
 from fiona import open as fopen
 from shapely.geometry import shape, Point
 
-from update_landsat_metadata import update
+from .update_landsat_metadata import update
+from .band_map import BandMap
 
 SATS = ['LANDSAT_1', 'LANDSAT_2', 'LANDSAT_3', 'LANDSAT_4',
         'LANDSAT_5', 'LANDSAT_7', 'LANDSAT_8']
 fmt = '%Y-%m-%d'
+MAP = {5: 'LT5', 7: 'LE7', 8: 'LC8'}
 
 
 class BadRequestsResponse(Exception):
@@ -72,9 +74,10 @@ class GoogleDownload(object):
         self.current_image = None
 
         self.scenes_abspath = None
-        self.scenes = os.path.abspath(os.path.dirname(__file__).replace('landsat', 'scene_list'))
+        self.scenes = os.path.abspath(os.path.dirname(__file__).replace('sat_image', 'scene_list'))
         self._check_scenes_lists()
         self._get_candidate_scenes()
+        self.band_map = BandMap()
 
     def download(self, output_dir, zipped=False,
                  alt_name=None):
@@ -82,7 +85,7 @@ class GoogleDownload(object):
         self.output = output_dir
         for ind, row in self.scenes_df.iterrows():
             print('Image {} for {}'.format(row.SCENE_ID, row.DATE_ACQUIRED))
-            for band in self.band_map[self.sat_name]:
+            for band in self.band_map.file_suffixes[self.sat_name]:
 
                 url = self._make_url(row, band)
 
@@ -94,8 +97,6 @@ class GoogleDownload(object):
 
                 if not os.path.isfile(dst):
                     self._fetch_image(url, dst)
-                else:
-                    print('{} exists'.format(dst))
 
             if zipped:
                 tgz_file = '{}.tar.gz'.format(row.SCENE_ID)
@@ -117,11 +118,13 @@ class GoogleDownload(object):
 
     def _check_scenes_lists(self):
         list_dir = [x for x in os.listdir(self.scenes)]
-        instruments = ['LANDSAT_1', 'LANDSAT_2', 'LANDSAT_3', 'LANDSAT_4', 'LANDSAT_5', 'LANDSAT_7', 'LANDSAT_8']
+        instruments = ['LANDSAT_1', 'LANDSAT_2', 'LANDSAT_3', 'LANDSAT_4',
+                       'LANDSAT_5', 'LANDSAT_7', 'LANDSAT_8']
         for s in instruments:
             if s not in list_dir:
                 print('Appears there is not scenes list, downloading and processing...')
                 update()
+                break
         path = os.path.join(self.scenes, 'LANDSAT_{}'.format(self.sat_num))
         self.scenes_abspath = path
 
@@ -152,22 +155,6 @@ class GoogleDownload(object):
                 polys.append(geo)
         return polys
 
-    @property
-    def band_map(self):
-
-        b = {'LANDSAT_1': ['B1.TIF', 'B2.TIF', 'B3.TIF', 'B4.TIF', 'B5.TIF', 'B6.TIF', 'B7.TIF', 'MTL.txt'],
-             'LANDSAT_2': ['B1.TIF', 'B2.TIF', 'B3.TIF', 'B4.TIF', 'B5.TIF', 'B6.TIF', 'B7.TIF', 'MTL.txt'],
-             'LANDSAT_3': ['B1.TIF', 'B2.TIF', 'B3.TIF', 'B4.TIF', 'B5.TIF', 'B6.TIF', 'B7.TIF', 'MTL.txt'],
-             'LANDSAT_4': ['B1.TIF', 'B2.TIF', 'B3.TIF', 'B4.TIF', 'B5.TIF', 'B6.TIF', 'B7.TIF', 'MTL.txt'],
-             'LANDSAT_5': ['B1.TIF', 'B2.TIF', 'B3.TIF', 'B4.TIF', 'B5.TIF', 'B6.TIF', 'B7.TIF', 'MTL.txt'],
-
-             'LANDSAT_7': ['B1.TIF', 'B2.TIF', 'B3.TIF', 'B4.TIF', 'B5.TIF', 'B6.TIF',
-                           'B6_VCID_1.TIF', 'B6_VCID_2.TIF', 'B7.TIF', 'B8.TIF', 'MTL.txt'],
-
-             'LANDSAT_8': ['B1.TIF', 'B2.TIF', 'B3.TIF', 'B4.TIF', 'B5.TIF', 'B6.TIF',
-                           'B7.TIF', 'B8.TIF', 'B9.TIF', 'B10.TIF', 'B11.TIF', 'BQA.TIF', 'MTL.txt']}
-        return b
-
     @staticmethod
     def _make_url(row, band):
 
@@ -185,16 +172,19 @@ class GoogleDownload(object):
         if not destination_path:
             destination_path = os.path.join(os.getcwd(), os.path.basename(url))
 
-        response = get(url, stream=True)
-        if response.status_code == 200:
-            with open(destination_path, 'wb') as f:
-                print('Getting {}'.format(os.path.basename(url)))
-                for chunk in response.iter_content(chunk_size=1024 * 1024 * 8):
-                    f.write(chunk)
+        try:
+            response = get(url, stream=True)
+            if response.status_code == 200:
+                with open(destination_path, 'wb') as f:
+                    print('Getting {}'.format(os.path.basename(url)))
+                    for chunk in response.iter_content(chunk_size=1024 * 1024 * 8):
+                        f.write(chunk)
 
-        elif response.status_code > 399:
-            print('Code {}'.format(response.status_code))
-            raise BadRequestsResponse(Exception)
+            elif response.status_code > 399:
+                print('Code {}'.format(response.status_code))
+                raise BadRequestsResponse(Exception)
+        except BadRequestsResponse:
+            pass
 
     @staticmethod
     def _zip_image(output_filename, source_dir):
