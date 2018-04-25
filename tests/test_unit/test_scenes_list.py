@@ -17,7 +17,7 @@
 import unittest
 from datetime import datetime
 
-from landsat.usgs_download import get_candidate_scenes_list
+from core.usgs_download import get_candidate_scenes_list
 
 
 class ScenesListTestCaseL7Single(unittest.TestCase):

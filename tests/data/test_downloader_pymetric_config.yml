@@ -9,7 +9,7 @@ longitude:
 output_path: None
 satellite:
 usgs_creds: /data01/images/usgs.txt
-# pymetric directory structure: e.g. D:/pyMETRIC/harney/landsat/path/row/year
+# pymetric directory structure: e.g. D:/pyMETRIC/harney/core/path/row/year
 # mutually exclusive with output, put None if output is specified, and zipped: True
 # make sure to leave output_path, satellite, path, row, latitude, and logitude empty
 pymetric_root: /data01/images/

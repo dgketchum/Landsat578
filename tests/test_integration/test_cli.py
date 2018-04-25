@@ -18,8 +18,8 @@ import unittest
 
 import pkg_resources
 
-from landsat.landsat import create_parser, main
-from landsat.landsat import TooFewInputsError
+from core.landsat import create_parser, main
+from core.landsat import TooFewInputsError
 
 
 class CommandLineTestCase(unittest.TestCase):
@@ -99,8 +99,8 @@ class CommandLineTestCase(unittest.TestCase):
         args_list = ['--configuration', filepath]
         args = self.parser.parse_args(args_list)
         main(args)
-        self.assertTrue(os.path.isfile('/data01/images/landsat/041/027/2015/LC08_041028_20170828.tar.gz'))
-        os.remove('/data01/images/landsat/041/027/2015/LC08_041028_20170828.tar.gz')
+        self.assertTrue(os.path.isfile('/data01/images/core/041/027/2015/LC08_041028_20170828.tar.gz'))
+        os.remove('/data01/images/core/041/027/2015/LC08_041028_20170828.tar.gz')
 
 
 if __name__ == '__main__':
