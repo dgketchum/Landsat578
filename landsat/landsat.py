@@ -64,7 +64,7 @@ def create_parser():
     parser.add_argument('-lon', '--longitude', help='Longitude, decimal degrees', type=float, default=None)
     parser.add_argument('-p', '--path', help='The path', type=str, default=None)
     parser.add_argument('-r', '--row', help='The row', type=str, default=None)
-    parser.add_argument('-o', '--output', help='Output directory', default=CONFIG_PLACEMENT)
+    parser.add_argument('-o', '--output-path', help='Output directory', default=CONFIG_PLACEMENT)
 
     parser.add_argument('-conf', '--configuration', help='Path to your configuration file. If a directory is provided,'
                                                          'a template cofiguration file will be created there.')
@@ -99,7 +99,6 @@ def main(args):
                 cfg[arg] = var
 
         if cfg['update_scenes']:
-            del cfg['update_scenes']
             update()
 
         if args.configuration:
@@ -107,15 +106,16 @@ def main(args):
                 print('Creating template configuration file at {}.'.format(args.configuration))
                 check_config(args.configuration)
 
-            print('\nStarting download with configuration file {}'.format(args.configuration))
             with open(args.configuration, 'r') as rfile:
                 ycfg = yaml.load(rfile)
                 cfg.update(ycfg)
-                del cfg['configuration']
 
             if cfg['return_list']:
                 return_scene_list = True
+
             del cfg['return_list']
+            del cfg['configuration']
+            del cfg['update_scenes']
 
             if cfg['pymetric_root']:
                 pymetric_download(cfg['clear_scenes'], cfg['pymetric_root'])
