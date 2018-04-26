@@ -23,11 +23,11 @@ os.environ['TRAVIS_CI'] = 'True'
 try:
     from setuptools import setup
 
-    setup_kwargs = {'entry_points': {'console_scripts': ['core=core.core:cli_runner']}}
+    setup_kwargs = {'entry_points': {'console_scripts': ['landsat=landsat.landsat:cli_runner']}}
 except ImportError:
     from distutils.core import setup
 
-    setup_kwargs = {'scripts': ['bin/core']}
+    setup_kwargs = {'scripts': ['bin/landsat']}
 
 tag = '0.4.6'
 
@@ -35,7 +35,7 @@ setup(name='Landsat578',
       version=tag,
       description='Very simple API to download Landsat data from LT5, LE7, and LC8 from USGS',
       setup_requires=['nose>=1.0'],
-      py_modules=['core'],
+      py_modules=['landsat'],
       license='Apache', classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Science/Research',
@@ -43,11 +43,11 @@ setup(name='Landsat578',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.6'],
-      keywords='core download hydrology remote sensing',
+      keywords='landsat download hydrology remote sensing',
       author='David Ketchum',
       author_email='dgketchum@gmail.com',
       platforms='Posix; MacOS X; Windows',
-      packages=['core'],
+      packages=['landsat'],
       download_url='https://github.com/{}/{}/archive/{}.tar.gz'.format('dgketchum', 'Landsat578', tag),
       url='https://github.com/dgketchum',
       test_suite='tests.test_suite.suite', install_requires=['lxml', 'numpy', 'pandas',

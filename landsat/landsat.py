@@ -1,0 +1,142 @@
+#!/usr/bin/env python
+# ===============================================================================
+# Copyright 2017 dgketchum
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ===============================================================================
+import os
+import argparse
+import sys
+import yaml
+
+try:
+    from google_download import GoogleDownload
+
+except ImportError:
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from .google_download import GoogleDownload
+
+try:
+    from .ymetric_prep import pymetric_preparation
+
+except ImportError:
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from .pymetric_prep import pymetric_download
+
+
+class TooFewInputsError(Exception):
+    pass
+
+
+DEFAULT_CFG = '''
+# date format: 'YYYY-MM-DD'
+start: '2007-05-01'
+end: '2007-05-31'
+path: 43
+row: 30
+latitude:
+longitude:
+output_path: None
+satellite: 5
+# pymetric directory structure: e.g. D:/pyMETRIC/harney/landsat/path/row/year
+pymetric_root: D:/pyMETRIC/root
+clear_scenes: D:/pyMETRIC/misc/clear_scenes.txt
+return_list: False
+zipped: True
+max_cloud_percent: 100
+'''
+
+
+def create_parser():
+    parser = argparse.ArgumentParser(prog='landsat', description='Download and unzip landsat data.')
+
+    parser.add_argument('--satellite', help='Satellite number: 1-8, except 6')
+    parser.add_argument('--start', help='Start date in format YYYY-MM-DD')
+    parser.add_argument('--end', help='End date in format YYYY-MM-DD')
+    parser.add_argument('-lat', '--latitude', help='Latitude, decimal degrees', type=str, default=None)
+    parser.add_argument('-lon', '--longitude', help='Longitude, decimal degrees', type=str, default=None)
+    parser.add_argument('-p', '--path', help='The path', default=None)
+    parser.add_argument('-r', '--row', help='The row', default=None)
+    parser.add_argument('-o', '--output', help='Output directory', default=os.getcwd())
+
+    parser.add_argument('-conf', '--configuration', help='Path to your configuration file. If a directory is provided,'
+                                                         'a template cofiguration file will be created there.')
+    parser.add_argument('-cs', '--clear-scenes', help='Path to your clear scenes file.')
+    parser.add_argument('-pym', '--pymetric-root', help='Path to your pyMETRIC study area root dir.')
+
+    parser.add_argument('--return-list', help='Just return list of images without downloading', action='store_true',
+                        default=False)
+
+    parser.add_argument('--zipped', help='Download .tar.gz file(s), without unzipping',
+                        action='store_true', default=False)
+
+    parser.add_argument('--max-cloud-percent', help='Maximum percent of of image obscured by clouds accepted,'
+                                                    ' type integer',
+                        default=100)
+
+    return parser
+
+
+def main(args):
+    if args:
+
+        cfg = vars(args)
+        if args.configuration:
+            if os.path.isdir(args.configuration):
+                print('Creating template configuration file at {}.'.format(args.configuration))
+                check_config(args.configuration)
+
+            print('\nStarting download with configuration file {}'.format(args.configuration))
+            with open(args.configuration, 'r') as rfile:
+                ycfg = yaml.load(rfile)
+                cfg.update(ycfg)
+
+            try:
+                pymetric_download(cfg['clear_scenes'], cfg['pymetric_root'])
+            except KeyError:
+                g = GoogleDownload(**cfg)
+                g.download()
+
+        else:
+            g = GoogleDownload(**args)
+            if args.return_scenes:
+                return g.candidate_scenes()
+            else:
+                g.download()
+
+
+def cli_runner():
+    parser = create_parser()
+    args = parser.parse_args()
+    return main(args)
+
+
+def check_config(dirname):
+    path = os.path.join(dirname, 'downloader_config.yml')
+    print('\n*****A default config file {} will be written'.format(path))
+
+    with open(path, 'w') as wfile:
+        print('-------------- DEFAULT CONFIG -----------------')
+        print(DEFAULT_CFG)
+        print('-----------------------------------------------')
+        wfile.write(DEFAULT_CFG)
+
+    print('***** Please edit the config file at {} and run the downer again *****\n'.format(
+        dirname))
+
+    sys.exit()
+
+
+if __name__ == '__main__':
+    cli_runner()
+# ===============================================================================
