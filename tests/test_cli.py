@@ -100,7 +100,7 @@ class CommandLineTestCase(unittest.TestCase):
         base = pkg_resources.resource_filename('tests', 'data/downloader_config_pymetric.yml')
         filepath = os.path.join(root, base)
         temp = os.path.join(os.path.dirname(filepath), 'temp')
-        os.mkdir(temp)
+        # os.mkdir(temp)
         args_list = ['--configuration', filepath]
         args = self.parser.parse_args(args_list)
         main(args)
