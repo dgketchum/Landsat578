@@ -17,7 +17,7 @@
 import os
 import argparse
 import sys
-
+import yaml
 
 from .google_download import GoogleDownload
 from .pymetric_prep import pymetric_download
@@ -45,10 +45,13 @@ max_cloud_percent: 100
 
 # pymetric directory structure: e.g. D:/pyMETRIC/harney/landsat/path/row/year
 # using pymetric_root and clear_scenes overrides all other arguments
+# leave blank to disable
 
 pymetric_root: D:/pyMETRIC/root
 clear_scenes: D:/pyMETRIC/misc/clear_scenes.txt
 '''
+
+CONFIG_PLACEMENT = os.path.dirname(__file__)
 
 
 def create_parser():
@@ -61,7 +64,7 @@ def create_parser():
     parser.add_argument('-lon', '--longitude', help='Longitude, decimal degrees', type=float, default=None)
     parser.add_argument('-p', '--path', help='The path', type=str, default=None)
     parser.add_argument('-r', '--row', help='The row', type=str, default=None)
-    parser.add_argument('-o', '--output', help='Output directory', default=os.getcwd())
+    parser.add_argument('-o', '--output', help='Output directory', default=CONFIG_PLACEMENT)
 
     parser.add_argument('-conf', '--configuration', help='Path to your configuration file. If a directory is provided,'
                                                          'a template cofiguration file will be created there.')
@@ -85,6 +88,8 @@ def create_parser():
 
 
 def main(args):
+    return_scene_list = False
+
     if args:
 
         cfg = {}
@@ -94,6 +99,7 @@ def main(args):
                 cfg[arg] = var
 
         if cfg['update_scenes']:
+            del cfg['update_scenes']
             update()
 
         if args.configuration:
@@ -105,18 +111,24 @@ def main(args):
             with open(args.configuration, 'r') as rfile:
                 ycfg = yaml.load(rfile)
                 cfg.update(ycfg)
+                del cfg['configuration']
 
-            try:
+            if cfg['return_list']:
+                return_scene_list = True
+            del cfg['return_list']
+
+            if cfg['pymetric_root']:
                 pymetric_download(cfg['clear_scenes'], cfg['pymetric_root'])
-            except KeyError:
+            else:
+                del cfg['clear_scenes']
+                del cfg['pymetric_root']
+
                 g = GoogleDownload(**cfg)
+                if return_scene_list:
+                    return g.candidate_scenes(return_list=True)
                 g.download()
 
         else:
-
-            return_scene_list = cfg['return_list']
-            del cfg['return_list']
-            del cfg['update_scenes']
 
             g = GoogleDownload(**cfg)
             if return_scene_list:
