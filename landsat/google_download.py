@@ -56,7 +56,7 @@ class MissingInitData(Exception):
 class GoogleDownload(object):
     def __init__(self, start, end, satellite, latitude=None, longitude=None,
                  path=None, row=None, max_cloud_percent=70,
-                 instrument=None, output_path=None, zipped=False, alt_name=None):
+                 instrument=None, output_path=None, zipped=False, alt_name=False):
 
         self.sat_num = satellite
         self.sat_name = 'LANDSAT_{}'.format(self.sat_num)
@@ -212,9 +212,6 @@ class GoogleDownload(object):
 
 
 if __name__ == '__main__':
-    home = os.path.expanduser('~')
-    g = GoogleDownload('2013-07-01', '2013-07-21', 8, path=39, row=27, max_cloud_percent=20)
-    out = os.path.join(home, 'landsat_images')
-    g.download()
+    pass
 
 # ========================= EOF ================================================================

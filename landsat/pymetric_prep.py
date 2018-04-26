@@ -22,10 +22,11 @@ from itertools import product
 from .google_download import GoogleDownload
 
 """
-Get a scenes list for download_usgs and prep the pymetric directory structure.
-
-output should be of form: ['LT50430302007147PAC01', 'LT50430302007131PAC01']
+Download into pymetric directory structure i.e. pymetric_root/landsat/path/row/year
+w/ naming e.g. LC08_041027_20150228.tar.gz
 """
+fmt_1 = '%Y%m%d'
+fmt_2 = '%Y-%m-%d'
 
 
 def pymetric_download(clear_scenes, pymetric_root):
@@ -41,45 +42,50 @@ def pymetric_download(clear_scenes, pymetric_root):
         if sat not in sats:
             sats.append(sat)
 
-        dt = datetime.strptime(item[-8:], '%Y%m%d')
+        dt = datetime.strptime(item[-8:], fmt_1)
         if dt.year not in years:
             years.append(dt.year)
         dates.append(dt)
+        path, row = item[5:8], item[8:11]
+        if path not in paths:
+            paths.append(path)
+        if row not in rows:
+            rows.append(row)
 
-    start = min(dates)
-    end = max(dates)
-
-    orgainize_directory(pymetric_root, paths, rows, years)
+    start = datetime.strftime(min(dates), fmt_2)
+    end = datetime.strftime(max(dates), fmt_2)
 
     objects = list(product(sats, paths, rows, years))
-    for s, p, r, y in objects:
-        out = os.path.join(pymetric_root, 'landsat', scene[3:6].lstrip('0'), scene[6:9].lstrip('0'),
-                   scene[9:13])
-        g = GoogleDownload(start, end, s, path=p, row=r,
-                           output_path=os.path.join(pymetric_root, p, r, y),
-                           alt_name=out)
+
+    orgainize_directory(pymetric_root, objects)
+
+    for item in objects:
+        sat, p, r, y = item
+        g = GoogleDownload(start, end, sat, path=p, row=r)
+
+        scenes = g.scene_ids
+        g.scene_ids = None
 
     return None
 
 
-def orgainize_directory(pymetric_rt, paths, rows, years):
+def orgainize_directory(pymetric_rt, p_r_yr_combinations):
     root_list = os.listdir(pymetric_rt)
     landsat = os.path.join(pymetric_rt, 'landsat')
     if 'landsat' not in root_list:
         print('Making landsat dir in {}'.format(pymetric_rt))
         os.mkdir(landsat)
-    for path in paths:
-        for row in rows:
-            for year in years:
-                dst_dir = os.path.join(landsat, str(path), str(row),
-                                       str(year))
-                try:
-                    os.makedirs(dst_dir)
-                    print('Made {}'.format(dst_dir))
-                except Exception as e:
-                    print('Exception {}'.format(e))
-                    print('...skipping creation...')
-                    pass
+
+    for item in p_r_yr_combinations:
+        sat, p, r, y = item
+        dst_dir = os.path.join(landsat, str(p), str(r), str(y))
+        try:
+            os.makedirs(dst_dir)
+            print('Made {}'.format(dst_dir))
+        except Exception as e:
+            print('Exception {}'.format(e))
+            print('...skipping creation...')
+            pass
 
 
 if __name__ == '__main__':
