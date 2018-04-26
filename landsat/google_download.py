@@ -121,6 +121,7 @@ class GoogleDownload(object):
 
     def candidate_scenes(self, return_list=False):
         df = read_pickle(self.scenes_abspath)
+
         df = df.loc[(df.CLOUD_COVER < self.cloud) & (df.WRS_PATH == self.p) & (df.WRS_ROW == self.r)
                     & (self.start < df.DATE_ACQUIRED) & (df.DATE_ACQUIRED < self.end)]
         df.dropna(subset=['PRODUCT_ID'], inplace=True, axis=0)
@@ -131,7 +132,7 @@ class GoogleDownload(object):
         self.product_ids = df.PRODUCT_ID.values.tolist()
         self.scene_ids = df.SCENE_ID.values.tolist()
         if return_list:
-            return self.scene_ids
+                return self.scene_ids
 
     def _check_scenes_lists(self):
         list_dir = [x for x in os.listdir(self.scenes)]
@@ -147,7 +148,10 @@ class GoogleDownload(object):
 
     def _check_pr_lat_lon(self):
         if self.p and self.r:
-            pass
+            try:
+                self.p, self.r = int(self.p), int(self.r)
+            except TypeError:
+                pass
         elif self.lat and self.lon:
             self._get_path_row()
         else:
