@@ -55,7 +55,6 @@ class CommandLineTestCase(unittest.TestCase):
                      '--lat', self.lat, '--lon', self.lon]
         args = self.parser.parse_args(args_list)
         scenes = main(args)
-        scenes.reverse()
         self.assertEqual(scenes, self.scene_list)
 
     def test_path_row(self):
@@ -65,18 +64,17 @@ class CommandLineTestCase(unittest.TestCase):
                      '--path', str(self.path), '--row', str(self.row)]
         args = self.parser.parse_args(args_list)
         scenes = main(args)
-        scenes.reverse()
         self.assertEqual(scenes, self.scene_list)
 
     # this cause systemexit, use only to make your own config
-    def test_config_no_config_provided(self):
-        dirname = 'data'
-        if __name__ == '__main__':
-            dirname = 'tests/data'
-        args_list = ['--configuration', dirname]
-        args = self.parser.parse_args(args_list)
-        main(args)
-        pass
+    # def test_config_no_config_provided(self):
+    #     dirname = 'data'
+    #     if __name__ == '__main__':
+    #         dirname = 'tests/data'
+    #     args_list = ['--configuration', dirname]
+    #     args = self.parser.parse_args(args_list)
+    #     main(args)
+    #     pass
 
     def test_config(self):
         # test suite needs handler to remove test-level dir

@@ -17,21 +17,11 @@
 import os
 import argparse
 import sys
-import yaml
 
-try:
-    from google_download import GoogleDownload
 
-except ImportError:
-    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from .google_download import GoogleDownload
-
-try:
-    from .ymetric_prep import pymetric_preparation
-
-except ImportError:
-    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from .pymetric_prep import pymetric_download
+from .google_download import GoogleDownload
+from .pymetric_prep import pymetric_download
+from .update_landsat_metadata import update
 
 
 class TooFewInputsError(Exception):
@@ -48,12 +38,16 @@ latitude:
 longitude:
 output_path: None
 satellite: 5
-# pymetric directory structure: e.g. D:/pyMETRIC/harney/landsat/path/row/year
-pymetric_root: D:/pyMETRIC/root
-clear_scenes: D:/pyMETRIC/misc/clear_scenes.txt
+
 return_list: False
 zipped: True
 max_cloud_percent: 100
+
+# pymetric directory structure: e.g. D:/pyMETRIC/harney/landsat/path/row/year
+# using pymetric_root and clear_scenes overrides all other arguments
+
+pymetric_root: D:/pyMETRIC/root
+clear_scenes: D:/pyMETRIC/misc/clear_scenes.txt
 '''
 
 
@@ -99,6 +93,9 @@ def main(args):
             if var is not None:
                 cfg[arg] = var
 
+        if cfg['update_scenes']:
+            update()
+
         if args.configuration:
             if os.path.isdir(args.configuration):
                 print('Creating template configuration file at {}.'.format(args.configuration))
@@ -119,10 +116,11 @@ def main(args):
 
             return_scene_list = cfg['return_list']
             del cfg['return_list']
+            del cfg['update_scenes']
 
             g = GoogleDownload(**cfg)
             if return_scene_list:
-                return g.candidate_scenes()
+                return g.candidate_scenes(return_list=True)
             else:
                 g.download()
 

@@ -30,11 +30,18 @@ except ImportError:
 from fiona import open as fopen
 from shapely.geometry import shape, Point
 
-from update_landsat_metadata import update
-from band_map import BandMap
+from .update_landsat_metadata import update
+from .band_map import BandMap
 
 SATS = ['LANDSAT_1', 'LANDSAT_2', 'LANDSAT_3', 'LANDSAT_4',
         'LANDSAT_5', 'LANDSAT_7', 'LANDSAT_8']
+
+WRS_1 = os.path.join(os.path.dirname(__file__).replace('landsat', 'wrs'),
+                     'wrs1_descending.shp')
+WRS_2 = os.path.join(os.path.dirname(__file__).replace('landsat', 'wrs'),
+                     'wrs2_descending.shp')
+SCENES = os.path.abspath(os.path.dirname(__file__).replace('landsat', 'scenes'))
+
 fmt = '%Y-%m-%d'
 
 
@@ -58,6 +65,11 @@ class GoogleDownload(object):
         self.end = dt.strptime(end, fmt)
         self.cloud = max_cloud_percent
 
+        if satellite < 4:
+            self.vectors = WRS_1
+        else:
+            self.vectors = WRS_2
+
         self.p = path
         self.r = row
         self.lat = latitude
@@ -76,7 +88,7 @@ class GoogleDownload(object):
         self.current_image = None
 
         self.scenes_abspath = None
-        self.scenes = os.path.abspath(os.path.dirname(__file__).replace('sat_image', 'scene_list'))
+        self.scenes = SCENES
         self._check_scenes_lists()
         self.candidate_scenes()
         self.band_map = BandMap()
@@ -107,7 +119,7 @@ class GoogleDownload(object):
 
         return None
 
-    def candidate_scenes(self):
+    def candidate_scenes(self, return_list=False):
         df = read_pickle(self.scenes_abspath)
         df = df.loc[(df.CLOUD_COVER < self.cloud) & (df.WRS_PATH == self.p) & (df.WRS_ROW == self.r)
                     & (self.start < df.DATE_ACQUIRED) & (df.DATE_ACQUIRED < self.end)]
@@ -118,6 +130,8 @@ class GoogleDownload(object):
         self.urls = df.BASE_URL.values.tolist()
         self.product_ids = df.PRODUCT_ID.values.tolist()
         self.scene_ids = df.SCENE_ID.values.tolist()
+        if return_list:
+            return self.scene_ids
 
     def _check_scenes_lists(self):
         list_dir = [x for x in os.listdir(self.scenes)]
@@ -135,25 +149,24 @@ class GoogleDownload(object):
         if self.p and self.r:
             pass
         elif self.lat and self.lon:
-            self._pr_from_latlon()
+            self._get_path_row()
         else:
             raise MissingInitData(print('Must create GoogleDownload object with both path and row,'
                                         'or with both latitude and longitude'))
 
-    def _pr_from_latlon(self):
-
-        polygons = self._get_path_row_polygons()
-        for poly in polygons:
-            if Point(self.lon, self.lat).within(poly):
-                pass
-
-    def _get_path_row_polygons(self):
+    def _get_path_row(self):
+        distance = []
+        path_rows = []
+        lat_lon_point = Point(self.lon, self.lat)
         with fopen(self.vectors, 'r') as src:
-            polys = []
             for feat in src:
                 geo = shape(feat['geometry'])
-                polys.append(geo)
-        return polys
+                if lat_lon_point.within(geo):
+                    center = geo.centroid
+                    path_rows.append((feat['properties']['PATH'], feat['properties']['ROW']))
+                    distance.append(center.distance(lat_lon_point))
+        self.p, self.r = path_rows[distance.index(min(distance))]
+        return None
 
     @staticmethod
     def _make_url(row, band):

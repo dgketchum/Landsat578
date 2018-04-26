@@ -16,5 +16,5 @@ tests/__pycache__/
 tests/test_integration/__pycache__/
 tests/test_unit/__pycache__/
 dist/
-scene_list/
 scenes/
+__pycache__/
