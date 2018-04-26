@@ -6,15 +6,15 @@ path: 43
 row: 30
 latitude:
 longitude:
-output_path: C:\\Users\\David\\PycharmProjects\\Landsat578\\tests\\data\\temp
+output_path: None
 satellite: 5
 
 return_list: False
-zipped: False
+zipped: True
 max_cloud_percent: 100
 
 # pymetric directory structure: e.g. D:/pyMETRIC/harney/landsat/path/row/year
 # using pymetric_root and clear_scenes overrides all other arguments
 
-pymetric_root:
-clear_scenes:
+pymetric_root: C:\\Users\\David\\PycharmProjects\\Landsat578
+clear_scenes: C:\\Users\\David\\PycharmProjects\\Landsat578

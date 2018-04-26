@@ -15,6 +15,7 @@
 # ===============================================================================
 import os
 import unittest
+import shutil
 
 import pkg_resources
 
@@ -38,7 +39,7 @@ class CommandLineTestCase(unittest.TestCase):
 
         self.wgs_tile = pkg_resources.resource_filename('tests',
                                                         'data/wrs2_036029_WGS.shp')
-        self.config_scenes = ['LT50430302007147PAC01', 'LT50430302007131PAC01']
+        self.config_scenes = ['LT50430302007131PAC01', 'LT50430302007147PAC01']
 
     def tearDown(self):
         pass
@@ -66,12 +67,9 @@ class CommandLineTestCase(unittest.TestCase):
         scenes = main(args)
         self.assertEqual(scenes, self.scene_list)
 
-    # this cause systemexit, use only to make your own config
+    # this cause systemexit, use only to make a new config
     # def test_config_no_config_provided(self):
-    #     dirname = 'data'
-    #     if __name__ == '__main__':
-    #         dirname = 'tests/data'
-    #     args_list = ['--configuration', dirname]
+    #     args_list = ['--configuration', os.getcwd()]
     #     args = self.parser.parse_args(args_list)
     #     main(args)
     #     pass
@@ -79,21 +77,30 @@ class CommandLineTestCase(unittest.TestCase):
     def test_config(self):
         # test suite needs handler to remove test-level dir
         root = 'tests'
-        base = pkg_resources.resource_filename('tests', 'data/test_downloader_config.yml')
+        base = pkg_resources.resource_filename('tests', 'data/downloader_config.yml')
         filepath = os.path.join(root, base)
         if not os.path.isfile(filepath):
             filepath = base
 
+        temp = os.path.join(os.path.dirname(filepath), 'temp')
+        os.mkdir(temp)
+
         args_list = ['--configuration', filepath]
         args = self.parser.parse_args(args_list)
-        scenes = main(args)
-        self.assertEqual(scenes, self.config_scenes)
+        main(args)
+        location = os.path.dirname(base)
+        self.assertTrue(os.path.isdir(os.path.join(location, 'temp', self.config_scenes[0])))
+        self.assertTrue(os.path.isfile(os.path.join(location, 'temp', self.config_scenes[0],
+                                                    'LT05_L1TP_043030_20070511_20160908_01_T1_B3.TIF')))
+        shutil.rmtree(temp)
 
     # this test needs credentials and thus should be run on local data
     def test_pymetric_config(self):
         root = 'tests'
-        base = pkg_resources.resource_filename('tests', 'data/test_downloader_pymetric_config.yml')
+        base = pkg_resources.resource_filename('tests', 'data/downloader_config_pymetric.yml')
         filepath = os.path.join(root, base)
+        temp = os.path.join(os.path.dirname(filepath), 'temp')
+        os.mkdir(temp)
         args_list = ['--configuration', filepath]
         args = self.parser.parse_args(args_list)
         main(args)
