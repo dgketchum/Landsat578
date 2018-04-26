@@ -1,0 +1,16 @@
+
+# date format: 'YYYY-MM-DD'
+start: '2007-05-01'
+end: '2007-05-31'
+path: 43
+row: 30
+latitude:
+longitude:
+output_path: None
+satellite: 5
+# pymetric directory structure: e.g. D:/pyMETRIC/harney/landsat/path/row/year
+pymetric_root: D:/pyMETRIC/root
+clear_scenes: D:/pyMETRIC/misc/clear_scenes.txt
+return_list: False
+zipped: True
+max_cloud_percent: 100
