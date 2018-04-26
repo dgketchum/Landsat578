@@ -41,7 +41,8 @@ in purple. Note overlap of neighboring scenes.
 
 The first time running this code will download and package a large
 list of scenes. This should thereafter be updated if one is after
-the latest imagery.
+the latest imagery.  This is a large file and will need about 3GB
+memory available to the python process to process it.
 
 landsat --update-scenes
 
