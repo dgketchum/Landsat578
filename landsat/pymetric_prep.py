@@ -16,7 +16,10 @@
 
 import os
 from pandas import read_csv
-from datetime import datetime, timedelta
+from datetime import datetime
+from itertools import product
+
+from .google_download import GoogleDownload
 
 """
 Get a scenes list for download_usgs and prep the pymetric directory structure.
@@ -26,33 +29,35 @@ output should be of form: ['LT50430302007147PAC01', 'LT50430302007131PAC01']
 
 
 def pymetric_download(clear_scenes, pymetric_root):
-    scenes_list = []
+    dates = []
     years = []
     paths = []
     rows = []
+    sats = []
 
     lst = read_csv(clear_scenes, header=None).iloc[:, 0].tolist()
     for item in lst:
-        sat = item[:4].replace('0', '')
-        dt = datetime.strptime(item[-8:], '%Y%m%d')
-        start = dt - timedelta(days=1)
-        end = dt + timedelta(days=1)
-        path, row = item[5:8], item[8:11]
-        if start.year not in years:
-            years.append(start.year)
-        if path not in paths:
-            paths.append(path.lstrip('0'))
-        if row not in rows:
-            rows.append(row.lstrip('0'))
+        sat = int(item[3])
+        if sat not in sats:
+            sats.append(sat)
 
-        scene = get_candidate_scenes_list(path, row, sat, start, end)
-        scenes_list.append(scene[0])
+        dt = datetime.strptime(item[-8:], '%Y%m%d')
+        if dt.year not in years:
+            years.append(dt.year)
+        dates.append(dt)
+
+    start = min(dates)
+    end = max(dates)
 
     orgainize_directory(pymetric_root, paths, rows, years)
-    for scene, name in zip(scenes_list, lst):
+
+    objects = list(product(sats, paths, rows, years))
+    for s, p, r, y in objects:
         out = os.path.join(pymetric_root, 'landsat', scene[3:6].lstrip('0'), scene[6:9].lstrip('0'),
-                           scene[9:13])
-        down_usgs_by_list()
+                   scene[9:13])
+        g = GoogleDownload(start, end, s, path=p, row=r,
+                           output_path=os.path.join(pymetric_root, p, r, y),
+                           alt_name=out)
 
     return None
 
