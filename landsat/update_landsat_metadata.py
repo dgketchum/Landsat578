@@ -24,6 +24,11 @@ from requests import get
 LANDSAT_METADATA_URL = 'http://storage.googleapis.com/gcp-public-data-landsat/index.csv.gz'
 ZIP_PATH = 'index.csv.gz'
 
+SCENES = os.path.dirname(__file__).replace('landsat', 'scenes')
+
+if not os.path.isdir(SCENES):
+    os.mkdir(SCENES)
+os.chdir(SCENES)
 fmt = '%Y%m%d'
 date = datetime.strftime(datetime.now(), fmt)
 LATEST = 'scenes_{}'.format(date)
@@ -70,6 +75,6 @@ def split_list(_list=LATEST):
 
 
 if __name__ == '__main__':
-    scenes = os.path.dirname(__file__).replace('landsat', 'scene_list')
+
     update()
 # ========================= EOF ================================================================

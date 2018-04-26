@@ -30,13 +30,12 @@ except ImportError:
 from fiona import open as fopen
 from shapely.geometry import shape, Point
 
-from .update_landsat_metadata import update
-from .band_map import BandMap
+from update_landsat_metadata import update
+from band_map import BandMap
 
 SATS = ['LANDSAT_1', 'LANDSAT_2', 'LANDSAT_3', 'LANDSAT_4',
         'LANDSAT_5', 'LANDSAT_7', 'LANDSAT_8']
 fmt = '%Y-%m-%d'
-MAP = {5: 'LT5', 7: 'LE7', 8: 'LC8'}
 
 
 class BadRequestsResponse(Exception):
@@ -48,15 +47,16 @@ class MissingInitData(Exception):
 
 
 class GoogleDownload(object):
-    def __init__(self, start_date, end_date, satellite, latitude=None, longitude=None, path=None, row=None,
-                 max_cloud=70, instrument=None, output=None, zipped=False, alt_name=None):
+    def __init__(self, start, end, satellite, latitude=None, longitude=None,
+                 path=None, row=None, max_cloud_percent=70,
+                 instrument=None, output=None, zipped=False, alt_name=None):
 
         self.sat_num = satellite
         self.sat_name = 'LANDSAT_{}'.format(self.sat_num)
         self.instrument = instrument
-        self.start = dt.strptime(start_date, fmt)
-        self.end = dt.strptime(end_date, fmt)
-        self.cloud = max_cloud
+        self.start = dt.strptime(start, fmt)
+        self.end = dt.strptime(end, fmt)
+        self.cloud = max_cloud_percent
 
         self.p = path
         self.r = row
@@ -196,7 +196,7 @@ class GoogleDownload(object):
 
 if __name__ == '__main__':
     home = os.path.expanduser('~')
-    g = GoogleDownload('2013-07-01', '2013-07-21', 8, path=39, row=27, max_cloud=20)
+    g = GoogleDownload('2013-07-01', '2013-07-21', 8, path=39, row=27, max_cloud_percent=20)
     out = os.path.join(home, 'landsat_images')
     g.download()
 

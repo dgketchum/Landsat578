@@ -26,11 +26,11 @@ class CommandLineTestCase(unittest.TestCase):
     def setUp(self):
         self.parser = create_parser()
 
-        self.lat = 45.6
-        self.lon = -107.5
-        self.sat = 'LE7'
-        self.path = 36
-        self.row = 28
+        self.lat = '45.6'
+        self.lon = '-107.5'
+        self.sat = '7'
+        self.path = '36'
+        self.row = '28'
         self.start = '2007-05-01'
         self.end = '2007-05-31'
         self.scene_list = ['LE70360282007122EDC00', 'LE70360282007138EDC00']
@@ -46,13 +46,13 @@ class CommandLineTestCase(unittest.TestCase):
     def test_empty_args(self):
         with self.assertRaises(TooFewInputsError):
             args = self.parser.parse_args([])
-            scenes = main(args)
+            main(args)
 
     def test_latlon(self):
         print('Testing valid lat lon...')
         args_list = ['--satellite', self.sat, '--start', self.start, '--end',
                      self.end, '--return-list',
-                     '--lat', str(self.lat), '--lon', str(self.lon)]
+                     '--lat', self.lat, '--lon', self.lon]
         args = self.parser.parse_args(args_list)
         scenes = main(args)
         scenes.reverse()

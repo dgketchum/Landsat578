@@ -60,13 +60,13 @@ max_cloud_percent: 100
 def create_parser():
     parser = argparse.ArgumentParser(prog='landsat', description='Download and unzip landsat data.')
 
-    parser.add_argument('--satellite', help='Satellite number: 1-8, except 6')
-    parser.add_argument('--start', help='Start date in format YYYY-MM-DD')
-    parser.add_argument('--end', help='End date in format YYYY-MM-DD')
-    parser.add_argument('-lat', '--latitude', help='Latitude, decimal degrees', type=str, default=None)
-    parser.add_argument('-lon', '--longitude', help='Longitude, decimal degrees', type=str, default=None)
-    parser.add_argument('-p', '--path', help='The path', default=None)
-    parser.add_argument('-r', '--row', help='The row', default=None)
+    parser.add_argument('--satellite', help='Satellite number: 1-8, except 6', type=int)
+    parser.add_argument('--start', help='Start date in format YYYY-MM-DD', type=str)
+    parser.add_argument('--end', help='End date in format YYYY-MM-DD', type=str)
+    parser.add_argument('-lat', '--latitude', help='Latitude, decimal degrees', type=float, default=None)
+    parser.add_argument('-lon', '--longitude', help='Longitude, decimal degrees', type=float, default=None)
+    parser.add_argument('-p', '--path', help='The path', type=str, default=None)
+    parser.add_argument('-r', '--row', help='The row', type=str, default=None)
     parser.add_argument('-o', '--output', help='Output directory', default=os.getcwd())
 
     parser.add_argument('-conf', '--configuration', help='Path to your configuration file. If a directory is provided,'
@@ -84,13 +84,21 @@ def create_parser():
                                                     ' type integer',
                         default=100)
 
+    parser.add_argument('--update-scenes', help='Update the scenes list this program uses to discover the '
+                                                'latest imagery.', default=False)
+
     return parser
 
 
 def main(args):
     if args:
 
-        cfg = vars(args)
+        cfg = {}
+        for arg in vars(args):
+            var = getattr(args, arg)
+            if var is not None:
+                cfg[arg] = var
+
         if args.configuration:
             if os.path.isdir(args.configuration):
                 print('Creating template configuration file at {}.'.format(args.configuration))
@@ -108,8 +116,12 @@ def main(args):
                 g.download()
 
         else:
-            g = GoogleDownload(**args)
-            if args.return_scenes:
+
+            return_scene_list = cfg['return_list']
+            del cfg['return_list']
+
+            g = GoogleDownload(**cfg)
+            if return_scene_list:
                 return g.candidate_scenes()
             else:
                 g.download()

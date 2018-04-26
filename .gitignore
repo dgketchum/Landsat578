@@ -15,7 +15,6 @@ notes
 tests/__pycache__/
 tests/test_integration/__pycache__/
 tests/test_unit/__pycache__/
-core/
 dist/
-fetchFromGoogleCloud.py
 scene_list/
+scenes/
