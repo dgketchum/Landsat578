@@ -110,6 +110,5 @@ if __name__ == '__main__':
                      output_path=output, usgs_creds=usgs_creds, dry_run=True)
 
 ```
-This work was adapted in part from work from [DevelopmentSeed](https://github.com/olivierhagolle) and [Olivier Hagolle.](https://github.com/developmentseed)
-# 2017 dgetchum
+# 2018 dgketchum
 
