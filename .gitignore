@@ -18,3 +18,4 @@ tests/test_unit/__pycache__/
 dist/
 scenes/
 __pycache__/
+pymetric/
