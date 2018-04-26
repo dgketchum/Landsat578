@@ -39,6 +39,12 @@ in purple. Note overlap of neighboring scenes.
 
 # Run
 
+The first time running this code will download and package a large
+list of scenes. This should thereafter be updated if one is after
+the latest imagery.
+
+landsat --update-scenes
+
 If you know the path and row of a location, you can enter it in the 
 command line interface to download and unzip images there between
 your specified start and end dates.  You must choose a satellite.
