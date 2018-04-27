@@ -25,6 +25,7 @@ from .google_download import GoogleDownload
 Download into pymetric directory structure i.e. pymetric_root/landsat/path/row/year
 w/ naming e.g. LC08_041027_20150228.tar.gz
 """
+
 fmt_1 = '%Y%m%d'
 fmt_2 = '%Y-%m-%d'
 
@@ -57,7 +58,7 @@ def pymetric_download(clear_scenes, pymetric_root):
 
     objects = list(product(sats, paths, rows, years))
 
-    orgainize_directory(pymetric_root, objects)
+    organize_directory(pymetric_root, objects)
 
     for item in objects:
         sat, p, r, y = item
@@ -69,7 +70,7 @@ def pymetric_download(clear_scenes, pymetric_root):
     return None
 
 
-def orgainize_directory(pymetric_rt, p_r_yr_combinations):
+def organize_directory(pymetric_rt, p_r_yr_combinations):
     root_list = os.listdir(pymetric_rt)
     landsat = os.path.join(pymetric_rt, 'landsat')
     if 'landsat' not in root_list:

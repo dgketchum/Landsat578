@@ -20,7 +20,7 @@ import sys
 import yaml
 
 from .google_download import GoogleDownload
-from .pymetric_prep import pymetric_download
+from .pymetric_download import pymetric_download
 from .update_landsat_metadata import update
 
 
