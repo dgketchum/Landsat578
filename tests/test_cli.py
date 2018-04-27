@@ -75,7 +75,6 @@ class CommandLineTestCase(unittest.TestCase):
     #     pass
 
     def test_config(self):
-        # test suite needs handler to remove test-level dir
         root = 'tests'
         base = pkg_resources.resource_filename('tests', 'data/downloader_config.yml')
         filepath = os.path.join(root, base)
@@ -94,7 +93,6 @@ class CommandLineTestCase(unittest.TestCase):
                                                     'LT05_L1TP_043030_20070511_20160908_01_T1_B3.TIF')))
         shutil.rmtree(temp)
 
-    # this test needs credentials and thus should be run on local data
     def test_pymetric_config(self):
         root = 'tests'
         base = pkg_resources.resource_filename('tests', 'data/downloader_config_pymetric.yml')
