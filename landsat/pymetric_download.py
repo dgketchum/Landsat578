@@ -16,10 +16,11 @@
 
 import os
 from pandas import read_csv
-from datetime import datetime
+from datetime import datetime, timedelta
 from itertools import product
+from copy import deepcopy
 
-from .google_download import GoogleDownload
+from landsat.google_download import GoogleDownload
 
 """
 Download into pymetric directory structure i.e. pymetric_root/landsat/path/row/year
@@ -53,8 +54,8 @@ def pymetric_download(clear_scenes, pymetric_root):
         if row not in rows:
             rows.append(row)
 
-    start = datetime.strftime(min(dates), fmt_2)
-    end = datetime.strftime(max(dates), fmt_2)
+    start = datetime.strftime(min(dates) - timedelta(days=1), fmt_2)
+    end = datetime.strftime(max(dates) + timedelta(days=1), fmt_2)
 
     objects = list(product(sats, paths, rows, years))
 
@@ -62,11 +63,16 @@ def pymetric_download(clear_scenes, pymetric_root):
 
     for item in objects:
         sat, p, r, y = item
-        g = GoogleDownload(start, end, sat, path=p, row=r)
+        out = os.path.join(pymetric_root, 'landsat', str(p), str(r), str(y))
+        g = GoogleDownload(start, end, sat, path=p, row=r, output_path=out, alt_name=True)
 
-        scenes = g.scene_ids
-        g.scene_ids = None
+        included_scenes = deepcopy(g.pymetric_ids)
+        for scene in included_scenes:
+            if scene not in lst:
+                print('remove {}'.format(scene))
+                g.scenes_df = g.scenes_df[g.scenes_df.PYMETRIC_ID != scene]
 
+        g.download()
     return None
 
 

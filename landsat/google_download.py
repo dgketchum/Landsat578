@@ -18,7 +18,7 @@ import os
 import tarfile
 import shutil
 from warnings import warn
-from pandas import read_pickle
+from pandas import read_pickle, concat, Series
 from datetime import datetime as dt
 from requests import get
 
@@ -80,6 +80,7 @@ class GoogleDownload(object):
         self.scene_ids = None
         self.product_ids = None
         self.scenes_df = None
+        self.pymetric_ids = None
 
         self.output = output_path
         self.zipped = zipped
@@ -114,7 +115,7 @@ class GoogleDownload(object):
                 tgz_file = '{}.tar.gz'.format(row.SCENE_ID)
                 self._zip_image(tgz_file, out_dir)
             if self.alt_name:
-                tgz_file = '{}.tar.gz'.format(self.alt_name)
+                tgz_file = '{}.tar.gz'.format(row.PYMETRIC_ID)
                 self._zip_image(tgz_file, out_dir)
 
         return None
@@ -131,6 +132,7 @@ class GoogleDownload(object):
         self.urls = df.BASE_URL.values.tolist()
         self.product_ids = df.PRODUCT_ID.values.tolist()
         self.scene_ids = df.SCENE_ID.values.tolist()
+        self._make_pymetric_ids()
         if return_list:
             return self.scene_ids
 
@@ -171,6 +173,15 @@ class GoogleDownload(object):
                     distance.append(center.distance(lat_lon_point))
         self.p, self.r = path_rows[distance.index(min(distance))]
         return None
+
+    def _make_pymetric_ids(self):
+        metric_ids = []
+        for _id in self.product_ids:
+            tag = '{}_{}_{}'.format(_id[:4], _id[10:16], _id[17:25])
+            metric_ids.append(tag)
+        self.pymetric_ids = metric_ids
+        series = Series(data=self.pymetric_ids, name='PYMETRIC_ID', index=self.scenes_df.index)
+        self.scenes_df = concat([self.scenes_df, series], axis=1)
 
     @staticmethod
     def _make_url(row, band):
