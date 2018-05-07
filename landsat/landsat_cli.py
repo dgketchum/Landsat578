@@ -57,7 +57,7 @@ CONFIG_PLACEMENT = os.path.dirname(__file__)
 def create_parser():
     parser = argparse.ArgumentParser(prog='landsat', description='Download and unzip landsat data.')
 
-    parser.add_argument('--satellite', help='Satellite number: 1-8, except 6', type=int)
+    parser.add_argument('--satellite', '-sat', help='Satellite number: 1-8, except 6', type=int)
     parser.add_argument('--start', help='Start date in format YYYY-MM-DD', type=str)
     parser.add_argument('--end', help='End date in format YYYY-MM-DD', type=str)
     parser.add_argument('-lat', '--latitude', help='Latitude, decimal degrees', type=float, default=None)
@@ -129,6 +129,8 @@ def main(args):
                 g.download()
 
         else:
+            del cfg['return_list']
+            del cfg['update_scenes']
 
             g = GoogleDownload(**cfg)
             if return_scene_list:

@@ -209,7 +209,7 @@ class GoogleDownload(object):
                         f.write(chunk)
 
             elif response.status_code > 399:
-                print('Code {}'.format(response.status_code))
+                print('Code {} on {}'.format(response.status_code, url))
                 raise BadRequestsResponse(Exception)
         except BadRequestsResponse:
             pass

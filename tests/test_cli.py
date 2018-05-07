@@ -16,11 +16,13 @@
 import os
 import unittest
 import shutil
-
+import sys
 import pkg_resources
 
-from landsat.landsat import create_parser, main
-from landsat.landsat import TooFewInputsError
+sys.path.append(os.path.dirname(__file__).replace('tests', 'landsat'))
+
+from landsat_cli import create_parser, main
+from landsat_cli import TooFewInputsError
 
 
 class CommandLineTestCase(unittest.TestCase):
@@ -67,7 +69,29 @@ class CommandLineTestCase(unittest.TestCase):
         scenes = main(args)
         self.assertEqual(scenes, self.scene_list)
 
-    # this cause systemexit, use only to make a new config
+    def test_zipped(self):
+        print('Testing zipped...')
+        root = 'tests'
+        base = pkg_resources.resource_filename('tests', 'data/downloader_config.yml')
+        filepath = os.path.join(root, base)
+        if not os.path.isfile(filepath):
+            filepath = base
+
+        temp = os.path.join(os.path.dirname(filepath), 'temp')
+        try:
+            shutil.rmtree(temp)
+        except Exception:
+            pass
+        os.mkdir(temp)
+        args_list = ['--satellite', self.sat, '--start', self.start, '--end',
+                     self.end, '--zipped',
+                     '--path', str(self.path), '--row', str(self.row), '-o', temp]
+        args = self.parser.parse_args(args_list)
+        main(args)
+        self.assertTrue(os.path.isfile(os.path.join(temp, 'LE70360282007122EDC00.tar.gz')))
+        shutil.rmtree(temp)
+
+    # this causes systemexit, use only to make a new config
     # def test_config_no_config_provided(self):
     #     args_list = ['--configuration', os.getcwd()]
     #     args = self.parser.parse_args(args_list)
@@ -82,6 +106,10 @@ class CommandLineTestCase(unittest.TestCase):
             filepath = base
 
         temp = os.path.join(os.path.dirname(filepath), 'temp')
+        try:
+            shutil.rmtree(temp)
+        except Exception:
+            pass
         os.mkdir(temp)
 
         args_list = ['--configuration', filepath]
@@ -106,8 +134,10 @@ class CommandLineTestCase(unittest.TestCase):
         args_list = ['--configuration', filepath]
         args = self.parser.parse_args(args_list)
         main(args)
-        self.assertTrue(os.path.isfile('/data01/images/landsat/041/027/2015/LC08_041028_20170828.tar.gz'))
-        os.remove('/data01/images/landsat/041/027/2015/LC08_041028_20170828.tar.gz')
+        self.assertTrue(os.path.isfile(os.path.join(temp, 'LC08_041027_20150228.tar.gz')))
+        self.assertTrue(os.path.isfile(os.path.join(temp, 'LC08_041027_20150417.tar.gz')))
+        self.assertTrue(os.path.isfile(os.path.join(temp, 'LC08_041027_20150503.tar.gz')))
+        shutil.rmtree(temp)
 
 
 if __name__ == '__main__':
