@@ -23,7 +23,7 @@ os.environ['TRAVIS_CI'] = 'True'
 try:
     from setuptools import setup
 
-    setup_kwargs = {'entry_points': {'console_scripts': ['landsat=landsat.landsat_cly:cli_runner']}}
+    setup_kwargs = {'entry_points': {'console_scripts': ['landsat=landsat.landsat_cli:cli_runner']}}
 except ImportError:
     from distutils.core import setup
 
