@@ -46,11 +46,6 @@ class CommandLineTestCase(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_empty_args(self):
-        with self.assertRaises(TooFewInputsError):
-            args = self.parser.parse_args([])
-            main(args)
-
     def test_latlon(self):
         print('Testing valid lat lon...')
         args_list = ['--satellite', self.sat, '--start', self.start, '--end',
@@ -134,9 +129,12 @@ class CommandLineTestCase(unittest.TestCase):
         args_list = ['--configuration', filepath]
         args = self.parser.parse_args(args_list)
         main(args)
-        self.assertTrue(os.path.isfile(os.path.join(temp, 'LC08_041027_20150228.tar.gz')))
-        self.assertTrue(os.path.isfile(os.path.join(temp, 'LC08_041027_20150417.tar.gz')))
-        self.assertTrue(os.path.isfile(os.path.join(temp, 'LC08_041027_20150503.tar.gz')))
+        self.assertTrue(os.path.isfile(os.path.join(temp, 'landsat', '041', '027', '2015',
+                                                    'LC08_041027_20150228.tar.gz')))
+        self.assertTrue(os.path.isfile(os.path.join(temp, 'landsat', '041', '027', '2015',
+                                                    'LC08_041027_20150417.tar.gz')))
+        self.assertTrue(os.path.isfile(os.path.join(temp, 'landsat', '041', '027', '2015',
+                                                    'LC08_041027_20150503.tar.gz')))
         shutil.rmtree(temp)
 
 
