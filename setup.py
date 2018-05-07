@@ -29,11 +29,11 @@ except ImportError:
 
     setup_kwargs = {'scripts': ['bin/landsat']}
 
-tag = '0.4.6'
+tag = '0.4.7'
 
 setup(name='Landsat578',
       version=tag,
-      description='Very simple API to download Landsat data from LT5, LE7, and LC8 from USGS',
+      description='Very simple API to download Landsat data from LT5, LE7, and LC8 from Google',
       setup_requires=['nose>=1.0'],
       py_modules=['landsat'],
       license='Apache', classifiers=[

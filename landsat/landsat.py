@@ -19,9 +19,9 @@ import argparse
 import sys
 import yaml
 
-from .google_download import GoogleDownload
-from .pymetric_download import pymetric_download
-from .update_landsat_metadata import update
+from google_download import GoogleDownload
+from pymetric_download import download
+from update_landsat_metadata import update
 
 
 class TooFewInputsError(Exception):
@@ -45,7 +45,7 @@ max_cloud_percent: 100
 
 # pymetric directory structure: e.g. D:/pyMETRIC/harney/landsat/path/row/year
 # using pymetric_root and clear_scenes overrides all other arguments
-# leave blank to disable
+# leave both blank to disable
 
 pymetric_root: D:/pyMETRIC/root
 clear_scenes: D:/pyMETRIC/misc/clear_scenes.txt
@@ -118,7 +118,7 @@ def main(args):
             del cfg['update_scenes']
 
             if cfg['pymetric_root']:
-                pymetric_download(cfg['clear_scenes'], cfg['pymetric_root'])
+                download(cfg['clear_scenes'], cfg['pymetric_root'])
             else:
                 del cfg['clear_scenes']
                 del cfg['pymetric_root']
@@ -140,6 +140,9 @@ def main(args):
 def cli_runner():
     parser = create_parser()
     args = parser.parse_args()
+    if len(sys.argv) == 1:
+        parser.print_help(sys.stderr)
+        sys.exit(1)
     return main(args)
 
 

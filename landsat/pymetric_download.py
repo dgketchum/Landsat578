@@ -20,7 +20,7 @@ from datetime import datetime, timedelta
 from itertools import product
 from copy import deepcopy
 
-from landsat.google_download import GoogleDownload
+from google_download import GoogleDownload
 
 """
 Download into pymetric directory structure i.e. pymetric_root/landsat/path/row/year
@@ -31,7 +31,7 @@ fmt_1 = '%Y%m%d'
 fmt_2 = '%Y-%m-%d'
 
 
-def pymetric_download(clear_scenes, pymetric_root):
+def download(clear_scenes, pymetric_root):
     dates = []
     years = []
     paths = []

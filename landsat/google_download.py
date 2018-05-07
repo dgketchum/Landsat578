@@ -30,8 +30,8 @@ except ImportError:
 from fiona import open as fopen
 from shapely.geometry import shape, Point
 
-from .update_landsat_metadata import update
-from .band_map import BandMap
+from update_landsat_metadata import update
+from band_map import BandMap
 
 SATS = ['LANDSAT_1', 'LANDSAT_2', 'LANDSAT_3', 'LANDSAT_4',
         'LANDSAT_5', 'LANDSAT_7', 'LANDSAT_8']
