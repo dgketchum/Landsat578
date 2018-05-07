@@ -16,5 +16,5 @@ max_cloud_percent: 100
 # pymetric directory structure: e.g. D:/pyMETRIC/harney/landsat/path/row/year
 # using pymetric_root and clear_scenes overrides all other arguments
 
-pymetric_root: /data01/PycharmProjects/Landsat578/tests/data/temp
-clear_scenes: /data01/PycharmProjects/Landsat578/tests/data/clear_scenes.txt
+pymetric_root: C:\Users\David\PycharmProjects\Landsat578\tests\data\temp
+clear_scenes: C:\Users\David\PycharmProjects\Landsat578\tests\data\clear_scenes.txt
