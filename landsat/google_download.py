@@ -89,7 +89,7 @@ class GoogleDownload(object):
 
         self.scenes_abspath = None
         self.scenes = SCENES
-        self._check_scenes_lists()
+        self._check_metadata()
         self.candidate_scenes()
         self.band_map = BandMap()
 
@@ -132,9 +132,9 @@ class GoogleDownload(object):
         self.product_ids = df.PRODUCT_ID.values.tolist()
         self.scene_ids = df.SCENE_ID.values.tolist()
         if return_list:
-                return self.scene_ids
+            return self.scene_ids
 
-    def _check_scenes_lists(self):
+    def _check_metadata(self):
         list_dir = [x for x in os.listdir(self.scenes)]
         instruments = ['LANDSAT_1', 'LANDSAT_2', 'LANDSAT_3', 'LANDSAT_4',
                        'LANDSAT_5', 'LANDSAT_7', 'LANDSAT_8']
