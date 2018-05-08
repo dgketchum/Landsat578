@@ -16,6 +16,6 @@ tests/__pycache__/
 tests/test_integration/__pycache__/
 tests/test_unit/__pycache__/
 dist/
-scenes/
 __pycache__/
 pymetric/
+landsat/scenes/

@@ -24,10 +24,11 @@ from requests import get
 LANDSAT_METADATA_URL = 'http://storage.googleapis.com/gcp-public-data-landsat/index.csv.gz'
 ZIP_PATH = 'index.csv.gz'
 
-SCENES = os.path.dirname(__file__).replace('landsat', 'scenes')
+SCENES = os.path.join(os.path.dirname(__file__), 'scenes')
 
 if not os.path.isdir(SCENES):
     os.mkdir(SCENES)
+
 os.chdir(SCENES)
 fmt = '%Y%m%d'
 date = datetime.strftime(datetime.now(), fmt)
