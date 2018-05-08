@@ -37,11 +37,11 @@ from band_map import BandMap
 SATS = ['LANDSAT_1', 'LANDSAT_2', 'LANDSAT_3', 'LANDSAT_4',
         'LANDSAT_5', 'LANDSAT_7', 'LANDSAT_8']
 
-WRS_1 = os.path.join(os.path.dirname(__file__).replace('landsat', 'wrs'),
-                     'wrs1_descending.shp')
-WRS_2 = os.path.join(os.path.dirname(__file__).replace('landsat', 'wrs'),
-                     'wrs2_descending.shp')
-SCENES = os.path.abspath(os.path.dirname(__file__).replace('landsat', 'scenes'))
+WRS_1 = os.path.join(os.path.dirname(__file__), 'wrs', 'wrs1_descending.shp')
+WRS_2 = os.path.join(os.path.dirname(__file__), 'wrs', 'wrs2_descending.shp')
+
+
+SCENES = os.path.join(os.path.dirname(__file__), 'scenes')
 
 fmt = '%Y-%m-%d'
 
