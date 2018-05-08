@@ -15,6 +15,7 @@ notes
 tests/__pycache__/
 tests/test_integration/__pycache__/
 tests/test_unit/__pycache__/
+scenes/
 dist/
 __pycache__/
 pymetric/
