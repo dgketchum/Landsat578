@@ -92,30 +92,5 @@ landsat -h
 ```
 This command will show you all positional (mandatory) and optional arguments.
 
-# Use a Python Script
-
-If you prefer to work from a python script, use sample_script.py:
-
-```
-import os
-from datetime import datetime
-
-from .download_composer import download_landsat
-
-if __name__ == '__main__':
-    home = os.path.expanduser('~')
-    start = datetime(2007, 5, 1)
-    end = datetime(2007, 5, 30)
-    satellite = 'LT5'
-    output = os.path.join(home, 'images', satellite)
-    usgs_creds = os.path.join(home, 'images', 'usgs.txt')
-    # path = 37
-    # row = 27
-    latitude = 45.6
-    longitude = -107.9
-    download_landsat((start, end), satellite, latitude=latitude, longitude=longitude,
-                     output_path=output, usgs_creds=usgs_creds, dry_run=True)
-
-```
 # 2018 dgketchum
 
