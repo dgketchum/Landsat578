@@ -34,7 +34,7 @@ before_install:
 install:
   - conda create --yes --quiet -n landsatenv ${PKGS} ${OPTIONAL}
   - source activate landsatenv
-  - conda install --yes --file requirements.yml
+  - conda install --yes --file requirements_conda.yml
   - pip install codecov coverage
 
 script:
