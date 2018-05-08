@@ -19,6 +19,8 @@ import argparse
 import sys
 import yaml
 
+sys.path.append(os.path.dirname(__file__).replace('tests', 'landsat'))
+
 from google_download import GoogleDownload
 from pymetric_download import download
 from update_landsat_metadata import update

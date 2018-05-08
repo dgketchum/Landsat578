@@ -15,6 +15,7 @@
 # =============================================================================================
 
 import os
+import sys
 import tarfile
 import shutil
 from warnings import warn
