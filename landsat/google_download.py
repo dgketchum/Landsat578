@@ -143,7 +143,7 @@ class GoogleDownload(object):
                        'LANDSAT_5', 'LANDSAT_7', 'LANDSAT_8']
         for s in instruments:
             if s not in list_dir:
-                print('Appears there is not scenes list, downloading and processing...')
+                print('Appears there is no scenes list, downloading and processing...')
                 update()
                 break
         path = os.path.join(self.scenes, 'LANDSAT_{}'.format(self.sat_num))
