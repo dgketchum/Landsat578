@@ -30,7 +30,7 @@ except ImportError:
 
 from fiona import open as fopen
 from shapely.geometry import shape, Point
-
+sys.path.append(os.path.dirname(__file__))
 from update_landsat_metadata import update
 from band_map import BandMap
 
