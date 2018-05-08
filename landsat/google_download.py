@@ -31,8 +31,9 @@ except ImportError:
 from fiona import open as fopen
 from shapely.geometry import shape, Point
 sys.path.append(os.path.dirname(__file__))
-from update_landsat_metadata import update
-from band_map import BandMap
+
+from landsat.update_landsat_metadata import update
+from landsat.band_map import BandMap
 
 SATS = ['LANDSAT_1', 'LANDSAT_2', 'LANDSAT_3', 'LANDSAT_4',
         'LANDSAT_5', 'LANDSAT_7', 'LANDSAT_8']
@@ -97,6 +98,7 @@ class GoogleDownload(object):
 
     def download(self):
 
+        out_dir = None
         for ind, row in self.scenes_df.iterrows():
             print('Image {} for {}'.format(row.SCENE_ID, row.DATE_ACQUIRED))
             for band in self.band_map.file_suffixes[self.sat_name]:
