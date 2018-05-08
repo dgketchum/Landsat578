@@ -6,7 +6,7 @@ path: 43
 row: 30
 latitude:
 longitude:
-output_path: C:\\Users\\David\\PycharmProjects\\Landsat578\\tests\\data\\temp
+output_path: /home/dgketchum/PycharmProjects/Landsat578/tests/data/temp
 satellite: 5
 
 return_list: False

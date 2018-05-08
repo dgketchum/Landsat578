@@ -21,8 +21,7 @@ import pkg_resources
 
 sys.path.append(os.path.dirname(__file__).replace('tests', 'landsat'))
 
-from landsat_cli import create_parser, main
-from landsat_cli import TooFewInputsError
+from landsat.landsat_cli import create_parser, main
 
 
 class CommandLineTestCase(unittest.TestCase):
