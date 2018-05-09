@@ -136,6 +136,29 @@ class CommandLineTestCase(unittest.TestCase):
                                                     'LC08_041027_20150503.tar.gz')))
         shutil.rmtree(temp)
 
+    def test_metadata_creation(self):
+        wrs = os.path.join(os.path.dirname(__file__).replace('tests', 'landsat'), 'wrs')
+        scenes = os.path.join(os.path.dirname(__file__).replace('tests', 'landsat'), 'scenes')
+
+        try:
+            shutil.rmtree(wrs)
+        except:
+            pass
+        try:
+            shutil.rmtree(scenes)
+        except:
+            pass
+
+        args_list = ['--satellite', self.sat, '--start', self.start, '--end',
+                     self.end, '--return-list',
+                     '--path', str(self.path), '--row', str(self.row)]
+
+        args = self.parser.parse_args(args_list)
+        main(args)
+        self.assertTrue(os.path.isdir(os.path.join(os.path.dirname(__file__).replace('tests', 'landsat'), 'wrs')))
+        self.assertTrue(os.path.join(os.path.dirname(__file__).replace('tests', 'landsat'), 'wrs', 'wrs2_descending.shp'))
+        self.assertTrue(os.path.join(os.path.dirname(__file__).replace('tests', 'landsat'), 'scenes'))
+
 
 if __name__ == '__main__':
     unittest.main()
