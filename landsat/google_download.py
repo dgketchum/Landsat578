@@ -30,9 +30,10 @@ except ImportError:
 
 from fiona import open as fopen
 from shapely.geometry import shape, Point
+
 sys.path.append(os.path.dirname(__file__))
 
-from landsat.update_landsat_metadata import update
+from landsat.update_landsat_metadata import update_metadata_lists, get_wrs_shapefiles
 from landsat.band_map import BandMap
 
 SATS = ['LANDSAT_1', 'LANDSAT_2', 'LANDSAT_3', 'LANDSAT_4',
@@ -40,7 +41,7 @@ SATS = ['LANDSAT_1', 'LANDSAT_2', 'LANDSAT_3', 'LANDSAT_4',
 
 WRS_1 = os.path.join(os.path.dirname(__file__), 'wrs', 'wrs1_descending.shp')
 WRS_2 = os.path.join(os.path.dirname(__file__), 'wrs', 'wrs2_descending.shp')
-
+WRS_DIR = os.path.join(os.path.dirname(__file__), 'wrs')
 
 SCENES = os.path.join(os.path.dirname(__file__), 'scenes')
 
@@ -146,10 +147,13 @@ class GoogleDownload(object):
         for s in instruments:
             if s not in list_dir:
                 print('Appears there is no scenes list, downloading and processing...')
-                update()
+                update_metadata_lists()
                 break
         path = os.path.join(self.scenes, 'LANDSAT_{}'.format(self.sat_num))
         self.scenes_abspath = path
+
+        if not os.path.isdir(WRS_DIR):
+            get_wrs_shapefiles()
 
     def _check_pr_lat_lon(self):
         if self.p and self.r:

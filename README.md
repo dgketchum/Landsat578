@@ -14,6 +14,7 @@ a simple python script. (Now you can get all Landsat [1, 2, 3, 4, 5, 7, 8]!)
 Python 2.7 and 3.6 compatible.
 
 ## Install
+
 To get the package from PyPi:
 ```
 $ pip install Landsat578

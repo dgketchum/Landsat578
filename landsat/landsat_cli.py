@@ -23,7 +23,7 @@ sys.path.append(os.path.dirname(__file__).replace('tests', 'landsat'))
 sys.path.append(os.path.dirname(__file__))
 from landsat.google_download import GoogleDownload
 from landsat.pymetric_download import download
-from landsat.update_landsat_metadata import update
+from landsat.update_landsat_metadata import update_metadata_lists
 
 
 class TooFewInputsError(Exception):
@@ -101,7 +101,7 @@ def main(args):
                 cfg[arg] = var
 
         if cfg['update_scenes']:
-            update()
+            update_metadata_lists()
 
         if cfg['return_list']:
             return_scene_list = True
