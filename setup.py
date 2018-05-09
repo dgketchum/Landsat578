@@ -29,7 +29,7 @@ except ImportError:
 
     setup_kwargs = {'scripts': ['bin/landsat/landsat_cli']}
 
-with open('README.md') as f:
+with open('description.txt') as f:
     readme = f.read()
 
 tag = '0.4.86'

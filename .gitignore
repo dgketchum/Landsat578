@@ -20,3 +20,4 @@ dist/
 __pycache__/
 pymetric/
 landsat/scenes/
+landsat/wrs/
