@@ -73,6 +73,10 @@ class GoogleDownload(object):
         else:
             self.vectors = WRS_2
 
+        self.scenes_abspath = None
+        self.scenes = SCENES
+        self._check_metadata()
+
         self.p = path
         self.r = row
         self.lat = latitude
@@ -91,9 +95,6 @@ class GoogleDownload(object):
 
         self.current_image = None
 
-        self.scenes_abspath = None
-        self.scenes = SCENES
-        self._check_metadata()
         self.candidate_scenes()
         self.band_map = BandMap()
 
@@ -141,14 +142,10 @@ class GoogleDownload(object):
             return self.scene_ids
 
     def _check_metadata(self):
-        list_dir = [x for x in os.listdir(self.scenes)]
-        instruments = ['LANDSAT_1', 'LANDSAT_2', 'LANDSAT_3', 'LANDSAT_4',
-                       'LANDSAT_5', 'LANDSAT_7', 'LANDSAT_8']
-        for s in instruments:
-            if s not in list_dir:
-                print('Appears there is no scenes list, downloading and processing...')
-                update_metadata_lists()
-                break
+
+        if not os.path.isdir(self.scenes):
+            update_metadata_lists()
+
         path = os.path.join(self.scenes, 'LANDSAT_{}'.format(self.sat_num))
         self.scenes_abspath = path
 
