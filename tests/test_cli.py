@@ -155,9 +155,9 @@ class CommandLineTestCase(unittest.TestCase):
 
         args = self.parser.parse_args(args_list)
         main(args)
-        self.assertTrue(os.path.isdir(os.path.join(os.path.dirname(__file__).replace('tests', 'landsat'), 'wrs')))
-        self.assertTrue(os.path.join(os.path.dirname(__file__).replace('tests', 'landsat'), 'wrs', 'wrs2_descending.shp'))
-        self.assertTrue(os.path.join(os.path.dirname(__file__).replace('tests', 'landsat'), 'scenes'))
+        self.assertTrue(os.path.isdir(wrs))
+        self.assertTrue(os.path.isfile(os.path.join(wrs, 'wrs2_descending.shp')))
+        self.assertTrue(os.path.isdir(scenes))
 
 
 if __name__ == '__main__':
