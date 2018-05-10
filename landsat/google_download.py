@@ -15,9 +15,11 @@
 # =============================================================================================
 
 import os
+import re
 import sys
 import tarfile
 import shutil
+from lxml import html
 from warnings import warn
 from pandas import read_pickle, concat, Series
 from datetime import datetime as dt
@@ -27,9 +29,6 @@ try:
     from urllib.parse import urlparse, urlunparse
 except ImportError:
     from urlparse import urlparse, urlunparse
-
-from fiona import open as fopen
-from shapely.geometry import shape, Point
 
 sys.path.append(os.path.dirname(__file__))
 
@@ -165,18 +164,30 @@ class GoogleDownload(object):
                                         'or with both latitude and longitude'))
 
     def _get_path_row(self):
-        distance = []
-        path_rows = []
-        lat_lon_point = Point(self.lon, self.lat)
-        with fopen(self.vectors, 'r') as src:
-            for feat in src:
-                geo = shape(feat['geometry'])
-                if lat_lon_point.within(geo):
-                    center = geo.centroid
-                    path_rows.append((feat['properties']['PATH'], feat['properties']['ROW']))
-                    distance.append(center.distance(lat_lon_point))
-        self.p, self.r = path_rows[distance.index(min(distance))]
-        return None
+        """
+        :param lat: Latitude float
+        :param lon: Longitude float
+                'convert_pr_to_ll' [path, row to coordinates]
+        :return: lat, lon tuple or path, row tuple
+        """
+        conversion_type = 'convert_ll_to_pr'
+        base = 'https://landsat.usgs.gov/landsat/lat_long_converter/tools_latlong.php'
+        unk_number = 1508518830987
+
+        full_url = '{}?rs={}&rsargs[]={}&rsargs[]={}&rsargs[]=1&rsrnd={}'.format(base, conversion_type,
+                                                                                 self.lat, self.lon,
+                                                                                 unk_number)
+        r = get(full_url)
+        tree = html.fromstring(r.text)
+
+        # remember to view source html to build xpath
+        # i.e. inspect element > network > find GET with relevant PARAMS
+        # > go to GET URL > view source HTML
+        p_string = tree.xpath('//table/tr[1]/td[2]/text()')
+        self.p = int(re.search(r'\d+', p_string[0]).group())
+
+        r_string = tree.xpath('//table/tr[1]/td[4]/text()')
+        self.r = int(re.search(r'\d+', r_string[0]).group())
 
     def _make_pymetric_ids(self):
         metric_ids = []
