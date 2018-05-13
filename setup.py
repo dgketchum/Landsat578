@@ -32,7 +32,7 @@ except ImportError:
 with open('README.txt') as f:
     readme = f.read()
 
-tag = '0.4.9'
+tag = '0.4.91'
 
 setup(name='Landsat578',
       version=tag,
