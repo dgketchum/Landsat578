@@ -146,6 +146,8 @@ class GoogleDownload(object):
             update_metadata_lists()
 
         path = os.path.join(self.scenes, 'LANDSAT_{}'.format(self.sat_num))
+        if not os.path.isfile(path):
+            update_metadata_lists()
         self.scenes_abspath = path
 
         if not os.path.isdir(WRS_DIR):
