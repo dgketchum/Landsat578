@@ -134,7 +134,7 @@ class CommandLineTestCase(unittest.TestCase):
                                                     'LC08_041027_20150417.tar.gz')))
         self.assertTrue(os.path.isfile(os.path.join(temp, 'landsat', '041', '027', '2015',
                                                     'LC08_041027_20150503.tar.gz')))
-        shutil.rmtree(temp)
+        # shutil.rmtree(temp)
 
     def test_metadata_creation(self):
         wrs = os.path.join(os.path.dirname(__file__).replace('tests', 'landsat'), 'wrs')
