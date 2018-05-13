@@ -49,7 +49,7 @@ max_cloud_percent: 100
 # using pymetric_root and clear_scenes overrides all other arguments
 # leave both blank to disable
 
-pymetric_root: D:/pyMETRIC/harney
+pymetric_root: D:/pyMETRIC/harney   
 clear_scenes: D:/pyMETRIC/harney/clear_scenes.txt
 '''
 
