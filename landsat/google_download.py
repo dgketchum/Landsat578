@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================================
+from __future__ import print_function, absolute_import
 
 import os
 import re
@@ -21,9 +22,10 @@ import tarfile
 import shutil
 from lxml import html
 from warnings import warn
-from pandas import read_pickle, concat, Series
+from pandas import read_pickle, concat, Series, Timestamp
 from datetime import datetime as dt
 from requests import get
+
 
 try:
     from urllib.parse import urlparse, urlunparse
@@ -126,13 +128,14 @@ class GoogleDownload(object):
 
     def candidate_scenes(self, return_list=False):
         df = read_pickle(self.scenes_abspath)
-
+        s, e = Timestamp(self.start), Timestamp(self.end)
         df = df.loc[(df.CLOUD_COVER < self.cloud) & (df.WRS_PATH == self.p) & (df.WRS_ROW == self.r)
-                    & (self.start < df.DATE_ACQUIRED) & (df.DATE_ACQUIRED < self.end)]
+                    & (s < df.DATE_ACQUIRED) & (df.DATE_ACQUIRED < e)]
         df.dropna(subset=['PRODUCT_ID'], inplace=True, axis=0)
         self.scenes_df = df
         if df.shape[0] == 0:
-            warn('There are no images for the satellite, time period, and cloud cover constraints provided.')
+            warn('There are no images for the satellite, time period, '
+                 'and cloud cover constraints provided.')
         self.urls = df.BASE_URL.values.tolist()
         self.product_ids = df.PRODUCT_ID.values.tolist()
         self.scene_ids = df.SCENE_ID.values.tolist()
