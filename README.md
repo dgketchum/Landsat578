@@ -1,4 +1,4 @@
-# ![Landsat](tests/data/QuickLook_CapeCod.jpg)
+<img src="https://github.com/dgketchum/Landsat578/blob/master/tests/data/QuickLook_CapeCod.jpg" width="500">
 
 [![Build Status](https://travis-ci.org/dgketchum/Landsat578.svg?branch=master)](https://travis-ci.org/dgketchum/Landsat578)
 [![codecov](https://codecov.io/gh/dgketchum/Landsat578/branch/master/graph/badge.svg)](https://codecov.io/gh/dgketchum/Landsat578)
