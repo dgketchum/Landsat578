@@ -54,7 +54,7 @@ Within the package you downloaded, you need to call landsat.py.
 Dates are entered as YYYY-MM-DD format, e.g. 2008-05-31.
 
 ```
-$ landsat LE7 2007-05-01 2007-05-31 --path 38 --row 27 -o /path/to/folder --credentials usgs.txt
+$ landsat -sat 7 --start 2007-05-01 --end 2007-05-31 --path 38 --row 27 -o /path/to/folder
 ```
 This command will find the two images that were captured by Landsat
 5 of scene 38, 27 in the month of May, 2007 and unzip them to your folder.
@@ -63,7 +63,7 @@ of what was found:
 
 
 ```
-$ landsat LE7 2007-05-01 2007-05-31 --path 38 --row 27 --return-list
+$ landsat -sat 7 --start 2007-05-01 --end 2007-05-31 --path 38 --row 27 --return-list
 ```
 
 This will return the two image scene IDs and print to your screen.
@@ -82,7 +82,7 @@ the USGS Landsat [site.](https://landsat.usgs.gov/what-are-naming-conventions-la
 
 You can also download by WGS decimal degrees coordinates (i.e., latitude and longitude):
 ```
-$ landsat LE7 2007-05-01 2007-05-31 --lat 46.5 --lon -107.5 --credentials usgs.txt
+$ landsat -sat 7 --start 2007-05-01 --end 2007-05-31 --lat 46.5 --lon -107.5 
 ```
 A negative number lat is in the southern hemisphere, a negtive lon is the 
 western hemisphere.  
