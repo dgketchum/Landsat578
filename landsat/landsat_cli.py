@@ -82,8 +82,7 @@ def create_parser():
                         action='store_true', default=False)
 
     parser.add_argument('--max-cloud-percent', help='Maximum percent of of image obscured by clouds accepted,'
-                                                    ' type integer',
-                        default=100)
+                                                    ' type integer', type=float, default=100)
 
     parser.add_argument('--update-scenes', help='Update the scenes list this program uses to discover the '
                                                 'latest imagery.', default=False)
