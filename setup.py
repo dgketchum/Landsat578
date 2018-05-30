@@ -32,7 +32,7 @@ except ImportError:
 with open('README.txt') as f:
     readme = f.read()
 
-tag = '0.4.93'
+tag = '0.4.94'
 
 setup(name='Landsat578',
       version=tag,
@@ -56,7 +56,7 @@ setup(name='Landsat578',
       download_url='https://github.com/{}/{}/archive/{}.tar.gz'.format('dgketchum', 'Landsat578', tag),
       url='https://github.com/dgketchum',
       test_suite='tests.test_suite.suite',
-      install_requires=['pyyaml', 'pandas', 'requests', 'lxml'],
+      install_requires=['pyyaml', 'pandas', 'requests', 'lxml', 'future'],
       **setup_kwargs)
 
 
