@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================================
+from __future__ import print_function
 
 import os
 import gzip
@@ -105,7 +106,7 @@ def split_list(_list=LATEST):
     sats = unique(csv.SPACECRAFT_ID).tolist()
     for sat in sats:
         df = csv[csv.SPACECRAFT_ID == sat]
-        df.to_pickle(sat)
+        df.to_pickle(sat, protocol=0)
 
     return None
 
