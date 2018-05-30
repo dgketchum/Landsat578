@@ -59,7 +59,7 @@ class MissingInitData(Exception):
 
 class GoogleDownload(object):
     def __init__(self, start, end, satellite, latitude=None, longitude=None,
-                 path=None, row=None, max_cloud_percent=70,
+                 path=None, row=None, max_cloud_percent=100,
                  instrument=None, output_path=None, zipped=False, alt_name=False):
 
         self.sat_num = satellite
@@ -67,7 +67,7 @@ class GoogleDownload(object):
         self.instrument = instrument
         self.start = dt.strptime(start, fmt)
         self.end = dt.strptime(end, fmt)
-        self.cloud = max_cloud_percent
+        self.cloud = float(max_cloud_percent)
 
         if satellite < 4:
             self.vectors = WRS_1
