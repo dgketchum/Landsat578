@@ -7,7 +7,7 @@
 
 # Easy Landsat Download
 
-Download and unzip Landsat 5, 7, and 8 (a.k.a. LT5, LE7, LC8) images 
+Download and unzip full size Landsat 5, 7, and 8 (a.k.a. LT5, LE7, LC8) images 
 via the Google service automatically using a command line interface or
 a simple python script. (Now you can get all Landsat [1, 2, 3, 4, 5, 7, 8]!)
 
