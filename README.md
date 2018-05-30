@@ -1,4 +1,4 @@
-# ![Landsat](tests/data/maple.png)
+# ![Landsat](tests/data/QuickLook_CapeCod.jpg)
 
 [![Build Status](https://travis-ci.org/dgketchum/Landsat578.svg?branch=master)](https://travis-ci.org/dgketchum/Landsat578)
 [![codecov](https://codecov.io/gh/dgketchum/Landsat578/branch/master/graph/badge.svg)](https://codecov.io/gh/dgketchum/Landsat578)
