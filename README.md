@@ -89,6 +89,14 @@ $ landsat -sat 7 --start 2007-05-01 --end 2007-05-31 --lat 46.5 --lon -107.5
 A negative number lat is in the southern hemisphere, a negtive lon is the 
 western hemisphere.  
 
+This package is easy to use within a python program:
+```
+from landsat.google import GoogleDownload
+
+g = GoogleDownload(start='2015-01-01', end='2015-12-31', sat=8, path='38', row='28', output_path='path/to/place')
+g.download()
+```
+
 # Help
 ```
 landsat -h
