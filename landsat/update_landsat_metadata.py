@@ -27,8 +27,8 @@ LANDSAT_METADATA_URL = 'http://storage.googleapis.com/gcp-public-data-landsat/in
 SCENES_ZIP = 'index.csv.gz'
 SCENES = os.path.join(os.path.dirname(__file__), 'scenes')
 
-WRS_URL = ('https://landsat.usgs.gov/sites/default/files/documents/wrs1_descending.zip',
-           'https://landsat.usgs.gov/sites/default/files/documents/wrs2_descending.zip')
+WRS_URL = ('https://landsat.usgs.gov/sites/default/files/documents/WRS1_descending.zip',
+           'https://landsat.usgs.gov/sites/default/files/documents/WRS2_descending.zip')
 WRS_FILES = (os.path.join(os.path.dirname(__file__), 'wrs', 'wrs1_descending.shp'),
              os.path.join(os.path.dirname(__file__), 'wrs', 'wrs2_descending.shp'))
 WRS_ZIP = 'wrs.zip'
