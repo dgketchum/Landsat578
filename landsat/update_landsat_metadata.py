@@ -20,7 +20,8 @@ import gzip
 from zipfile import ZipFile
 from numpy import unique
 from datetime import datetime
-from pandas import read_csv
+# from pandas import read_csv
+from dask.dataframe import read_csv
 from requests import get
 
 LANDSAT_METADATA_URL = 'http://storage.googleapis.com/gcp-public-data-landsat/index.csv.gz'
@@ -74,8 +75,15 @@ def update_metadata_lists():
     if not os.path.isdir(SCENES):
         os.mkdir(SCENES)
     os.chdir(SCENES)
+    ls = os.listdir(SCENES)
+    for f in ls:
+        if 'scenes_' in f and LATEST not in f:
+            os.remove(os.path.join(SCENES, f))
     download_latest_metadata()
     split_list()
+    os.remove(LATEST)
+    with open(LATEST, 'w') as empty:
+        empty.write('')
     return None
 
 
@@ -102,15 +110,30 @@ def download_latest_metadata():
 
 
 def split_list(_list=LATEST):
-    csv = read_csv(_list, parse_dates=PARSE_DATES)
+    """
+    # dtypes = ['object', 'object', 'object', 'object', 'object', 'int64', 'object', 'object',
+    #           'object', 'int64', 'int64', 'float64', 'float64', 'float64', 'float64', 'float64',
+    #           'int64', 'object']
+    #
+    # keys = ['SCENE_ID', 'PRODUCT_ID', 'SPACECRAFT_ID', 'SENSOR_ID', 'DATE_ACQUIRED',
+    #         'COLLECTION_NUMBER', 'COLLECTION_CATEGORY', 'SENSING_TIME', 'DATA_TYPE', 'WRS_PATH',
+    #         'WRS_ROW', 'CLOUD_COVER', 'NORTH_LAT', 'SOUTH_LAT', 'WEST_LON', 'EAST_LON',
+    #         'TOTAL_SIZE', 'BASE_URL']
+    """
+    print('Please wait while scene metadata is split')
+    csv = read_csv(_list, dtype={'PRODUCT_ID': object, 'COLLECTION_NUMBER': object,
+                                 'COLLECTION_CATEGORY': object}, blocksize=25e6)
+    csv = csv[csv.COLLECTION_NUMBER != 'PRE']
+
     sats = unique(csv.SPACECRAFT_ID).tolist()
     for sat in sats:
+        print(sat)
         df = csv[csv.SPACECRAFT_ID == sat]
-        df.to_pickle(sat, protocol=0)
+        df.to_parquet('{}'.format(sat))
 
     return None
 
 
 if __name__ == '__main__':
-    pass
+    update_metadata_lists()
 # ========================= EOF ================================================================
