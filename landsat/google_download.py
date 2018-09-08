@@ -85,12 +85,16 @@ class GoogleDownload(object):
         self.lon = longitude
         self._check_pr_lat_lon()
 
-        self.urls = None
-        self.scene_ids = None
-        self.product_ids = None
-        self.scenes_df = None
-        self.scenes_all = None
+        self.urls_low_cloud = None
+        self.product_ids_low_cloud = None
+        self.scene_ids_low_cloud = None
         self.scenes_low_cloud = None
+
+        self.urls_all = None
+        self.product_ids_all = None
+        self.scene_ids_all = None
+        self.scenes_all = None
+
         self.pymetric_ids = None
 
         self.output = output_path
@@ -102,10 +106,15 @@ class GoogleDownload(object):
         self.candidate_scenes()
         self.band_map = BandMap()
 
-    def download(self):
+    def download(self, low_cloud=True):
+
+        if low_cloud:
+            scenes = self.scenes_low_cloud
+        else:
+            scenes = self.scenes_all
 
         out_dir = None
-        for ind, row in self.scenes_df.iterrows():
+        for ind, row in scenes.iterrows():
             print('Image {} for {}'.format(row.SCENE_ID, row.DATE_ACQUIRED))
             for band in self.band_map.file_suffixes[self.sat_name]:
 
@@ -123,6 +132,7 @@ class GoogleDownload(object):
             if self.zipped:
                 tgz_file = '{}.tar.gz'.format(row.SCENE_ID)
                 self._zip_image(tgz_file, out_dir)
+
             if self.alt_name:
                 tgz_file = '{}.tar.gz'.format(row.PYMETRIC_ID)
                 self._zip_image(tgz_file, out_dir)
@@ -145,12 +155,19 @@ class GoogleDownload(object):
         if df.shape[0] == 0:
             warn('There are no images for the satellite, time period, '
                  'and cloud cover constraints provided.')
-        self.urls = df.BASE_URL.values.tolist()
-        self.product_ids = df.PRODUCT_ID.values.tolist()
-        self.scene_ids = df.SCENE_ID.values.tolist()
+
+        self.urls_low_cloud = pr_dt.BASE_URL.values.tolist()
+        self.product_ids_low_cloud = pr_dt.PRODUCT_ID.values.tolist()
+        self.scene_ids_low_cloud = pr_dt.SCENE_ID.values.tolist()
+
+        self.urls_all = cloud_select.BASE_URL.values.tolist()
+        self.product_ids_all = cloud_select.PRODUCT_ID.values.tolist()
+        self.scene_ids_all = cloud_select.SCENE_ID.values.tolist()
+
         self._make_pymetric_ids()
+
         if return_list:
-            return self.scene_ids
+            return self.scene_ids_low_cloud, self.scene_ids_all
 
     def _check_metadata(self):
 
@@ -206,12 +223,12 @@ class GoogleDownload(object):
 
     def _make_pymetric_ids(self):
         metric_ids = []
-        for _id in self.product_ids:
+        for _id in self.product_ids_all:
             tag = '{}_{}_{}'.format(_id[:4], _id[10:16], _id[17:25])
             metric_ids.append(tag)
         self.pymetric_ids = metric_ids
         series = Series(data=self.pymetric_ids, name='PYMETRIC_ID', index=self.scenes_df.index)
-        self.scenes_df = concat([self.scenes_df, series], axis=1)
+        self.scenes_all = concat([self.scenes_all, series], axis=1)
 
     @staticmethod
     def _make_url(row, band):
