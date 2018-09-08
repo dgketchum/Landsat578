@@ -31,10 +31,15 @@ class MyTestCase(unittest.TestCase):
         self.max_cloud = 20
         self.root = os.path.join(os.path.dirname(__file__), 'data')
 
-    def test_something(self):
+    def test_low_cloud(self):
         g = GoogleDownload(self.start, self.end, self.sat, path=self.path, row=self.row,
                            output_path=self.root, max_cloud_percent=self.max_cloud)
-        g.download()
+        g.download(low_cloud=True)
+
+    def test_all_scenes(self):
+        g = GoogleDownload(self.start, self.end, self.sat, path=self.path, row=self.row,
+                           output_path=self.root, max_cloud_percent=self.max_cloud)
+        g.download(low_cloud=False)
 
 
 if __name__ == '__main__':
