@@ -149,10 +149,11 @@ class GoogleDownload(object):
 
         cloud_select = pr_dt.loc[(pr_dt.CLOUD_COVER < self.cloud)]
 
-        df.dropna(subset=['PRODUCT_ID'], inplace=True, axis=0)
+        pr_dt.dropna(subset=['PRODUCT_ID'], inplace=True, axis=0)
+        cloud_select.dropna(subset=['PRODUCT_ID'], inplace=True, axis=0)
         self.scenes_all = pr_dt
         self.scenes_low_cloud = cloud_select
-        if df.shape[0] == 0:
+        if cloud_select.shape[0] == 0 or pr_dt.shape[0] == 0:
             warn('There are no images for the satellite, time period, '
                  'and cloud cover constraints provided.')
 
@@ -226,8 +227,8 @@ class GoogleDownload(object):
         for _id in self.product_ids_all:
             tag = '{}_{}_{}'.format(_id[:4], _id[10:16], _id[17:25])
             metric_ids.append(tag)
-        self.pymetric_ids = metric_ids
-        series = Series(data=self.pymetric_ids, name='PYMETRIC_ID', index=self.scenes_df.index)
+        self.product_ids_all = metric_ids
+        series = Series(data=self.product_ids_all, name='PYMETRIC_ID', index=self.scenes_all.index)
         self.scenes_all = concat([self.scenes_all, series], axis=1)
 
     @staticmethod
