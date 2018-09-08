@@ -117,27 +117,6 @@ class CommandLineTestCase(unittest.TestCase):
                                                     'LT05_L1TP_043030_20070511_20160908_01_T1_B3.TIF')))
         shutil.rmtree(temp)
 
-    def test_pymetric_config(self):
-        root = 'tests'
-        base = pkg_resources.resource_filename('tests', 'data/downloader_config_pymetric.yml')
-        filepath = os.path.join(root, base)
-        temp = os.path.join(os.path.dirname(filepath), 'temp')
-        try:
-            shutil.rmtree(temp)
-        except Exception:
-            pass
-        os.mkdir(temp)
-        args_list = ['--configuration', filepath]
-        args = self.parser.parse_args(args_list)
-        main(args)
-        self.assertTrue(os.path.isfile(os.path.join(temp, 'landsat', '041', '027', '2015',
-                                                    'LC08_041027_20150228.tar.gz')))
-        self.assertTrue(os.path.isfile(os.path.join(temp, 'landsat', '041', '027', '2015',
-                                                    'LC08_041027_20150417.tar.gz')))
-        self.assertTrue(os.path.isfile(os.path.join(temp, 'landsat', '041', '027', '2015',
-                                                    'LC08_041027_20150503.tar.gz')))
-        # shutil.rmtree(temp)
-
     def test_metadata_creation(self):
         wrs = os.path.join(os.path.dirname(__file__).replace('tests', 'landsat'), 'wrs')
         scenes = os.path.join(os.path.dirname(__file__).replace('tests', 'landsat'), 'scenes')
