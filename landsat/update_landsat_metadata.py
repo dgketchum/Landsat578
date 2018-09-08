@@ -20,7 +20,6 @@ import gzip
 from zipfile import ZipFile
 from numpy import unique
 from datetime import datetime
-# from pandas import read_csv
 from dask.dataframe import read_csv
 from requests import get
 
@@ -82,6 +81,7 @@ def update_metadata_lists():
     download_latest_metadata()
     split_list()
     os.remove(LATEST)
+    os.remove(SCENES_ZIP)
     with open(LATEST, 'w') as empty:
         empty.write('')
     return None
@@ -122,7 +122,8 @@ def split_list(_list=LATEST):
     """
     print('Please wait while scene metadata is split')
     csv = read_csv(_list, dtype={'PRODUCT_ID': object, 'COLLECTION_NUMBER': object,
-                                 'COLLECTION_CATEGORY': object}, blocksize=25e6)
+                                 'COLLECTION_CATEGORY': object}, blocksize=25e6,
+                   parse_dates=True)
     csv = csv[csv.COLLECTION_NUMBER != 'PRE']
 
     sats = unique(csv.SPACECRAFT_ID).tolist()
