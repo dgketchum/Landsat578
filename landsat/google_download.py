@@ -22,10 +22,9 @@ import tarfile
 import shutil
 from lxml import html
 from warnings import warn
-from pandas import read_pickle, concat, Series, Timestamp
+from pandas import Timestamp, read_parquet, concat, Series, to_datetime
 from datetime import datetime as dt
 from requests import get
-
 
 try:
     from urllib.parse import urlparse, urlunparse
@@ -65,6 +64,8 @@ class GoogleDownload(object):
         self.sat_num = satellite
         self.sat_name = 'LANDSAT_{}'.format(self.sat_num)
         self.instrument = instrument
+        self.start_str = start
+        self.end_str = end
         self.start = dt.strptime(start, fmt)
         self.end = dt.strptime(end, fmt)
         self.cloud = float(max_cloud_percent)
@@ -88,6 +89,8 @@ class GoogleDownload(object):
         self.scene_ids = None
         self.product_ids = None
         self.scenes_df = None
+        self.scenes_all = None
+        self.scenes_low_cloud = None
         self.pymetric_ids = None
 
         self.output = output_path
@@ -127,12 +130,18 @@ class GoogleDownload(object):
         return None
 
     def candidate_scenes(self, return_list=False):
-        df = read_pickle(self.scenes_abspath)
+        df = read_parquet(self.scenes_abspath)
         s, e = Timestamp(self.start), Timestamp(self.end)
-        df = df.loc[(df.CLOUD_COVER < self.cloud) & (df.WRS_PATH == self.p) & (df.WRS_ROW == self.r)
-                    & (s < df.DATE_ACQUIRED) & (df.DATE_ACQUIRED < e)]
+        pr = df.loc[(df.WRS_PATH == self.p) & (df.WRS_ROW == self.r)]
+        df = None
+        pr['DATE_ACQUIRED'] = pr['DATE_ACQUIRED'].apply(to_datetime)
+        pr_dt = pr.loc[(s < pr.DATE_ACQUIRED) & (pr.DATE_ACQUIRED < e)]
+
+        cloud_select = pr_dt.loc[(pr_dt.CLOUD_COVER < self.cloud)]
+
         df.dropna(subset=['PRODUCT_ID'], inplace=True, axis=0)
-        self.scenes_df = df
+        self.scenes_all = pr_dt
+        self.scenes_low_cloud = cloud_select
         if df.shape[0] == 0:
             warn('There are no images for the satellite, time period, '
                  'and cloud cover constraints provided.')
@@ -149,7 +158,7 @@ class GoogleDownload(object):
             update_metadata_lists()
 
         path = os.path.join(self.scenes, 'LANDSAT_{}'.format(self.sat_num))
-        if not os.path.isfile(path):
+        if not os.path.isdir(path):
             update_metadata_lists()
         self.scenes_abspath = path
 
@@ -179,7 +188,8 @@ class GoogleDownload(object):
         base = 'https://landsat.usgs.gov/landsat/lat_long_converter/tools_latlong.php'
         unk_number = 1508518830987
 
-        full_url = '{}?rs={}&rsargs[]={}&rsargs[]={}&rsargs[]=1&rsrnd={}'.format(base, conversion_type,
+        full_url = '{}?rs={}&rsargs[]={}&rsargs[]={}&rsargs[]=1&rsrnd={}'.format(base,
+                                                                                 conversion_type,
                                                                                  self.lat, self.lon,
                                                                                  unk_number)
         r = get(full_url)
