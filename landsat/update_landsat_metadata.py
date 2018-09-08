@@ -41,36 +41,8 @@ LATEST = 'scenes_{}'.format(date)
 PARSE_DATES = ['DATE_ACQUIRED', 'SENSING_TIME']
 
 
-def get_wrs_shapefiles():
-    if not os.path.isdir(WRS_DIR):
-        os.mkdir(WRS_DIR)
-    os.chdir(WRS_DIR)
-    download_wrs_data()
-
-
-def download_wrs_data():
-    for url, wrs_file in zip(WRS_URL, WRS_FILES):
-        if not os.path.isfile(WRS_ZIP):
-            req = get(url, stream=True)
-            if req.status_code != 200:
-                raise ValueError('Bad response {} from request.'.format(req.status_code))
-
-            with open(WRS_ZIP, 'wb') as f:
-                print('Downloading {}'.format(url))
-                for chunk in req.iter_content(chunk_size=1024):
-                    if chunk:
-                        f.write(chunk)
-
-        with ZipFile(WRS_ZIP, 'r') as zip_file:
-            print('unzipping {}'.format(WRS_ZIP))
-            zip_file.extractall()
-
-        os.remove(WRS_ZIP)
-
-    return None
-
-
 def update_metadata_lists():
+    print('Please wait while Landsat578 updates Landsat metadata files...')
     if not os.path.isdir(SCENES):
         os.mkdir(SCENES)
     os.chdir(SCENES)
@@ -131,6 +103,35 @@ def split_list(_list=LATEST):
         print(sat)
         df = csv[csv.SPACECRAFT_ID == sat]
         df.to_parquet('{}'.format(sat))
+
+    return None
+
+
+def get_wrs_shapefiles():
+    if not os.path.isdir(WRS_DIR):
+        os.mkdir(WRS_DIR)
+    os.chdir(WRS_DIR)
+    download_wrs_data()
+
+
+def download_wrs_data():
+    for url, wrs_file in zip(WRS_URL, WRS_FILES):
+        if not os.path.isfile(WRS_ZIP):
+            req = get(url, stream=True)
+            if req.status_code != 200:
+                raise ValueError('Bad response {} from request.'.format(req.status_code))
+
+            with open(WRS_ZIP, 'wb') as f:
+                print('Downloading {}'.format(url))
+                for chunk in req.iter_content(chunk_size=1024):
+                    if chunk:
+                        f.write(chunk)
+
+        with ZipFile(WRS_ZIP, 'r') as zip_file:
+            print('unzipping {}'.format(WRS_ZIP))
+            zip_file.extractall()
+
+        os.remove(WRS_ZIP)
 
     return None
 

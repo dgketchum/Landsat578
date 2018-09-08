@@ -34,14 +34,20 @@ class MyTestCase(unittest.TestCase):
     def test_low_cloud(self):
         g = GoogleDownload(self.start, self.end, self.sat, path=self.path, row=self.row,
                            output_path=self.root, max_cloud_percent=self.max_cloud)
-        low, all = g.candidate_scenes(return_list=True)
-        print(low, all)
+        low, _all = g.candidate_scenes(return_list=True)
+        print(low, _all)
 
     def test_all_scenes(self):
         g = GoogleDownload(self.start, self.end, self.sat, path=self.path, row=self.row,
                            output_path=self.root, max_cloud_percent=self.max_cloud)
-        low, all = g.candidate_scenes(return_list=True)
-        print(low, all)
+        low, _all = g.candidate_scenes(return_list=True)
+        print(low, _all)
+
+    def test_select_n(self):
+        g = GoogleDownload(self.start, self.end, self.sat, path=self.path, row=self.row,
+                           output_path=self.root, max_cloud_percent=100)
+        g.select_scenes(n=3)
+        g.download()
 
 
 if __name__ == '__main__':

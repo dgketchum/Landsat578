@@ -37,7 +37,7 @@ from landsat.update_landsat_metadata import update_metadata_lists, get_wrs_shape
 from landsat.band_map import BandMap
 
 SATS = ['LANDSAT_1', 'LANDSAT_2', 'LANDSAT_3', 'LANDSAT_4',
-        'LANDSAT_5', 'LANDSAT_7', 'LANDSAT_8']
+        'LANDSAT_5', 'LANDSAT_7', 'LANDSAT_8.parquet']
 
 WRS_1 = os.path.join(os.path.dirname(__file__), 'wrs', 'wrs1_descending.shp')
 WRS_2 = os.path.join(os.path.dirname(__file__), 'wrs', 'wrs2_descending.shp')
@@ -58,16 +58,16 @@ class MissingInitData(Exception):
 
 class GoogleDownload(object):
     def __init__(self, start, end, satellite, latitude=None, longitude=None,
-                 path=None, row=None, max_cloud_percent=100,
-                 instrument=None, output_path=None, zipped=False, alt_name=False):
+            path=None, row=None, max_cloud_percent=100,
+            instrument=None, output_path=None, zipped=False, alt_name=False):
 
         self.sat_num = satellite
         self.sat_name = 'LANDSAT_{}'.format(self.sat_num)
         self.instrument = instrument
         self.start_str = start
         self.end_str = end
-        self.start = dt.strptime(start, fmt)
-        self.end = dt.strptime(end, fmt)
+        self.start_dt = dt.strptime(start, fmt)
+        self.end_dt = dt.strptime(end, fmt)
         self.cloud = float(max_cloud_percent)
 
         if satellite < 4:
@@ -140,8 +140,9 @@ class GoogleDownload(object):
         return None
 
     def candidate_scenes(self, return_list=False):
-        df = read_parquet(self.scenes_abspath)
-        s, e = Timestamp(self.start), Timestamp(self.end)
+        path = self.scenes_abspath
+        df = read_parquet(path, engine='fastparquet')
+        s, e = Timestamp(self.start_dt), Timestamp(self.end_dt)
         pr = df.loc[(df.WRS_PATH == self.p) & (df.WRS_ROW == self.r)]
         df = None
         pr['DATE_ACQUIRED'] = pr['DATE_ACQUIRED'].apply(to_datetime)
@@ -165,10 +166,17 @@ class GoogleDownload(object):
         self.product_ids_all = cloud_select.PRODUCT_ID.values.tolist()
         self.scene_ids_all = cloud_select.SCENE_ID.values.tolist()
 
-        self._make_pymetric_ids()
-
         if return_list:
             return self.scene_ids_low_cloud, self.scene_ids_all
+
+    def select_scenes(self, n=None, begin=None, stop=None, monthly=None):
+        if begin and stop:
+            pass
+        if n:
+            pass
+        if monthly:
+            pass
+        return None
 
     def _check_metadata(self):
 
@@ -221,15 +229,6 @@ class GoogleDownload(object):
 
         r_string = tree.xpath('//table/tr[1]/td[4]/text()')
         self.r = int(re.search(r'\d+', r_string[0]).group())
-
-    def _make_pymetric_ids(self):
-        metric_ids = []
-        for _id in self.product_ids_all:
-            tag = '{}_{}_{}'.format(_id[:4], _id[10:16], _id[17:25])
-            metric_ids.append(tag)
-        self.product_ids_all = metric_ids
-        series = Series(data=self.product_ids_all, name='PYMETRIC_ID', index=self.scenes_all.index)
-        self.scenes_all = concat([self.scenes_all, series], axis=1)
 
     @staticmethod
     def _make_url(row, band):
