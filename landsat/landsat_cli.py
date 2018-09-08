@@ -24,7 +24,6 @@ import yaml
 sys.path.append(os.path.dirname(__file__).replace('tests', 'landsat'))
 sys.path.append(os.path.dirname(__file__))
 from landsat.google_download import GoogleDownload
-from landsat.pymetric_download import download
 from landsat.update_landsat_metadata import update_metadata_lists
 
 
@@ -46,13 +45,6 @@ satellite: 5
 return_list: False
 zipped: True
 max_cloud_percent: 100
-
-# pymetric directory structure: e.g. D:/pyMETRIC/harney/landsat/path/row/year
-# using pymetric_root and clear_scenes overrides all other arguments
-# leave both blank to disable
-
-pymetric_root: D:/pyMETRIC/harney   
-clear_scenes: D:/pyMETRIC/harney/clear_scenes.txt
 '''
 
 CONFIG_PLACEMENT = os.path.dirname(__file__)
@@ -73,7 +65,6 @@ def create_parser():
     parser.add_argument('-conf', '--configuration', help='Path to your configuration file. If a directory is provided,'
                                                          'a template cofiguration file will be created there.')
     parser.add_argument('-cs', '--clear-scenes', help='Path to your clear scenes file.')
-    parser.add_argument('-pym', '--pymetric-root', help='Path to your pyMETRIC study area root dir.')
 
     parser.add_argument('--return-list', help='Just return list of images without downloading', action='store_true',
                         default=False)
@@ -120,16 +111,13 @@ def main(args):
             del cfg['configuration']
             del cfg['update_scenes']
 
-            if cfg['pymetric_root']:
-                download(cfg['clear_scenes'], cfg['pymetric_root'])
-            else:
-                del cfg['clear_scenes']
-                del cfg['pymetric_root']
+            del cfg['clear_scenes']
+            del cfg['pymetric_root']
 
-                g = GoogleDownload(**cfg)
-                if return_scene_list:
-                    return g.candidate_scenes(return_list=True)
-                g.download(low_cloud=True)
+            g = GoogleDownload(**cfg)
+            if return_scene_list:
+                return g.candidate_scenes(return_list=True)
+            g.download(low_cloud=True)
 
         else:
             del cfg['return_list']
