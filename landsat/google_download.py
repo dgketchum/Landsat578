@@ -95,6 +95,7 @@ class GoogleDownload(object):
         self.scene_ids_all = None
         self.scenes_all = None
 
+        self.selected = None
         self.pymetric_ids = None
 
         self.output = output_path
@@ -178,6 +179,17 @@ class GoogleDownload(object):
                 raise AttributeError('Must choose list return type all or low_cloud')
         else:
             return None
+
+    def select_scenes(self, n):
+        scn = self.scenes_all
+        s = scn.sort_values(by='SENSING_TIME').index.values.tolist()
+        c = scn.sort_values(by='SENSING_TIME')['CLOUD_COVER'].values.tolist()
+        ls = self._split_list(s, n)
+        lc = self._split_list(c, n)
+        c_idx = [c.index(min(c)) for c in lc]
+        select = [l[i] for l, i in zip(ls, c_idx)]
+        self.selected = scn.ix[select]
+        pass
 
     def _check_metadata(self):
 
@@ -269,6 +281,17 @@ class GoogleDownload(object):
             tar.add(source_dir, arcname=os.path.basename(source_dir))
         shutil.rmtree(source_dir)
 
+    @staticmethod
+    def _split_list(seq, num):
+        avg = len(seq) / float(num)
+        out = []
+        last = 0.0
+
+        while last < len(seq):
+            out.append(seq[int(last):int(last + avg)])
+            last += avg
+
+        return out
 
 if __name__ == '__main__':
     pass
