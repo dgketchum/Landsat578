@@ -58,8 +58,8 @@ class MissingInitData(Exception):
 
 class GoogleDownload(object):
     def __init__(self, start, end, satellite, latitude=None, longitude=None,
-            path=None, row=None, max_cloud_percent=100,
-            instrument=None, output_path=None, zipped=False, alt_name=False):
+                 path=None, row=None, max_cloud_percent=100,
+                 instrument=None, output_path=None, zipped=False, alt_name=False):
 
         self.sat_num = satellite
         self.sat_name = 'LANDSAT_{}'.format(self.sat_num)
@@ -95,7 +95,7 @@ class GoogleDownload(object):
         self.scene_ids_all = None
         self.scenes_all = None
 
-        self.selected = None
+        self.selected_scenes = None
         self.pymetric_ids = None
 
         self.output = output_path
@@ -111,8 +111,10 @@ class GoogleDownload(object):
 
         if list_type == 'low_cloud':
             scenes = self.scenes_low_cloud
-        else:
+        elif list_type == 'all':
             scenes = self.scenes_all
+        elif list_type == 'selected':
+            scenes = self.selected_scenes
 
         out_dir = None
         for ind, row in scenes.iterrows():
@@ -188,7 +190,7 @@ class GoogleDownload(object):
         lc = self._split_list(c, n)
         c_idx = [c.index(min(c)) for c in lc]
         select = [l[i] for l, i in zip(ls, c_idx)]
-        self.selected = scn.ix[select]
+        self.selected_scenes = scn.loc[select]
         pass
 
     def _check_metadata(self):
@@ -292,6 +294,7 @@ class GoogleDownload(object):
             last += avg
 
         return out
+
 
 if __name__ == '__main__':
     pass
