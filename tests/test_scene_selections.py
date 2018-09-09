@@ -48,10 +48,13 @@ class MyTestCase(unittest.TestCase):
                                 'LC80390272013231LGN01', 'LC80390272013279LGN01'])
 
     def test_select_n(self):
+        self.start = '2013-04-15'
+        self.end = '2013-10-15'
         g = GoogleDownload(self.start, self.end, self.sat, path=self.path, row=self.row,
                            output_path=self.root, max_cloud_percent=100)
         g.select_scenes(n=3)
-        g.download()
+        self.assertEqual(g.selected_scenes['SCENE_ID'].values.tolist(),
+                         ['LC80390272013119LGN02', 'LC80390272013183LGN01', 'LC80390272013231LGN01'])
 
 
 if __name__ == '__main__':
