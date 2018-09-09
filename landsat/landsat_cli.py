@@ -117,7 +117,7 @@ def main(args):
             g = GoogleDownload(**cfg)
             if return_scene_list:
                 return g.candidate_scenes(return_list=True)
-            g.download(low_cloud=True)
+            g.download()
 
         else:
             del cfg['return_list']
@@ -127,7 +127,7 @@ def main(args):
             if return_scene_list:
                 return g.candidate_scenes(return_list=True)
             else:
-                g.download(low_cloud=True)
+                g.download()
 
 
 def cli_runner():

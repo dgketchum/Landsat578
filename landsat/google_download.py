@@ -106,9 +106,9 @@ class GoogleDownload(object):
         self.candidate_scenes()
         self.band_map = BandMap()
 
-    def download(self, low_cloud=True):
+    def download(self, list_type='low_cloud'):
 
-        if low_cloud:
+        if list_type == 'low_cloud':
             scenes = self.scenes_low_cloud
         else:
             scenes = self.scenes_all
@@ -139,7 +139,8 @@ class GoogleDownload(object):
 
         return None
 
-    def candidate_scenes(self, return_list=False):
+    def candidate_scenes(self, return_list=False, list_type='low_cloud'):
+
         path = self.scenes_abspath
         df = read_parquet(path, engine='fastparquet')
         s, e = Timestamp(self.start_dt), Timestamp(self.end_dt)
@@ -167,16 +168,16 @@ class GoogleDownload(object):
         self.scene_ids_all = cloud_select.SCENE_ID.values.tolist()
 
         if return_list:
-            return self.scene_ids_low_cloud, self.scene_ids_all
+            if list_type == 'low_cloud':
+                return self.scene_ids_low_cloud
 
-    def select_scenes(self, n=None, begin=None, stop=None, monthly=None):
-        if begin and stop:
-            pass
-        if n:
-            pass
-        if monthly:
-            pass
-        return None
+            elif list_type == 'all':
+                return self.scene_ids_all
+
+            else:
+                raise AttributeError('Must choose list return type all or low_cloud')
+        else:
+            return None
 
     def _check_metadata(self):
 
