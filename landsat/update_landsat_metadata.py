@@ -82,16 +82,7 @@ def download_latest_metadata():
 
 
 def split_list(_list=LATEST):
-    """
-    # dtypes = ['object', 'object', 'object', 'object', 'object', 'int64', 'object', 'object',
-    #           'object', 'int64', 'int64', 'float64', 'float64', 'float64', 'float64', 'float64',
-    #           'int64', 'object']
-    #
-    # keys = ['SCENE_ID', 'PRODUCT_ID', 'SPACECRAFT_ID', 'SENSOR_ID', 'DATE_ACQUIRED',
-    #         'COLLECTION_NUMBER', 'COLLECTION_CATEGORY', 'SENSING_TIME', 'DATA_TYPE', 'WRS_PATH',
-    #         'WRS_ROW', 'CLOUD_COVER', 'NORTH_LAT', 'SOUTH_LAT', 'WEST_LON', 'EAST_LON',
-    #         'TOTAL_SIZE', 'BASE_URL']
-    """
+
     print('Please wait while scene metadata is split')
     csv = read_csv(_list, dtype={'PRODUCT_ID': object, 'COLLECTION_NUMBER': object,
                                  'COLLECTION_CATEGORY': object}, blocksize=25e6,
@@ -102,7 +93,12 @@ def split_list(_list=LATEST):
     for sat in sats:
         print(sat)
         df = csv[csv.SPACECRAFT_ID == sat]
-        df.to_parquet('{}'.format(sat))
+        dst = os.path.join(SCENES, sat)
+        if os.path.isfile(dst):
+            os.remove(dst)
+        if not os.path.isdir(dst):
+            os.mkdir(dst)
+        df.to_parquet('{}'.format(dst))
 
     return None
 
@@ -137,5 +133,5 @@ def download_wrs_data():
 
 
 if __name__ == '__main__':
-    update_metadata_lists()
+    pass
 # ========================= EOF ================================================================
