@@ -1,0 +1,5 @@
+pyyaml
+pandas
+requests
+lxml
+future

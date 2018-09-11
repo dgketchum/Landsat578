@@ -1,0 +1,21 @@
+
+# date format: 'YYYY-MM-DD'
+start: '2007-05-01'
+end: '2007-05-31'
+path: 43
+row: 30
+latitude:
+longitude:
+output_path: None
+satellite: 5
+
+return_list: False
+zipped: True
+max_cloud_percent: 100
+
+# pymetric directory structure: e.g. D:/pyMETRIC/harney/landsat/path/row/year
+# using pymetric_root and clear_scenes overrides all other arguments
+# leave both blank to disable
+
+pymetric_root: /home/dgketchum/PycharmProjects/Landsat578/
+clear_scenes: /home/dgketchum/PycharmProjects/Landsat578/clear_scenes_2011.txt
