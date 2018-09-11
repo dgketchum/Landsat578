@@ -1,3 +1,0 @@
-[console_scripts]
-landsat = landsat.landsat_cli:cli_runner
-
