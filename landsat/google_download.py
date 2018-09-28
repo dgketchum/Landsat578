@@ -37,7 +37,7 @@ from landsat.update_landsat_metadata import update_metadata_lists, get_wrs_shape
 from landsat.band_map import BandMap
 
 SATS = ['LANDSAT_1', 'LANDSAT_2', 'LANDSAT_3', 'LANDSAT_4',
-        'LANDSAT_5', 'LANDSAT_7', 'LANDSAT_8.parquet']
+        'LANDSAT_5', 'LANDSAT_7', 'LANDSAT_8']
 
 WRS_1 = os.path.join(os.path.dirname(__file__), 'wrs', 'wrs1_descending.shp')
 WRS_2 = os.path.join(os.path.dirname(__file__), 'wrs', 'wrs2_descending.shp')
