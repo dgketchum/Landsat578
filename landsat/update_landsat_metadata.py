@@ -27,17 +27,6 @@ from requests import get
 fmt = '%Y%m%d'
 date = datetime.strftime(datetime.now(), fmt)
 
-LANDSAT_METADATA_URL = 'http://storage.googleapis.com/gcp-public-data-landsat/index.csv.gz'
-L_SCENES_ZIP = 's_index.csv.gz'
-L_SCENES = os.path.join(os.path.dirname(__file__), 'l_scenes')
-WRS_URL = ('https://landsat.usgs.gov/sites/default/files/documents/WRS1_descending.zip',
-           'https://landsat.usgs.gov/sites/default/files/documents/WRS2_descending.zip')
-WRS_FILES = (os.path.join(os.path.dirname(__file__), 'wrs', 'wrs1_descending.shp'),
-             os.path.join(os.path.dirname(__file__), 'wrs', 'wrs2_descending.shp'))
-WRS_ZIP = 'wrs.zip'
-WRS_DIR = os.path.join(os.path.dirname(__file__), 'wrs')
-L_LATEST = 'l_scenes_{}'.format(date)
-
 
 class SatMetaData(object):
 
