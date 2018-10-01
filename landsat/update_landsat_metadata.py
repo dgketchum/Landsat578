@@ -18,7 +18,8 @@ from __future__ import print_function, absolute_import
 import gzip
 import os
 from datetime import datetime
-from zipfile import ZipFile
+from zipfile import ZipFile, BadZipFile
+from fastkml import kml
 
 from dask.dataframe import read_csv
 from numpy import unique
@@ -29,8 +30,10 @@ date = datetime.strftime(datetime.now(), fmt)
 
 
 class SatMetaData(object):
+    """ ... """
 
     def __init__(self, sat):
+
         if sat == 'landsat':
             self.sat = 'landsat'
             self.scenes_zip = 'l_index.csv.gz'
@@ -49,14 +52,14 @@ class SatMetaData(object):
             self.metadata_url = 'https://storage.googleapis.com/gcp-public-data-sentinel-2/index.csv.gz'
             self.scenes_zip = 's_index.csv.gz'
             self.scenes = os.path.join(os.path.dirname(__file__), 's_scenes')
-            a = 'https://sentinel.esa.int/documents/247904/1955685/'
-            b = 'S2A_OPER_GIP_TILPAR_MPC__20151209T095117_V20150622T000000_21000101T000000_B00.kml'
-            self.vector_url = ['{}{}'.format(a, b)]
+            # a = 'https://sentinel.esa.int/documents/247904/1955685/'
+            # b = 'S2A_OPER_GIP_TILPAR_MPC__20151209T095117_V20150622T000000_21000101T000000_B00.kml'
+            # self.vector_url = ['{}{}'.format(a, b)]
+            self.vector_url = 'http://earth-info.nga.mil/GandG/coordsys/zip/MGRS/MGRS_100kmSQ_ID/MGRS_100kmSQ_ID.zip'
             self.vector_files = [os.path.join(os.path.dirname(__file__), 's_tiles', 'tiles.shp')]
-            self.vector_zip = 's_tiles.zip'
+            self.vector_zip = 's_tiles.kml'
             self.vector_dir = os.path.join(os.path.dirname(__file__), 's_tiles')
             self.latest = 's_scenes_{}'.format(date)
-
 
         else:
             raise NotImplementedError('must choose from "sentinel" or "landsat"')
@@ -72,6 +75,7 @@ class SatMetaData(object):
                 os.remove(os.path.join(self.scenes, f))
         self.download_latest_metadata()
         self.split_list()
+        self.get_wrs_shapefiles()
         os.remove(self.latest)
         os.remove(self.scenes_zip)
         with open(self.latest, 'w') as empty:
@@ -80,7 +84,7 @@ class SatMetaData(object):
 
     def download_latest_metadata(self):
 
-        if not os.path.isfile(self.scenes_zip):
+        if not os.path.isfile(self.latest):
             req = get(self.metadata_url, stream=True)
             if req.status_code != 200:
                 raise ValueError('Bad response {} from request.'.format(req.status_code))
@@ -90,6 +94,8 @@ class SatMetaData(object):
                 for chunk in req.iter_content(chunk_size=1024):
                     if chunk:
                         f.write(chunk)
+        else:
+            print('you have the latest {} metadata'.format(self.sat))
 
         if not os.path.isfile(self.latest):
             with gzip.open(self.scenes_zip, 'rb') as infile:
@@ -112,45 +118,57 @@ class SatMetaData(object):
             for sat in sats:
                 print(sat)
                 df = csv[csv.SPACECRAFT_ID == sat]
-                dst = os.path.join(L_SCENES, sat)
+                dst = os.path.join(self.latest, sat)
                 if os.path.isfile(dst):
                     os.remove(dst)
                 if not os.path.isdir(dst):
                     os.mkdir(dst)
                 df.to_parquet('{}'.format(dst))
         else:
-            csv = read_csv(self.latest)
+            dst = os.path.join(self.scenes, self.sat)
+            if os.path.isfile(dst):
+                os.remove(dst)
+            if not os.path.isdir(dst):
+                os.mkdir(dst)
+            df = read_csv(self.latest)
+            df.to_parquet('{}'.format(dst))
 
         return None
 
+    def get_wrs_shapefiles(self):
+        if not os.path.isdir(self.vector_dir):
+            os.mkdir(self.vector_dir)
+        os.chdir(self.vector_dir)
+        self.download_wrs_data()
 
-def get_wrs_shapefiles():
-    if not os.path.isdir(WRS_DIR):
-        os.mkdir(WRS_DIR)
-    os.chdir(WRS_DIR)
-    download_wrs_data()
+    def download_wrs_data(self):
+        for url, wrs_file in zip(self.vector_url, self.vector_files):
+            if not os.path.isfile(wrs_file):
+                req = get(url, stream=True)
+                if req.status_code != 200:
+                    raise ValueError('Bad response {} from request.'.format(req.status_code))
 
+                with open(self.vector_zip, 'wb') as f:
+                    print('Downloading {}'.format(url))
+                    for chunk in req.iter_content(chunk_size=1024):
+                        if chunk:
+                            f.write(chunk)
+            try:
+                with ZipFile(self.vector_zip, 'r') as zip_file:
+                    print('unzipping {}'.format(self.vector_zip))
+                    zip_file.extractall()
 
-def download_wrs_data():
-    for url, wrs_file in zip(WRS_URL, WRS_FILES):
-        if not os.path.isfile(WRS_ZIP):
-            req = get(url, stream=True)
-            if req.status_code != 200:
-                raise ValueError('Bad response {} from request.'.format(req.status_code))
+            except BadZipFile:
+                with open(self.vector_zip) as doc:
+                    s = doc.read()
+                    k = kml.KML()
+                    k.from_string(s)
+                    features = list(k.features())
+                for f in features:
+                    pass
+            os.remove(self.vector_zip)
 
-            with open(WRS_ZIP, 'wb') as f:
-                print('Downloading {}'.format(url))
-                for chunk in req.iter_content(chunk_size=1024):
-                    if chunk:
-                        f.write(chunk)
-
-        with ZipFile(WRS_ZIP, 'r') as zip_file:
-            print('unzipping {}'.format(WRS_ZIP))
-            zip_file.extractall()
-
-        os.remove(WRS_ZIP)
-
-    return None
+        return None
 
 
 if __name__ == '__main__':
