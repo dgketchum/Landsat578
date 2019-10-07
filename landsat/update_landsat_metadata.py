@@ -21,6 +21,7 @@ from zipfile import ZipFile
 from numpy import unique
 from datetime import datetime
 from dask.dataframe import read_csv
+from pandas.io.common import EmptyDataError
 from requests import get
 
 LANDSAT_METADATA_URL = 'http://storage.googleapis.com/gcp-public-data-landsat/index.csv.gz'
@@ -37,7 +38,6 @@ WRS_DIR = os.path.join(os.path.dirname(__file__), 'wrs')
 fmt = '%Y%m%d'
 date = datetime.strftime(datetime.now(), fmt)
 LATEST = 'scenes_{}'.format(date)
-
 PARSE_DATES = ['DATE_ACQUIRED', 'SENSING_TIME']
 
 
@@ -84,9 +84,14 @@ def download_latest_metadata():
 def split_list(_list=LATEST):
 
     print('Please wait while scene metadata is split')
-    csv = read_csv(_list, dtype={'PRODUCT_ID': object, 'COLLECTION_NUMBER': object,
-                                 'COLLECTION_CATEGORY': object}, blocksize=25e6,
-                   parse_dates=True)
+    try:
+        csv = read_csv(_list, dtype={'PRODUCT_ID': object, 'COLLECTION_NUMBER': object,
+                                    'COLLECTION_CATEGORY': object}, blocksize=25e6,
+                    parse_dates=True)
+    except EmptyDataError:
+        print('Metadata has already been updated for the day.')
+        return None
+
     csv = csv[csv.COLLECTION_NUMBER != 'PRE']
 
     sats = unique(csv.SPACECRAFT_ID).tolist()
