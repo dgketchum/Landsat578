@@ -1,4 +1,4 @@
 pandas==0.22.0
-PyYAML==3.12
+PyYAML==5.1
 requests==2.20.0
-lxml
+lxmlr
