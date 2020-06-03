@@ -57,7 +57,7 @@ class MissingInitData(Exception):
 
 
 class GoogleDownload(object):
-    def __init__(self, start, end, satellite, latitude=None, longitude=None,
+    def __init__(self, start=None, end=None, satellite=None, latitude=None, longitude=None,
                  path=None, row=None, max_cloud_percent=100,
                  instrument=None, output_path=None, zipped=False, alt_name=False):
 

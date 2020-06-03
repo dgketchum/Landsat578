@@ -76,7 +76,7 @@ def create_parser():
                                                     ' type integer', type=float, default=100)
 
     parser.add_argument('--update-scenes', help='Update the scenes list this program uses to discover the '
-                                                'latest imagery.', default=False)
+                                                'latest imagery.', default=False, action='store_true')
 
     return parser
 
