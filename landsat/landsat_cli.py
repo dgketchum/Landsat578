@@ -116,7 +116,11 @@ def main(args):
 
             g = GoogleDownload(**cfg)
             if return_scene_list:
-                return g.candidate_scenes(return_list=True)
+                if cfg['max_cloud_percent'] < 100.0:
+                    return g.candidate_scenes(return_list=True)
+                else: 
+                    return g.candidate_scenes(return_list=True,list_type='all')
+                              
             g.download()
 
         else:
@@ -125,10 +129,15 @@ def main(args):
 
             g = GoogleDownload(**cfg)
             if return_scene_list:
-                return g.candidate_scenes(return_list=True)
+                if cfg['max_cloud_percent'] < 100.0:
+                    return g.candidate_scenes(return_list=True)
+                else: 
+                    return g.candidate_scenes(return_list=True,list_type='all')
             else:
-                g.download()
-
+                if cfg['max_cloud_percent'] < 100.0:
+                    g.download()
+                else:
+                    g.download(list_type='all')
 
 def cli_runner():
     parser = create_parser()
