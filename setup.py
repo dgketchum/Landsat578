@@ -56,7 +56,8 @@ setup(name='Landsat578',
       download_url='https://github.com/{}/{}/archive/{}.tar.gz'.format('dgketchum', 'Landsat578', tag),
       url='https://github.com/dgketchum',
       test_suite='tests.test_suite.suite',
-      install_requires=['pyyaml', 'geopandas', 'requests', 'lxml', 'future', 'pyarrow', 'fastparquet', 'dask[dataframe]', 'scikit-learn'],
+      install_requires=['pyyaml', 'geopandas', 'requests', 'lxml', 'future', 'pyarrow',
+                        'dask[dataframe]'],
       **setup_kwargs)
 
 
