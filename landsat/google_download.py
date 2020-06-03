@@ -145,7 +145,7 @@ class GoogleDownload(object):
     def candidate_scenes(self, return_list=False, list_type='low_cloud'):
 
         path = self.scenes_abspath
-        df = read_parquet(path, engine='fastparquet')
+        df = read_parquet(path, engine='pyarrow')
         s, e = Timestamp(self.start_dt), Timestamp(self.end_dt)
         pr = df.loc[(df.WRS_PATH == self.p) & (df.WRS_ROW == self.r)]
         df = None
