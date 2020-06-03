@@ -17,10 +17,13 @@ No credentials needed.
 
 ## Install
 
-To get the package from PyPi:
+~~To get the package from PyPi:~~
+
+Note: This package is no longer maintained on PyPi, just use
 ```
-$ pip install Landsat578
+$ pip install git+git://github.com/dgketchum/Landsat578.git
 ```
+if you want install/update the package with `pip`.
 
 Landsat instruments orbit the earth in sun-synchronous fashion.
 They pass over each place at approximately the same 

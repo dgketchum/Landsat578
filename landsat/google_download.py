@@ -57,7 +57,7 @@ class MissingInitData(Exception):
 
 
 class GoogleDownload(object):
-    def __init__(self, start, end, satellite, latitude=None, longitude=None,
+    def __init__(self, start=None, end=None, satellite=None, latitude=None, longitude=None,
                  path=None, row=None, max_cloud_percent=100,
                  instrument=None, output_path=None, zipped=False, alt_name=False):
 
@@ -145,7 +145,7 @@ class GoogleDownload(object):
     def candidate_scenes(self, return_list=False, list_type='low_cloud'):
 
         path = self.scenes_abspath
-        df = read_parquet(path, engine='fastparquet')
+        df = read_parquet(path, engine='pyarrow')
         s, e = Timestamp(self.start_dt), Timestamp(self.end_dt)
         pr = df.loc[(df.WRS_PATH == self.p) & (df.WRS_ROW == self.r)]
         df = None
@@ -162,13 +162,13 @@ class GoogleDownload(object):
             warn('There are no images for the satellite, time period, '
                  'and cloud cover constraints provided.')
 
-        self.urls_low_cloud = pr_dt.BASE_URL.values.tolist()
-        self.product_ids_low_cloud = pr_dt.PRODUCT_ID.values.tolist()
-        self.scene_ids_low_cloud = pr_dt.SCENE_ID.values.tolist()
+        self.urls_low_cloud = cloud_select.BASE_URL.values.tolist()
+        self.product_ids_low_cloud = cloud_select.PRODUCT_ID.values.tolist()
+        self.scene_ids_low_cloud = cloud_select.SCENE_ID.values.tolist()
 
-        self.urls_all = cloud_select.BASE_URL.values.tolist()
-        self.product_ids_all = cloud_select.PRODUCT_ID.values.tolist()
-        self.scene_ids_all = cloud_select.SCENE_ID.values.tolist()
+        self.urls_all = pr_dt.BASE_URL.values.tolist()
+        self.product_ids_all = pr_dt.PRODUCT_ID.values.tolist()
+        self.scene_ids_all = pr_dt.SCENE_ID.values.tolist()
 
         if return_list:
             if list_type == 'low_cloud':
