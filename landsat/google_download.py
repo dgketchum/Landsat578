@@ -162,7 +162,6 @@ class GoogleDownload(object):
             warn('There are no images for the satellite, time period, '
                  'and cloud cover constraints provided.')
 
-
         self.urls_low_cloud = cloud_select.BASE_URL.values.tolist()
         self.product_ids_low_cloud = cloud_select.PRODUCT_ID.values.tolist()
         self.scene_ids_low_cloud = cloud_select.SCENE_ID.values.tolist()
@@ -170,7 +169,6 @@ class GoogleDownload(object):
         self.urls_all = pr_dt.BASE_URL.values.tolist()
         self.product_ids_all = pr_dt.PRODUCT_ID.values.tolist()
         self.scene_ids_all = pr_dt.SCENE_ID.values.tolist()
-
 
         if return_list:
             if list_type == 'low_cloud':
