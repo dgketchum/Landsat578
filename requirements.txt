@@ -14,7 +14,7 @@ idna==2.9
 Landsat578==0.5.1
 llvmlite==0.32.1
 locket==0.2.0
-lxml==4.5.1
+lxml==4.6.5
 munch==2.5.0
 numba==0.49.1
 numpy==1.18.4
