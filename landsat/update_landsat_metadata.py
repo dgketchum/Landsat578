@@ -42,7 +42,7 @@ class SatMetaData(object):
                                'https://landsat.usgs.gov/sites/default/files/documents/WRS2_descending.zip']
             self.vector_files = (os.path.join(os.path.dirname(__file__), 'wrs', 'wrs1_descending.shp'),
                                  os.path.join(os.path.dirname(__file__), 'wrs', 'wrs2_descending.shp'))
-            self.vector_zip = 'wrs.zip'
+            self.vector_zip = 'wrs/wrs.zip'
             self.vector_dir = os.path.join(os.path.dirname(__file__), 'wrs')
             self.scenes = os.path.join(os.path.dirname(__file__), 'l_scenes')
             self.latest = 'l_scenes_{}'.format(date)
@@ -118,7 +118,7 @@ class SatMetaData(object):
             for sat in sats:
                 print(sat)
                 df = csv[csv.SPACECRAFT_ID == sat]
-                dst = os.path.join(self.latest, sat)
+                dst = os.path.join(self.scenes, sat)
                 if os.path.isfile(dst):
                     os.remove(dst)
                 if not os.path.isdir(dst):
@@ -172,6 +172,7 @@ class SatMetaData(object):
 
 
 if __name__ == '__main__':
-    m = SatMetaData(sat='sentinel')
-    m.update_metadata_lists()
+    m = SatMetaData(sat='landsat')
+    # m.update_metadata_lists()
+    m.download_wrs_data()
 # ========================= EOF ================================================================

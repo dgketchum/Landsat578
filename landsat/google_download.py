@@ -33,7 +33,7 @@ except ImportError:
 
 sys.path.append(os.path.dirname(__file__))
 
-from landsat.update_landsat_metadata import update_metadata_lists, get_wrs_shapefiles
+from landsat.update_landsat_metadata import SatMetaData
 from landsat.band_map import BandMap
 
 SATS = ['LANDSAT_1', 'LANDSAT_2', 'LANDSAT_3', 'LANDSAT_4',
