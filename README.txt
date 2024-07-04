@@ -1,8 +1,17 @@
+Update July 4, 2024:
+
+Revisiting this package for a new project, found that GCS only
+updated Landsat images until sometime in 2021. I got this running
+again and updated to modern Python packages for this push. AWS is now
+charging 'requestor pays' to download from their public storage. I think
+it will be necessary to get a machine-to-machine API key from USGS
+Earth Explorer to download recent imagery for the time being. YMMV.
+
 Download and unzip Landsat 5, 7, and 8 (a.k.a. LT5, LE7, LC8) images
 via the Google service automatically using a command line interface or
 a simple python script. (Now you can get all Landsat [1, 2, 3, 4, 5, 7, 8]!)
 
-Python 2.7 and 3.6 compatible.
+Python 3.9 compatible.
 
 Landsat instruments orbit the earth in sun-synchronous fashion.
 They pass over each place at approximately the same
