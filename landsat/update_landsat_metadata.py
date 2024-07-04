@@ -36,33 +36,22 @@ class SatMetaData(object):
 
         if sat == 'landsat':
             self.sat = 'landsat'
-            self.scenes_zip = 'l_index.csv.gz'
             self.metadata_url = 'http://storage.googleapis.com/gcp-public-data-landsat/index.csv.gz'
-            self.vector_url = ['https://landsat.usgs.gov/sites/default/files/documents/WRS1_descending.zip',
-                               'https://landsat.usgs.gov/sites/default/files/documents/WRS2_descending.zip']
-            self.vector_files = (os.path.join(os.path.dirname(__file__), 'wrs', 'wrs1_descending.shp'),
-                                 os.path.join(os.path.dirname(__file__), 'wrs', 'wrs2_descending.shp'))
-            self.vector_zip = 'wrs/wrs.zip'
-            self.vector_dir = os.path.join(os.path.dirname(__file__), 'wrs')
-            self.scenes = os.path.join(os.path.dirname(__file__), 'l_scenes')
-            self.latest = 'l_scenes_{}'.format(date)
-
-        elif sat == 'sentinel':
-            self.sat = 'sentinel'
-            self.metadata_url = 'https://storage.googleapis.com/gcp-public-data-sentinel-2/index.csv.gz'
-            self.scenes_zip = 's_index.csv.gz'
-            self.scenes = os.path.join(os.path.dirname(__file__), 's_scenes')
-            # a = 'https://sentinel.esa.int/documents/247904/1955685/'
-            # b = 'S2A_OPER_GIP_TILPAR_MPC__20151209T095117_V20150622T000000_21000101T000000_B00.kml'
-            # self.vector_url = ['{}{}'.format(a, b)]
-            self.vector_url = 'http://earth-info.nga.mil/GandG/coordsys/zip/MGRS/MGRS_100kmSQ_ID/MGRS_100kmSQ_ID.zip'
-            self.vector_files = [os.path.join(os.path.dirname(__file__), 's_tiles', 'tiles.shp')]
-            self.vector_zip = 's_tiles.kml'
-            self.vector_dir = os.path.join(os.path.dirname(__file__), 's_tiles')
-            self.latest = 's_scenes_{}'.format(date)
+            self.vector_url = ['https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/'
+                               's3fs-public/atoms/files/WRS1_descending_0.zip',
+                               'https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/'
+                               's3fs-public/atoms/files/WRS2_descending_0.zip']
+            self.project_ws = os.path.dirname(__file__)
+            self.vector_files = (os.path.join(self.project_ws, 'wrs', 'wrs1_descending.shp'),
+                                 os.path.join(self.project_ws, 'wrs', 'wrs2_descending.shp'))
+            self.vector_zip = os.path.join(self.project_ws, 'wrs', 'wrs.zip')
+            self.vector_dir = os.path.join(self.project_ws, 'wrs')
+            self.scenes = os.path.join(self.project_ws, 'scenes')
+            self.scenes_zip = os.path.join(self.scenes, 'l_index.csv.gz')
+            self.latest = os.path.join(self.scenes, 'scenes_{}'.format(date))
 
         else:
-            raise NotImplementedError('must choose from "sentinel" or "landsat"')
+            raise NotImplementedError('only works for "landsat"')
 
     def update_metadata_lists(self):
         print('Please wait while Landsat578 updates {} metadata files...'.format(self.sat))
@@ -74,10 +63,11 @@ class SatMetaData(object):
             if 'l_scenes_' in f and self.latest not in f:
                 os.remove(os.path.join(self.scenes, f))
         self.download_latest_metadata()
-        self.split_list()
-        self.get_wrs_shapefiles()
-        os.remove(self.latest)
-        os.remove(self.scenes_zip)
+        try:
+            os.remove(self.latest)
+            os.remove(self.scenes_zip)
+        except FileNotFoundError:
+            pass
         with open(self.latest, 'w') as empty:
             empty.write('')
         return None
@@ -94,6 +84,10 @@ class SatMetaData(object):
                 for chunk in req.iter_content(chunk_size=1024):
                     if chunk:
                         f.write(chunk)
+
+            self.split_list()
+            self.get_wrs_shapefiles()
+
         else:
             print('you have the latest {} metadata'.format(self.sat))
 
@@ -107,30 +101,22 @@ class SatMetaData(object):
         return None
 
     def split_list(self):
-        if self.sat == 'landsat':
-            print('Please wait while {} scene metadata is split'.format(self.sat))
-            csv = read_csv(self.latest, dtype={'PRODUCT_ID': object, 'COLLECTION_NUMBER': object,
-                                               'COLLECTION_CATEGORY': object}, blocksize=25e6,
-                           parse_dates=True)
-            csv = csv[csv.COLLECTION_NUMBER != 'PRE']
 
-            sats = unique(csv.SPACECRAFT_ID).tolist()
-            for sat in sats:
-                print(sat)
-                df = csv[csv.SPACECRAFT_ID == sat]
-                dst = os.path.join(self.scenes, sat)
-                if os.path.isfile(dst):
-                    os.remove(dst)
-                if not os.path.isdir(dst):
-                    os.mkdir(dst)
-                df.to_parquet('{}'.format(dst))
-        else:
-            dst = os.path.join(self.scenes, self.sat)
+        print('Please wait while {} scene metadata is split'.format(self.sat))
+        csv = read_csv(self.latest, dtype={'PRODUCT_ID': object, 'COLLECTION_NUMBER': object,
+                                           'COLLECTION_CATEGORY': object}, blocksize=25e6,
+                       parse_dates=True)
+        csv = csv[csv.COLLECTION_NUMBER != 'PRE']
+
+        sats = unique(csv.SPACECRAFT_ID).tolist()
+        for sat in sats:
+            print(sat)
+            df = csv[csv.SPACECRAFT_ID == sat]
+            dst = os.path.join(self.scenes, sat)
             if os.path.isfile(dst):
                 os.remove(dst)
             if not os.path.isdir(dst):
                 os.mkdir(dst)
-            df = read_csv(self.latest)
             df.to_parquet('{}'.format(dst))
 
         return None
@@ -172,7 +158,6 @@ class SatMetaData(object):
 
 
 if __name__ == '__main__':
-    m = SatMetaData(sat='landsat')
-    # m.update_metadata_lists()
-    m.download_wrs_data()
+    pass
+
 # ========================= EOF ================================================================
