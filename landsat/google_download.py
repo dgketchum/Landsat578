@@ -21,8 +21,11 @@ import sys
 import tarfile
 import shutil
 from lxml import html
+import numpy as np
 from warnings import warn
-from pandas import Timestamp, read_parquet, concat, Series, to_datetime
+import pandas as pd
+from shapely.geometry import Point
+import geopandas as gpd
 from datetime import datetime as dt
 from requests import get
 
@@ -39,8 +42,8 @@ from landsat.band_map import BandMap
 SATS = ['LANDSAT_1', 'LANDSAT_2', 'LANDSAT_3', 'LANDSAT_4',
         'LANDSAT_5', 'LANDSAT_7', 'LANDSAT_8']
 
-WRS_1 = os.path.join(os.path.dirname(__file__), 'wrs', 'wrs1_descending.shp')
-WRS_2 = os.path.join(os.path.dirname(__file__), 'wrs', 'wrs2_descending.shp')
+WRS_1 = os.path.join(os.path.dirname(__file__), 'wrs', 'WRS1_descending.shp')
+WRS_2 = os.path.join(os.path.dirname(__file__), 'wrs', 'WRS2_descending.shp')
 WRS_DIR = os.path.join(os.path.dirname(__file__), 'wrs')
 
 SCENES = os.path.join(os.path.dirname(__file__), 'scenes')
@@ -144,27 +147,33 @@ class GoogleDownload(object):
 
     def candidate_scenes(self, return_list=False, list_type='low_cloud'):
 
+        filters = None
         path = self.scenes_abspath
-        df = read_parquet(path, engine='fastparquet')
-        s, e = Timestamp(self.start_dt), Timestamp(self.end_dt)
-        pr = df.loc[(df.WRS_PATH == self.p) & (df.WRS_ROW == self.r)]
-        df = None
-        pr['DATE_ACQUIRED'] = pr['DATE_ACQUIRED'].apply(to_datetime)
-        pr_dt = pr.loc[(s < pr.DATE_ACQUIRED) & (pr.DATE_ACQUIRED < e)]
 
-        cloud_select = pr_dt.loc[(pr_dt.CLOUD_COVER < self.cloud)]
+        if isinstance(self.p, int):
+            filters = [[('WRS_PATH', '=', self.p), ('WRS_ROW', '=', self.r)]]
+        elif isinstance(self.p, list):
+            filters = [[('WRS_PATH', 'in', self.p), ('WRS_ROW', 'in', self.r)]]
 
-        pr_dt.dropna(subset=['PRODUCT_ID'], inplace=True, axis=0)
+        df = pd.read_parquet(path, engine="pyarrow", filters=filters)
+
+        s, e = pd.Timestamp(self.start_dt), pd.Timestamp(self.end_dt)
+
+        df['DATE_ACQUIRED'] = df['DATE_ACQUIRED'].apply(pd.to_datetime)
+        df = df.loc[(s < df.DATE_ACQUIRED) & (df.DATE_ACQUIRED < e)]
+
+        cloud_select = df.loc[(df.CLOUD_COVER < self.cloud)]
         cloud_select.dropna(subset=['PRODUCT_ID'], inplace=True, axis=0)
-        self.scenes_all = pr_dt
+
+        self.scenes_all = df
         self.scenes_low_cloud = cloud_select
-        if cloud_select.shape[0] == 0 or pr_dt.shape[0] == 0:
+        if cloud_select.shape[0] == 0 or df.shape[0] == 0:
             warn('There are no images for the satellite, time period, '
                  'and cloud cover constraints provided.')
 
-        self.urls_low_cloud = pr_dt.BASE_URL.values.tolist()
-        self.product_ids_low_cloud = pr_dt.PRODUCT_ID.values.tolist()
-        self.scene_ids_low_cloud = pr_dt.SCENE_ID.values.tolist()
+        self.urls_low_cloud = df.BASE_URL.values.tolist()
+        self.product_ids_low_cloud = df.PRODUCT_ID.values.tolist()
+        self.scene_ids_low_cloud = df.SCENE_ID.values.tolist()
 
         self.urls_all = cloud_select.BASE_URL.values.tolist()
         self.product_ids_all = cloud_select.PRODUCT_ID.values.tolist()
@@ -196,15 +205,15 @@ class GoogleDownload(object):
     def _check_metadata(self):
 
         if not os.path.isdir(self.scenes):
-            update_metadata_lists()
+            SatMetaData(sat='landsat').update_metadata_lists()
 
         path = os.path.join(self.scenes, 'LANDSAT_{}'.format(self.sat_num))
         if not os.path.isdir(path):
-            update_metadata_lists()
+            SatMetaData(sat='landsat').update_metadata_lists()
         self.scenes_abspath = path
 
         if not os.path.isdir(WRS_DIR):
-            get_wrs_shapefiles()
+            SatMetaData(sat='landsat').get_wrs_shapefiles()
 
     def _check_pr_lat_lon(self):
         if self.p and self.r:
@@ -225,25 +234,23 @@ class GoogleDownload(object):
                 'convert_pr_to_ll' [path, row to coordinates]
         :return: lat, lon tuple or path, row tuple
         """
-        conversion_type = 'convert_ll_to_pr'
-        base = 'https://landsat.usgs.gov/landsat/lat_long_converter/tools_latlong.php'
-        unk_number = 1508518830987
+        if self.sat_num > 3:
+            shp = WRS_2
+        else:
+            shp = WRS_1
 
-        full_url = '{}?rs={}&rsargs[]={}&rsargs[]={}&rsargs[]=1&rsrnd={}'.format(base,
-                                                                                 conversion_type,
-                                                                                 self.lat, self.lon,
-                                                                                 unk_number)
-        r = get(full_url)
-        tree = html.fromstring(r.text)
-
-        # remember to view source html to build xpath
-        # i.e. inspect element > network > find GET with relevant PARAMS
-        # > go to GET URL > view source HTML
-        p_string = tree.xpath('//table/tr[1]/td[2]/text()')
-        self.p = int(re.search(r'\d+', p_string[0]).group())
-
-        r_string = tree.xpath('//table/tr[1]/td[4]/text()')
-        self.r = int(re.search(r'\d+', r_string[0]).group())
+        wrs = gpd.read_file(shp)
+        pt = Point(self.lon, self.lat)
+        inter = wrs[wrs.intersects(pt)]
+        inter = inter[['PATH', 'ROW', 'PR_', 'WRSPR']]
+        if inter.shape[0] == 0:
+            raise NotImplementedError('Lat/Lon point failed to intersect the worldwide WRS, check the numbers')
+        elif inter.shape[0] == 1:
+            self.p, self.r = inter.iloc[0, 'PATH'], inter.iloc[0, 'ROW']
+        else:
+            self.path_rows = [pr for pr in inter['WRSPR']]
+            self.p, self.r = [pr for pr in inter['PATH']], [pr for pr in inter['ROW']]
+            print('Lat/Lon produced multiple path/row intersects: {}'.format(self.path_rows))
 
     @staticmethod
     def _make_url(row, band):
