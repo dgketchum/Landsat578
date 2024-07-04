@@ -24,7 +24,9 @@ import yaml
 sys.path.append(os.path.dirname(__file__).replace('tests', 'landsat'))
 sys.path.append(os.path.dirname(__file__))
 from landsat.google_download import GoogleDownload
-from landsat.update_landsat_metadata import update_metadata_lists
+from landsat.update_landsat_metadata import SatMetaData
+
+from argparse import Namespace
 
 
 class TooFewInputsError(Exception):
@@ -75,8 +77,7 @@ def create_parser():
     parser.add_argument('--max-cloud-percent', help='Maximum percent of of image obscured by clouds accepted,'
                                                     ' type integer', type=float, default=100)
 
-    parser.add_argument('--update-scenes', help='Update the scenes list this program uses to discover the '
-                                                'latest imagery.', default=False, action='store_true')
+    parser.add_argument('--update-scenes', action='store_true', help='Update the scenes list')
 
     return parser
 
@@ -93,7 +94,8 @@ def main(args):
                 cfg[arg] = var
 
         if cfg['update_scenes']:
-            update_metadata_lists()
+            SatMetaData(sat='landsat').update_metadata_lists()
+            exit()
 
         if cfg['return_list']:
             return_scene_list = True
@@ -104,7 +106,7 @@ def main(args):
                 check_config(args.configuration)
 
             with open(args.configuration, 'r') as rfile:
-                ycfg = yaml.load(rfile)
+                ycfg = yaml.safe_load(rfile)
                 cfg.update(ycfg)
 
             del cfg['return_list']
@@ -116,11 +118,7 @@ def main(args):
 
             g = GoogleDownload(**cfg)
             if return_scene_list:
-                if cfg['max_cloud_percent'] < 100.0:
-                    return g.candidate_scenes(return_list=True)
-                else: 
-                    return g.candidate_scenes(return_list=True,list_type='all')
-                              
+                return g.candidate_scenes(return_list=True)
             g.download()
 
         else:
@@ -129,15 +127,10 @@ def main(args):
 
             g = GoogleDownload(**cfg)
             if return_scene_list:
-                if cfg['max_cloud_percent'] < 100.0:
-                    return g.candidate_scenes(return_list=True)
-                else: 
-                    return g.candidate_scenes(return_list=True,list_type='all')
+                return g.candidate_scenes(return_list=True)
             else:
-                if cfg['max_cloud_percent'] < 100.0:
-                    g.download()
-                else:
-                    g.download(list_type='all')
+                g.download()
+
 
 def cli_runner():
     parser = create_parser()
@@ -165,5 +158,12 @@ def check_config(dirname):
 
 
 if __name__ == '__main__':
-    cli_runner()
+    # cli_runner()
+    args = Namespace(satellite=8, start='2021-07-01', end='2021-07-31', latitude=46.8, longitude=-114.0, path=None,
+                     row=None,
+                     output_path='/home/dgketchum/PycharmProjects/Landsat578', configuration=None, clear_scenes=None,
+                     return_list=False, zipped=False, max_cloud_percent=100, update_scenes=False)
+
+    main(args)
+
 # ===============================================================================

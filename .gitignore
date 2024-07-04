@@ -22,3 +22,4 @@ pymetric/
 landsat/scenes/
 landsat/wrs/
 tests/data/
+/Landsat578.egg-info/

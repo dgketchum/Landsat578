@@ -15,128 +15,149 @@
 # =============================================================================================
 from __future__ import print_function, absolute_import
 
-import os
 import gzip
-from zipfile import ZipFile
-from numpy import unique
+import os
 from datetime import datetime
+from zipfile import ZipFile, BadZipFile
+from fastkml import kml
+
 from dask.dataframe import read_csv
-from pandas.io.common import EmptyDataError
+from numpy import unique
 from requests import get
-
-LANDSAT_METADATA_URL = 'http://storage.googleapis.com/gcp-public-data-landsat/index.csv.gz'
-SCENES_ZIP = 'index.csv.gz'
-SCENES = os.path.join(os.path.dirname(__file__), 'scenes')
-
-WRS_URL = ('https://landsat.usgs.gov/sites/default/files/documents/WRS1_descending.zip',
-           'https://landsat.usgs.gov/sites/default/files/documents/WRS2_descending.zip')
-WRS_FILES = (os.path.join(os.path.dirname(__file__), 'wrs', 'wrs1_descending.shp'),
-             os.path.join(os.path.dirname(__file__), 'wrs', 'wrs2_descending.shp'))
-WRS_ZIP = 'wrs.zip'
-WRS_DIR = os.path.join(os.path.dirname(__file__), 'wrs')
 
 fmt = '%Y%m%d'
 date = datetime.strftime(datetime.now(), fmt)
-LATEST = 'scenes_{}'.format(date)
-PARSE_DATES = ['DATE_ACQUIRED', 'SENSING_TIME']
 
 
-def update_metadata_lists():
-    print('Please wait while Landsat578 updates Landsat metadata files...')
-    if not os.path.isdir(SCENES):
-        os.mkdir(SCENES)
-    os.chdir(SCENES)
-    ls = os.listdir(SCENES)
-    for f in ls:
-        if 'scenes_' in f and LATEST not in f:
-            os.remove(os.path.join(SCENES, f))
-    download_latest_metadata()
-    split_list()
-    os.remove(LATEST)
-    os.remove(SCENES_ZIP)
-    with open(LATEST, 'w') as empty:
-        empty.write('')
-    return None
+class SatMetaData(object):
+    """ ... """
 
+    def __init__(self, sat):
 
-def download_latest_metadata():
-    if not os.path.isfile(SCENES_ZIP):
-        req = get(LANDSAT_METADATA_URL, stream=True)
-        if req.status_code != 200:
-            raise ValueError('Bad response {} from request.'.format(req.status_code))
+        if sat == 'landsat':
+            self.sat = 'landsat'
+            self.metadata_url = 'http://storage.googleapis.com/gcp-public-data-landsat/index.csv.gz'
+            self.vector_url = ['https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/'
+                               's3fs-public/atoms/files/WRS1_descending_0.zip',
+                               'https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/'
+                               's3fs-public/atoms/files/WRS2_descending_0.zip']
+            self.project_ws = os.path.dirname(__file__)
+            self.vector_files = (os.path.join(self.project_ws, 'wrs', 'wrs1_descending.shp'),
+                                 os.path.join(self.project_ws, 'wrs', 'wrs2_descending.shp'))
+            self.vector_zip = os.path.join(self.project_ws, 'wrs', 'wrs.zip')
+            self.vector_dir = os.path.join(self.project_ws, 'wrs')
+            self.scenes = os.path.join(self.project_ws, 'scenes')
+            self.scenes_zip = os.path.join(self.scenes, 'l_index.csv.gz')
+            self.latest = os.path.join(self.scenes, 'scenes_{}'.format(date))
 
-        with open(SCENES_ZIP, 'wb') as f:
-            print('Downloading {}'.format(LANDSAT_METADATA_URL))
-            for chunk in req.iter_content(chunk_size=1024):
-                if chunk:
-                    f.write(chunk)
+        else:
+            raise NotImplementedError('only works for "landsat"')
 
-    if not os.path.isfile(LATEST):
-        with gzip.open(SCENES_ZIP, 'rb') as infile:
-            print('unzipping {}'.format(SCENES_ZIP))
-            with open(LATEST, 'wb') as outfile:
-                for line in infile:
-                    outfile.write(line)
-
-    return None
-
-
-def split_list(_list=LATEST):
-
-    print('Please wait while scene metadata is split')
-    try:
-        csv = read_csv(_list, dtype={'PRODUCT_ID': object, 'COLLECTION_NUMBER': object,
-                                    'COLLECTION_CATEGORY': object}, blocksize=25e6,
-                    parse_dates=True)
-    except EmptyDataError:
-        print('Metadata has already been updated for the day.')
+    def update_metadata_lists(self):
+        print('Please wait while Landsat578 updates {} metadata files...'.format(self.sat))
+        if not os.path.isdir(self.scenes):
+            os.mkdir(self.scenes)
+        os.chdir(self.scenes)
+        ls = os.listdir(self.scenes)
+        for f in ls:
+            if 'l_scenes_' in f and self.latest not in f:
+                os.remove(os.path.join(self.scenes, f))
+        self.download_latest_metadata()
+        try:
+            os.remove(self.latest)
+            os.remove(self.scenes_zip)
+        except FileNotFoundError:
+            pass
+        with open(self.latest, 'w') as empty:
+            empty.write('')
         return None
 
-    csv = csv[csv.COLLECTION_NUMBER != 'PRE']
+    def download_latest_metadata(self):
 
-    sats = unique(csv.SPACECRAFT_ID).tolist()
-    for sat in sats:
-        print(sat)
-        df = csv[csv.SPACECRAFT_ID == sat]
-        dst = os.path.join(SCENES, sat)
-        if os.path.isfile(dst):
-            os.remove(dst)
-        if not os.path.isdir(dst):
-            os.mkdir(dst)
-        df.to_parquet('{}'.format(dst))
-
-    return None
-
-
-def get_wrs_shapefiles():
-    if not os.path.isdir(WRS_DIR):
-        os.mkdir(WRS_DIR)
-    os.chdir(WRS_DIR)
-    download_wrs_data()
-
-
-def download_wrs_data():
-    for url, wrs_file in zip(WRS_URL, WRS_FILES):
-        if not os.path.isfile(WRS_ZIP):
-            req = get(url, stream=True)
+        if not os.path.isfile(self.latest):
+            req = get(self.metadata_url, stream=True)
             if req.status_code != 200:
                 raise ValueError('Bad response {} from request.'.format(req.status_code))
 
-            with open(WRS_ZIP, 'wb') as f:
-                print('Downloading {}'.format(url))
+            with open(self.scenes_zip, 'wb') as f:
+                print('Downloading {}'.format(self.metadata_url))
                 for chunk in req.iter_content(chunk_size=1024):
                     if chunk:
                         f.write(chunk)
 
-        with ZipFile(WRS_ZIP, 'r') as zip_file:
-            print('unzipping {}'.format(WRS_ZIP))
-            zip_file.extractall()
+            self.split_list()
+            self.get_wrs_shapefiles()
 
-        os.remove(WRS_ZIP)
+        else:
+            print('you have the latest {} metadata'.format(self.sat))
 
-    return None
+        if not os.path.isfile(self.latest):
+            with gzip.open(self.scenes_zip, 'rb') as infile:
+                print('unzipping {}'.format(self.scenes_zip))
+                with open(self.latest, 'wb') as outfile:
+                    for line in infile:
+                        outfile.write(line)
+
+        return None
+
+    def split_list(self):
+
+        print('Please wait while {} scene metadata is split'.format(self.sat))
+        csv = read_csv(self.latest, dtype={'PRODUCT_ID': object, 'COLLECTION_NUMBER': object,
+                                           'COLLECTION_CATEGORY': object}, blocksize=25e6,
+                       parse_dates=True)
+        csv = csv[csv.COLLECTION_NUMBER != 'PRE']
+
+        sats = unique(csv.SPACECRAFT_ID).tolist()
+        for sat in sats:
+            print(sat)
+            df = csv[csv.SPACECRAFT_ID == sat]
+            dst = os.path.join(self.scenes, sat)
+            if os.path.isfile(dst):
+                os.remove(dst)
+            if not os.path.isdir(dst):
+                os.mkdir(dst)
+            df.to_parquet('{}'.format(dst))
+
+        return None
+
+    def get_wrs_shapefiles(self):
+        if not os.path.isdir(self.vector_dir):
+            os.mkdir(self.vector_dir)
+        os.chdir(self.vector_dir)
+        self.download_wrs_data()
+
+    def download_wrs_data(self):
+        for url, wrs_file in zip(self.vector_url, self.vector_files):
+            if not os.path.isfile(wrs_file):
+                req = get(url, stream=True)
+                if req.status_code != 200:
+                    raise ValueError('Bad response {} from request.'.format(req.status_code))
+
+                with open(self.vector_zip, 'wb') as f:
+                    print('Downloading {}'.format(url))
+                    for chunk in req.iter_content(chunk_size=1024):
+                        if chunk:
+                            f.write(chunk)
+            try:
+                with ZipFile(self.vector_zip, 'r') as zip_file:
+                    print('unzipping {}'.format(self.vector_zip))
+                    zip_file.extractall()
+
+            except BadZipFile:
+                with open(self.vector_zip) as doc:
+                    s = doc.read()
+                    k = kml.KML()
+                    k.from_string(s)
+                    features = list(k.features())
+                for f in features:
+                    pass
+            os.remove(self.vector_zip)
+
+        return None
 
 
 if __name__ == '__main__':
     pass
+
 # ========================= EOF ================================================================
