@@ -1,3 +1,5 @@
+> **Deprecated, October 2026.** Landsat578 downloaded Landsat Collection 1 scenes from the Google Cloud public bucket. USGS stopped producing Collection 1 at the end of 2021 and removed it from its archive in December 2022; the Google bucket is a frozen copy with no Landsat 9 and nothing acquired after 2021. This repository is archived and will not be updated. For Collection 2 data, query the USGS LandsatLook STAC API (https://landsatlook.usgs.gov/stac-server) with pystac-client and download with a tool such as eodag or stac-asset; for analysis-ready access use Google Earth Engine or odc-stac. The text below is kept as a historical record.
+
 <img src="https://github.com/dgketchum/Landsat578/blob/master/tests/data/QuickLook_CapeCod.jpg" width="500">
 
 [![Build Status](https://travis-ci.org/dgketchum/Landsat578.svg?branch=master)](https://travis-ci.org/dgketchum/Landsat578)
